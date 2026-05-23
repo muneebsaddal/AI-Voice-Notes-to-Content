@@ -92,6 +92,7 @@ Version 1 must include:
   - Email
   - Journal Entry
   - Content Post
+- Hybrid output selection: infer the best output type from the transcript, then let the user generate or change type.
 - Output preview and edit screen.
 - Local save history.
 - Copy output.
@@ -119,7 +120,7 @@ Version 1 should avoid:
 
 Version 1.5:
 
-- Auto-detect output type.
+- More advanced auto-detection using learned user preferences and templates.
 - Tone selector.
 - Templates by use case.
 - Apple Reminders export.
@@ -166,10 +167,11 @@ Acceptance criteria:
 3. User taps stop.
 4. App allows playback.
 5. App transcribes audio.
-6. User selects output type or accepts suggested default if available.
-7. App generates structured output.
-8. App shows editable preview.
-9. User saves, copies, shares, or exports.
+6. App suggests an output type from the transcript.
+7. User taps the primary generate button or changes the output type.
+8. App generates structured output.
+9. App shows editable preview.
+10. User saves, copies, shares, or exports.
 
 Acceptance criteria:
 
@@ -179,17 +181,23 @@ Acceptance criteria:
 - Generated output can be edited before save/export.
 - A successful output is saved to history.
 
-### 8.3 Choose Output Type
+### 8.3 Confirm Suggested Output Type
 
 1. User records a note.
-2. App shows output type choices.
-3. User selects Note, Todo List, Email, Journal Entry, or Content Post.
-4. App generates the chosen output.
+2. App reviews the transcript for explicit intent.
+3. If the user clearly says what they want, such as "write an email", "make this a note", or "turn this into a todo list", the app uses that output type.
+4. If the user does not clearly specify an output type, the app chooses the best likely type.
+5. App shows a primary action such as `Generate Email` and a secondary `Change Type` action.
+6. User confirms or changes the type.
+7. App generates the chosen output.
 
 Acceptance criteria:
 
 - Output types are understandable without prompt-writing knowledge.
 - Each type produces a distinct, useful structure.
+- Explicit user intent takes priority over model guesswork.
+- The suggested type is always visible before generation.
+- User can change the suggested type before generation.
 - User can regenerate with another output type from the same transcript.
 
 ### 8.4 Edit, Save, And Reuse
@@ -639,6 +647,7 @@ Suggested app modules:
 - `recording`: microphone permission, record, stop, playback, temporary file handling.
 - `transcription`: upload audio, receive transcript, retry, error handling.
 - `generation`: output type prompts, structured response parsing, regeneration.
+- `intent`: lightweight output type inference from transcript and explicit user commands.
 - `history`: local storage, edit, delete, favorite/search later.
 - `export`: clipboard, native iOS Share Sheet, basic Notion-through-share path.
 - `settings`: privacy preferences, audio retention, subscription status.
@@ -653,6 +662,7 @@ Core screens:
 - Recording active state.
 - Processing/transcribing state.
 - Output type selection screen or panel.
+- Suggested output confirmation state.
 - Output preview/edit screen.
 - History list.
 - History detail.
@@ -734,6 +744,7 @@ Requirements:
 - Screenshots showing:
   - Record voice note.
   - Choose output type.
+  - Confirm suggested output type.
   - Generated todo/email/note.
   - Share/export.
   - History.
@@ -878,6 +889,7 @@ When requirements change:
 
 ## 25. Change Log
 
+- 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
 - 2026-05-23: Locked v1 audio retention decision: delete local audio after successful transcription by default; keep TestFlight/subscription timing open.
 - 2026-05-23: Locked MVP Notion/export approach to native iOS Share Sheet; moved direct Notion API to later roadmap.
 - 2026-05-23: Created initial requirements document from `product-context.md` and project instructions.
@@ -886,7 +898,7 @@ When requirements change:
 
 Product:
 
-- Should the MVP force users to choose an output type, or should it suggest one after transcription?
+- What confidence threshold or rule set should trigger each suggested output type?
 - Should the first TestFlight be fully free, subscription-gated, or free with usage limits?
 - What maximum recording length should the free tier allow?
 - What quality-of-life features are required before offering a user-controlled save-audio option?

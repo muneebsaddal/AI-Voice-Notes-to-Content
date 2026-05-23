@@ -84,8 +84,8 @@ Version 1 must include:
 - iOS-first app experience.
 - Voice recording.
 - Audio playback before or after transcription.
-- Speech-to-text transcription.
-- AI cleanup and transformation.
+- Cloud speech-to-text transcription through a backend-mediated provider call.
+- Cloud AI cleanup and transformation through a backend-mediated provider call.
 - Five output modes:
   - Note
   - Todo List
@@ -121,6 +121,7 @@ Version 1 should avoid:
 Version 1.5:
 
 - More advanced auto-detection using learned user preferences and templates.
+- Local/privacy mode research spike for Apple Speech, Apple Foundation Models, and/or embedded local LLM runtimes.
 - Tone selector.
 - Templates by use case.
 - Apple Reminders export.
@@ -132,6 +133,7 @@ Version 1.5:
 
 Version 2:
 
+- Optional total privacy mode if local transcription and local generation meet quality, speed, battery, and device-coverage requirements.
 - Full Notion database mapping.
 - Gmail draft creation.
 - Todoist, Things, and TickTick export.
@@ -383,6 +385,9 @@ Requirements:
 - Should preserve enough punctuation and sentence boundaries for downstream AI transformation.
 - Should support at least English for MVP.
 - Should not store audio with the provider longer than needed, where configurable.
+- MVP uses cloud transcription through the app backend for speed and quality.
+- Audio upload must be clearly disclosed before processing.
+- Audio must not be uploaded silently.
 
 Provider candidates:
 
@@ -393,7 +398,7 @@ Provider candidates:
 Initial recommendation:
 
 - Use a server-mediated OpenAI transcription flow for MVP if it gives the fastest reliable path.
-- Re-evaluate Apple on-device speech for privacy and cost once recording and transformation flows are validated.
+- Re-evaluate Apple on-device speech and other local transcription options after the cloud MVP validates the core flow.
 
 ### 11.2 AI Transformation
 
@@ -405,10 +410,14 @@ Requirements:
 - The AI should ask for confirmation only when needed; MVP can show uncertain output notes instead of conversational follow-up.
 - Generation should complete quickly enough that the full record-to-output path feels usable.
 - User-facing errors must avoid technical provider details.
+- MVP uses cloud AI generation through the app backend for output quality and implementation speed.
+- Generated text requests must be clearly disclosed as cloud processing.
 
 Model candidates:
 
 - OpenAI text generation model suitable for fast structured transformation.
+- Apple Foundation Models for future on-device transformation where available.
+- Embedded local LLM runtimes such as MLC LLM or similar only after a dedicated feasibility spike.
 - Lower-cost model for simple cleanup if quality is acceptable.
 - Higher-quality model for paid/pro generation if needed later.
 
@@ -475,7 +484,7 @@ Voice notes may contain sensitive personal, work, client, health, financial, or 
 MVP requirements:
 
 - Explain microphone permission before requesting it.
-- Explain what is uploaded for transcription and AI generation.
+- Explain that v1 uploads audio for transcription and transcript text for AI generation.
 - Do not store audio after successful transcription by default in v1.
 - Playback may be available only before transcription cleanup, unless a temporary file still exists.
 - Later versions may add an explicit save-audio option with quality-of-life features such as replay, rename, retention settings, and storage controls.
@@ -486,6 +495,8 @@ MVP requirements:
 - Avoid logging raw transcripts, generated outputs, or audio URLs.
 - Use user-safe error reporting that does not leak sensitive content.
 - Do not use user content for model training unless the user explicitly opts in.
+- Do not market v1 as fully local or fully offline.
+- Future total privacy mode must make a clear distinction between local processing and cloud processing.
 - Prepare for account/data deletion in a later account-based release.
 
 Security requirements:
@@ -825,7 +836,26 @@ Milestones:
     - Target: 2026-07-15.
     - Deliverable: App Store listing assets, privacy policy, review-ready build.
 
-## 22. Testing Requirements
+Post-MVP privacy-mode investigation:
+
+- Test Apple Speech on-device transcription quality, latency, language support, device coverage, and Expo/native-module implications.
+- Test Apple Foundation Models for note cleanup, todo extraction, email drafting, journal formatting, and content post generation.
+- Test one embedded local LLM runtime only if Apple Foundation Models are insufficient or unavailable for the target devices.
+- Decide whether to ship `Total Privacy Mode`, `Private Local Mode`, or `Cloud Quality Mode` as a later feature.
+
+## 22. Product To Do / Backlog
+
+Privacy-mode backlog:
+
+- After the cloud MVP flow works, create a dedicated technical spike for local processing.
+- Prototype on-device speech-to-text using Apple Speech where supported.
+- Prototype on-device transformation using Apple Foundation Models where supported.
+- Compare local output quality against cloud output quality for all five MVP output types.
+- Measure local processing latency, battery impact, device heat, app size impact, and supported-device coverage.
+- Decide whether total privacy is a separate mode, a premium feature, or the default on supported devices.
+- Do not claim fully local processing in marketing until the shipped app actually supports it.
+
+## 23. Testing Requirements
 
 MVP test coverage should focus on risky behavior:
 
@@ -854,7 +884,7 @@ Manual QA scenarios:
 - Share output to Notion using share sheet.
 - App restart preserves history.
 
-## 23. Definition Of Done For MVP
+## 24. Definition Of Done For MVP
 
 The MVP is done when a user can:
 
@@ -878,7 +908,7 @@ The MVP is not done if:
 - There is no clear privacy explanation.
 - The app cannot be distributed through TestFlight.
 
-## 24. Requirement Change Process
+## 25. Requirement Change Process
 
 When requirements change:
 
@@ -887,14 +917,15 @@ When requirements change:
 3. Add a dated note to the change log below.
 4. If implementation has started, identify affected files, tests, and milestones before coding.
 
-## 25. Change Log
+## 26. Change Log
 
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
+- 2026-05-23: Locked v1 AI/transcription approach as cloud-first through backend-mediated provider calls; added post-MVP local/privacy-mode investigation for Apple Speech, Apple Foundation Models, and local LLM runtimes.
 - 2026-05-23: Locked v1 audio retention decision: delete local audio after successful transcription by default; keep TestFlight/subscription timing open.
 - 2026-05-23: Locked MVP Notion/export approach to native iOS Share Sheet; moved direct Notion API to later roadmap.
 - 2026-05-23: Created initial requirements document from `product-context.md` and project instructions.
 
-## 26. Open Questions
+## 27. Open Questions
 
 Product:
 
@@ -903,11 +934,13 @@ Product:
 - What maximum recording length should the free tier allow?
 - What quality-of-life features are required before offering a user-controlled save-audio option?
 - Should history store raw transcripts, or only generated outputs, for privacy?
+- What exact promise should future local processing use: `Total Privacy Mode`, `Private Local Mode`, or `Offline Mode`?
 
 Technical:
 
 - Which transcription provider gives the best balance of quality, speed, cost, and privacy for MVP?
 - Should the backend be serverless from day one or a small persistent API service?
+- Which on-device path should be tested first after MVP: Apple Speech, Apple Foundation Models, or embedded local LLM runtime?
 - What exact text/Markdown format should be shared to Notion from v1 outputs?
 - Which local database should be used for Expo: SQLite directly, WatermelonDB, Realm, or another option?
 - Which analytics/crash tools best fit the privacy requirements?

@@ -4,6 +4,8 @@ Last updated: 2026-05-24
 Status: Draft v0.1
 Figma design: https://www.figma.com/design/i2YJriFfE0abcoljVGF2uT
 
+Design note: the Figma file includes an `HIG Applied v1` page with safe-area-aware iPhone frames, native-style sheets/settings, 44pt+ controls, clear hierarchy, and implementation annotations based on Apple's Human Interface Guidelines.
+
 ## 1. UX Philosophy
 
 The app should feel like the fastest possible way to turn a thought into useful work.

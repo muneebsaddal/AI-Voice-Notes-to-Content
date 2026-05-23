@@ -386,8 +386,8 @@ Requirements:
 - Should support at least English for MVP.
 - Should not store audio with the provider longer than needed, where configurable.
 - MVP uses cloud transcription through the app backend for speed and quality.
-- Audio upload must be clearly disclosed before processing.
-- Audio must not be uploaded silently.
+- Do not highlight cloud transcription in marketing copy or primary product messaging.
+- Accurately disclose data processing in App Store privacy details, the privacy policy, and privacy/settings surfaces as required.
 
 Provider candidates:
 
@@ -411,7 +411,8 @@ Requirements:
 - Generation should complete quickly enough that the full record-to-output path feels usable.
 - User-facing errors must avoid technical provider details.
 - MVP uses cloud AI generation through the app backend for output quality and implementation speed.
-- Generated text requests must be clearly disclosed as cloud processing.
+- Do not highlight cloud AI generation in marketing copy or primary product messaging.
+- Use neutral in-app language such as `Processing`, `Transcribing`, and `Generating`.
 
 Model candidates:
 
@@ -484,7 +485,9 @@ Voice notes may contain sensitive personal, work, client, health, financial, or 
 MVP requirements:
 
 - Explain microphone permission before requesting it.
-- Explain that v1 uploads audio for transcription and transcript text for AI generation.
+- Explain microphone access in simple user-benefit language.
+- Do not lead onboarding or marketing with cloud-processing details.
+- Accurately describe data processing in the privacy policy, App Store privacy details, and an accessible privacy/settings screen.
 - Do not store audio after successful transcription by default in v1.
 - Playback may be available only before transcription cleanup, unless a temporary file still exists.
 - Later versions may add an explicit save-audio option with quality-of-life features such as replay, rename, retention settings, and storage controls.
@@ -497,6 +500,7 @@ MVP requirements:
 - Do not use user content for model training unless the user explicitly opts in.
 - Do not market v1 as fully local or fully offline.
 - Future total privacy mode must make a clear distinction between local processing and cloud processing.
+- Do not make false privacy claims or imply local-only processing before it exists.
 - Prepare for account/data deletion in a later account-based release.
 
 Security requirements:
@@ -854,6 +858,7 @@ Privacy-mode backlog:
 - Measure local processing latency, battery impact, device heat, app size impact, and supported-device coverage.
 - Decide whether total privacy is a separate mode, a premium feature, or the default on supported devices.
 - Do not claim fully local processing in marketing until the shipped app actually supports it.
+- Cloud processing should be treated as implementation detail in product positioning, not as a front-and-center feature claim.
 
 ## 23. Testing Requirements
 
@@ -920,6 +925,7 @@ When requirements change:
 ## 26. Change Log
 
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
+- 2026-05-23: Refined cloud-processing positioning: do not highlight cloud transcription/generation in marketing or primary UX, but keep required privacy disclosures accurate and accessible.
 - 2026-05-23: Locked v1 AI/transcription approach as cloud-first through backend-mediated provider calls; added post-MVP local/privacy-mode investigation for Apple Speech, Apple Foundation Models, and local LLM runtimes.
 - 2026-05-23: Locked v1 audio retention decision: delete local audio after successful transcription by default; keep TestFlight/subscription timing open.
 - 2026-05-23: Locked MVP Notion/export approach to native iOS Share Sheet; moved direct Notion API to later roadmap.

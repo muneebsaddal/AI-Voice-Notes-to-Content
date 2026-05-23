@@ -2,6 +2,7 @@
 
 Last updated: 2026-05-24
 Status: Draft v0.1
+Figma design: https://www.figma.com/design/i2YJriFfE0abcoljVGF2uT
 
 ## 1. UX Philosophy
 
@@ -376,4 +377,3 @@ Visual direction:
 - Should cancel require confirmation?
 - Should selecting an output type in `Change Type` immediately generate or return to confirmation?
 - Should history sheet show generated outputs only, or also pending/failed recordings?
-

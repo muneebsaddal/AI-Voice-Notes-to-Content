@@ -96,7 +96,7 @@ Version 1 must include:
 - Local save history.
 - Copy output.
 - Native iOS share sheet export.
-- Basic Notion export path using share/export or a simple Notion API flow if low-risk.
+- Basic Notion export path using the native iOS Share Sheet.
 - Clear loading, success, empty, permission, and error states.
 - Delete note/history item.
 - Basic onboarding and privacy explanation.
@@ -209,14 +209,15 @@ Acceptance criteria:
 
 1. User generates an output.
 2. User chooses export/share to Notion.
-3. App sends text through the native share sheet or a basic Notion connection.
-4. User confirms completion outside the app if using share sheet.
+3. App sends text through the native iOS Share Sheet.
+4. User chooses Notion or another destination from the share menu.
+5. User confirms completion outside the app.
 
 Acceptance criteria:
 
 - MVP has at least one usable path to get content into Notion.
-- If Notion API is used, authentication and failure states are clear.
-- If share sheet is used, the app labels this as a basic export path, not full Notion sync.
+- The app labels this as a basic export path, not full Notion sync.
+- No Notion OAuth, token storage, workspace picker, or database mapping is required in v1.
 
 ## 9. Output Type Requirements
 
@@ -422,25 +423,12 @@ Required:
 - iOS native share sheet.
 - Basic Notion export path.
 
-Notion MVP options:
+Notion v1 decision:
 
-Option A: Share sheet to Notion.
-
-- Fastest to ship.
-- Lower engineering risk.
-- No OAuth or database mapping.
-- Less magical, but enough for v1.
-
-Option B: Simple Notion API connection.
-
-- More polished.
-- Requires auth, token storage, API error handling, and page creation.
-- Database mapping should remain out of MVP unless very simple.
-
-Initial recommendation:
-
-- Ship native share sheet and label it clearly.
-- Add direct Notion API only if it does not delay recording, transcription, generation, editing, and history.
+- Use the native iOS Share Sheet for Notion export.
+- Format shared output cleanly, preferably as Markdown-friendly text.
+- Do not add direct Notion API, OAuth, token storage, workspace selection, page creation, or database mapping in v1.
+- Revisit direct Notion API in v1.5 or v2 after the core record-to-output loop is validated.
 
 ### 12.2 Later Integrations
 
@@ -459,6 +447,7 @@ Initial recommendation:
 - Microsoft Teams.
 - Google Docs.
 - Full Notion database mapping.
+- Direct Notion API page creation.
 
 Each integration must define:
 
@@ -495,7 +484,7 @@ Security requirements:
 - Secrets must be stored in environment variables or managed secret storage.
 - Subscription and entitlement checks must not rely only on client-side state.
 - If auth is added, use proven identity/payment providers.
-- If Notion OAuth is added, tokens must be stored securely and revocable.
+- If Notion OAuth is added in a later version, tokens must be stored securely and revocable.
 
 ## 14. Non-Functional Requirements
 
@@ -649,7 +638,7 @@ Suggested app modules:
 - `transcription`: upload audio, receive transcript, retry, error handling.
 - `generation`: output type prompts, structured response parsing, regeneration.
 - `history`: local storage, edit, delete, favorite/search later.
-- `export`: clipboard, share sheet, Notion path.
+- `export`: clipboard, native iOS Share Sheet, basic Notion-through-share path.
 - `settings`: privacy preferences, audio retention, subscription status.
 - `backend`: server endpoints, provider adapters, rate limits, usage tracking.
 
@@ -887,6 +876,7 @@ When requirements change:
 
 ## 25. Change Log
 
+- 2026-05-23: Locked MVP Notion/export approach to native iOS Share Sheet; moved direct Notion API to later roadmap.
 - 2026-05-23: Created initial requirements document from `product-context.md` and project instructions.
 
 ## 26. Open Questions
@@ -903,7 +893,7 @@ Technical:
 
 - Which transcription provider gives the best balance of quality, speed, cost, and privacy for MVP?
 - Should the backend be serverless from day one or a small persistent API service?
-- Should Notion v1 be share-sheet only or include direct API page creation?
+- What exact text/Markdown format should be shared to Notion from v1 outputs?
 - Which local database should be used for Expo: SQLite directly, WatermelonDB, Realm, or another option?
 - Which analytics/crash tools best fit the privacy requirements?
 
@@ -913,4 +903,3 @@ Launch:
 - What landing page domain should host privacy policy and marketing pages?
 - What App Store keywords should be tested first?
 - What screenshots and demo scripts should be produced before review?
-

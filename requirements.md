@@ -67,6 +67,9 @@ Early adopter niches:
 ## 5. Product Principles
 
 - Recording should be one tap from the main screen.
+- The home screen should be the recording surface, not a dashboard.
+- One large primary control should start and stop recording.
+- Haptic and/or audio cues should confirm recording start and stop by default.
 - The app should feel mobile-native, fast, calm, and obvious.
 - The user should not need to write prompts.
 - Output labels should use plain language.
@@ -83,6 +86,10 @@ Version 1 must include:
 
 - iOS-first app experience.
 - Voice recording.
+- Home screen dominated by one large record/stop button.
+- Same primary button starts and stops recording.
+- Cancel action available while recording.
+- Haptic and/or audio cue when recording starts and stops.
 - Audio playback before or after transcription.
 - Cloud speech-to-text transcription through a backend-mediated provider call.
 - Cloud AI cleanup and transformation through a backend-mediated provider call.
@@ -115,6 +122,7 @@ Version 1 should avoid:
 - Web dashboard.
 - Multi-language support beyond what transcription provider supports by default.
 - Background recording complexity unless required for basic usability.
+- Auto-start recording on app open as a default behavior.
 
 ## 7. Non-MVP Features
 
@@ -165,20 +173,26 @@ Acceptance criteria:
 ### 8.2 Record To Output
 
 1. User taps record.
-2. App starts recording and shows elapsed time.
-3. User taps stop.
-4. App allows playback.
-5. App transcribes audio.
-6. App suggests an output type from the transcript.
-7. User taps the primary generate button or changes the output type.
-8. App generates structured output.
-9. App shows editable preview.
-10. User saves, copies, shares, or exports.
+2. App starts recording and confirms start with haptic and/or audio cue.
+3. The primary button changes into the stop control.
+4. A smaller cancel action appears below the primary button.
+5. User taps the same primary button to stop.
+6. App confirms stop with haptic and/or audio cue.
+7. App allows playback when audio is still available.
+8. App transcribes audio.
+9. App suggests an output type from the transcript.
+10. User taps the primary generate button or changes the output type.
+11. App generates structured output.
+12. App shows editable preview.
+13. User saves, copies, shares, or exports.
 
 Acceptance criteria:
 
 - Recording can be started and stopped reliably.
 - User can see recording state.
+- Recording start/stop is confirmed with haptic and/or audio feedback.
+- No recording timer is required in v1.
+- Cancel is available during active recording.
 - User can recover from transcription or generation failure.
 - Generated output can be edited before save/export.
 - A successful output is saved to history.
@@ -529,6 +543,9 @@ Reliability:
 Usability:
 
 - Main screen must prioritize recording.
+- Main screen should not feel like a dashboard.
+- The first visible interactive element should be the large record button.
+- Do not show a recording timer in v1 unless later testing proves users need it.
 - Output type selection must be simple.
 - Empty states must invite recording, not explain too much.
 - Buttons and controls must be thumb-friendly on iPhone.
@@ -702,6 +719,13 @@ Important states:
 UX constraints:
 
 - No prompt box as the primary experience.
+- No dashboard-first home screen.
+- No helper line such as `Speak naturally` under the record button by default.
+- Keep home-screen copy minimal; the primary button and state should carry the experience.
+- Candidate home-screen microcopy, if needed for later testing: `Ready`, `Record`, `Hold that thought`, `Start`, or no text at all beyond the button label/accessibility label.
+- History/task list should be accessible through a secondary gesture such as swipe up/down or a secondary affordance, not the dominant first view.
+- Settings should use native-feeling iOS settings patterns and remain accessible from the top right.
+- `Start recording when app opens` should be a power-user setting, not the default.
 - No complex setup before first recording.
 - Avoid long forms in MVP.
 - Output editing should happen in a familiar text editor style.
@@ -860,12 +884,20 @@ Privacy-mode backlog:
 - Do not claim fully local processing in marketing until the shipped app actually supports it.
 - Cloud processing should be treated as implementation detail in product positioning, not as a front-and-center feature claim.
 
+UX backlog:
+
+- Add a power-user setting for `Start recording when app opens` after the default one-tap recording flow is stable.
+- Explore home-screen history access through swipe up/down once the core record button interaction is validated.
+- Test whether the record button should use text, icon-only, or icon plus subtle state label.
+
 ## 23. Testing Requirements
 
 MVP test coverage should focus on risky behavior:
 
 - Recording permission states.
 - Recording start/stop lifecycle.
+- Haptic/audio feedback on recording start and stop.
+- Cancel action during active recording.
 - Audio playback availability.
 - Transcription API success and failure.
 - AI generation for each output type.
@@ -924,6 +956,7 @@ When requirements change:
 
 ## 26. Change Log
 
+- 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no v1 timer, cancel during recording, haptic/audio start-stop cues by default, auto-start only as a future power-user setting.
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
 - 2026-05-23: Refined cloud-processing positioning: do not highlight cloud transcription/generation in marketing or primary UX, but keep required privacy disclosures accurate and accessible.
 - 2026-05-23: Locked v1 AI/transcription approach as cloud-first through backend-mediated provider calls; added post-MVP local/privacy-mode investigation for Apple Speech, Apple Foundation Models, and local LLM runtimes.

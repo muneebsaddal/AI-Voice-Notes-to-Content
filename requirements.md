@@ -70,6 +70,7 @@ Early adopter niches:
 - The home screen should be the recording surface, not a dashboard.
 - One large primary control should start and stop recording.
 - Haptic and/or audio cues should confirm recording start and stop by default.
+- Do not show a recording timer as part of the core product experience.
 - The app should feel mobile-native, fast, calm, and obvious.
 - The user should not need to write prompts.
 - Output labels should use plain language.
@@ -191,7 +192,7 @@ Acceptance criteria:
 - Recording can be started and stopped reliably.
 - User can see recording state.
 - Recording start/stop is confirmed with haptic and/or audio feedback.
-- No recording timer is required in v1.
+- No recording timer should be shown.
 - Cancel is available during active recording.
 - User can recover from transcription or generation failure.
 - Generated output can be edited before save/export.
@@ -545,7 +546,7 @@ Usability:
 - Main screen must prioritize recording.
 - Main screen should not feel like a dashboard.
 - The first visible interactive element should be the large record button.
-- Do not show a recording timer in v1 unless later testing proves users need it.
+- Do not show a recording timer.
 - Output type selection must be simple.
 - Empty states must invite recording, not explain too much.
 - Buttons and controls must be thumb-friendly on iPhone.
@@ -723,7 +724,7 @@ UX constraints:
 - No helper line such as `Speak naturally` under the record button by default.
 - Keep home-screen copy minimal; the primary button and state should carry the experience.
 - Candidate home-screen microcopy, if needed for later testing: `Ready`, `Record`, `Hold that thought`, `Start`, or no text at all beyond the button label/accessibility label.
-- History/task list should be accessible through a secondary gesture such as swipe up/down or a secondary affordance, not the dominant first view.
+- History/task list should be accessible by swiping up from the recording home screen.
 - Settings should use native-feeling iOS settings patterns and remain accessible from the top right.
 - `Start recording when app opens` should be a power-user setting, not the default.
 - No complex setup before first recording.
@@ -887,7 +888,7 @@ Privacy-mode backlog:
 UX backlog:
 
 - Add a power-user setting for `Start recording when app opens` after the default one-tap recording flow is stable.
-- Explore home-screen history access through swipe up/down once the core record button interaction is validated.
+- Use swipe up from the recording home screen to reveal history/task list as a secondary sheet or drawer.
 - Test whether the record button should use text, icon-only, or icon plus subtle state label.
 
 ## 23. Testing Requirements
@@ -956,7 +957,7 @@ When requirements change:
 
 ## 26. Change Log
 
-- 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no v1 timer, cancel during recording, haptic/audio start-stop cues by default, auto-start only as a future power-user setting.
+- 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no recording timer, cancel during recording, haptic/audio start-stop cues by default, swipe up for history/task list, auto-start only as a future power-user setting.
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
 - 2026-05-23: Refined cloud-processing positioning: do not highlight cloud transcription/generation in marketing or primary UX, but keep required privacy disclosures accurate and accessible.
 - 2026-05-23: Locked v1 AI/transcription approach as cloud-first through backend-mediated provider calls; added post-MVP local/privacy-mode investigation for Apple Speech, Apple Foundation Models, and local LLM runtimes.

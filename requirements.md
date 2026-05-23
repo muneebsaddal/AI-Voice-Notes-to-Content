@@ -97,6 +97,7 @@ Version 1 must include:
 - Copy output.
 - Native iOS share sheet export.
 - Basic Notion export path using the native iOS Share Sheet.
+- Delete local audio after successful transcription by default.
 - Clear loading, success, empty, permission, and error states.
 - Delete note/history item.
 - Basic onboarding and privacy explanation.
@@ -357,7 +358,7 @@ Fields:
 
 - `preferredOutputType`: optional default output type.
 - `saveAudioByDefault`: boolean, default should be false or clearly explained.
-- `deleteAudioAfterTranscription`: boolean, default should be true unless user opts in to saving audio.
+- `deleteAudioAfterTranscription`: boolean, default true for v1.
 - `privacyAnalyticsEnabled`: boolean.
 - `subscriptionStatus`: enum: `free`, `pro`, `annual`, `creator`, `unknown`.
 - `monthlyNoteCount`: count for free-tier limits.
@@ -467,8 +468,9 @@ MVP requirements:
 
 - Explain microphone permission before requesting it.
 - Explain what is uploaded for transcription and AI generation.
-- Do not store audio by default unless needed for playback/history and clearly disclosed.
-- Prefer deleting local audio after transcription unless user opts in to keep it.
+- Do not store audio after successful transcription by default in v1.
+- Playback may be available only before transcription cleanup, unless a temporary file still exists.
+- Later versions may add an explicit save-audio option with quality-of-life features such as replay, rename, retention settings, and storage controls.
 - Let users delete individual notes and generated outputs.
 - Store local data securely using platform-appropriate storage.
 - Store API keys only on a backend, never in the app bundle.
@@ -553,8 +555,8 @@ Paid feature assumptions:
 
 Open monetization questions:
 
-- Should the first TestFlight be fully free?
-- Should the App Store launch include subscriptions immediately or start free with waitlist/pricing test?
+- Should the first TestFlight be fully free, subscription-gated, or free with usage limits?
+- Should the App Store launch include subscriptions immediately or start free with a waitlist/pricing test?
 - What note length or generation limits should protect AI costs?
 
 ## 16. Technical Stack Recommendation
@@ -876,6 +878,7 @@ When requirements change:
 
 ## 25. Change Log
 
+- 2026-05-23: Locked v1 audio retention decision: delete local audio after successful transcription by default; keep TestFlight/subscription timing open.
 - 2026-05-23: Locked MVP Notion/export approach to native iOS Share Sheet; moved direct Notion API to later roadmap.
 - 2026-05-23: Created initial requirements document from `product-context.md` and project instructions.
 
@@ -884,9 +887,9 @@ When requirements change:
 Product:
 
 - Should the MVP force users to choose an output type, or should it suggest one after transcription?
-- Should the first TestFlight include subscriptions, or should it be free while testing retention?
+- Should the first TestFlight be fully free, subscription-gated, or free with usage limits?
 - What maximum recording length should the free tier allow?
-- Should audio be saved by default for playback/history, or deleted after transcription by default?
+- What quality-of-life features are required before offering a user-controlled save-audio option?
 - Should history store raw transcripts, or only generated outputs, for privacy?
 
 Technical:

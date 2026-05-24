@@ -24,7 +24,7 @@ Everything else, including history, settings, output type selection, editing, an
 - The first visible interactive element on the home screen is one large record button.
 - The same primary button starts and stops recording.
 - No recording timer is shown anywhere in the core experience.
-- Haptic and/or audio cues confirm recording start and stop by default.
+- Haptic and/or audio cues confirm recording start and stop by default, but this should not be explained as visible helper text on the recording screen.
 - The recording state follows the attached reference: same centered record control becomes stop, with a secondary `Cancel` pill below.
 - Top-right overflow uses an SF Symbol-style `ellipsis` control.
 - History/task list is secondary and opens by swiping up from the recording home screen.
@@ -85,7 +85,7 @@ Layout:
 
 - Top right: More toolbar button using SF Symbol `ellipsis`.
 - Center: large record button.
-- Bottom/edge: subtle swipe affordance for history, if needed.
+- Bottom/edge: subtle chevron-up affordance for history, using two wide angled strokes with no text label.
 - No dashboard cards.
 - No prompt input.
 - No output type picker.
@@ -104,6 +104,7 @@ Recommendation:
 
 - Use a large icon-first record control with SF Symbol `mic.fill` in the default state and `stop.fill` in the active state.
 - The record control's outer size, inner hit area, and center point must not change between start and stop states.
+- The record/stop button uses a refined warm red rather than default system red, and that same red family should be used consistently anywhere recording state appears.
 - Keep visible text minimal so the home screen feels confident, not instructional.
 
 ## 6. Active Recording State
@@ -131,7 +132,8 @@ Cancel behavior:
 State labels:
 
 - Avoid timer-based feedback.
-- Use visual state, button shape/color, subtle waveform/motion, or status text only if needed.
+- Use visual state, button shape/color, subtle waveform/motion, or a short status label only if needed.
+- Do not show explanatory text such as `No timer. Start/stop confirmed through haptic/audio cues.` on the recording screen.
 
 Possible status text while recording:
 
@@ -217,7 +219,9 @@ Layout:
 - Title field.
 - Generated body.
 - Output type badge or subtle label.
-- Primary actions: copy/share/save.
+- Primary action: Share, highlighted on the right.
+- Secondary action: Save, positioned on the left.
+- Copy can remain available as a smaller secondary control if the layout has room, but Share and Save should not be visually crowded.
 - Secondary action: regenerate/change type.
 
 Requirements:

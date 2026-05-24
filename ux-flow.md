@@ -7,6 +7,8 @@ Canva design: https://www.canva.com/d/YQMCQ_6dClL6ERt
 
 Design note: the Figma file should include an `Apple Native v3` page that copies the attached HIG-applied screen layouts, then applies Apple-native typography, SF Symbol references, Apple system colors, native sheets, and stable 44pt+ controls.
 
+Canva font note: Canva may render the mockups with Helvetica/Arial fallback if SF Pro is unavailable. The production iOS app should use the platform system font so typography resolves to Apple's native San Francisco family on device.
+
 ## 1. UX Philosophy
 
 The app should feel like the fastest possible way to turn a thought into useful work.

@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1800" viewBox="0 0 2400 1800">
+  <rect width="2400" height="1800" fill="#f2f2f7"/>
+  <text x="1200" y="90" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-size="52" font-weight="700" fill="#111114">AI Voice Notes To Content</text>
+  <text x="1200" y="138" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="25" font-weight="500" fill="#5c5c62">Native iOS mockups: recording first, no timer, SF Symbols-style controls</text>
+
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .font { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif; }
+      .display { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif; }
+      .phone { fill: #f2f2f7; stroke: #d1d1d6; stroke-width: 1; filter: url(#shadow); }
+      .island { fill: #000000; }
+      .label { fill: #111114; }
+      .secondary { fill: #5c5c62; }
+      .tertiary { fill: #8e8e93; }
+      .group { fill: #ffffff; stroke: #d1d1d6; stroke-width: 1; }
+      .soft { fill: #e5e5ea; }
+      .red { fill: #ff3b30; }
+      .redsoft { fill: #ffd6d2; }
+      .blue { fill: #007aff; }
+    </style>
+  </defs>
+
+  <!-- phone helper geometry manually repeated -->
+  <g transform="translate(90 210)">
+    <rect class="phone" width="393" height="852" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <rect x="156" y="832" width="81" height="5" rx="3" fill="#000" opacity=".72"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Voice Notes</text>
+    <circle cx="351" cy="82" r="22" fill="#fff" stroke="#d1d1d6"/>
+    <text class="font label" x="351" y="90" font-size="21" text-anchor="middle">⚙</text>
+    <circle class="redsoft" cx="196" cy="388" r="92"/>
+    <circle class="red" cx="196" cy="388" r="72"/>
+    <rect x="185" y="355" width="22" height="50" rx="11" fill="#fff"/>
+    <rect x="166" y="399" width="60" height="9" rx="4.5" fill="#fff"/>
+    <rect x="192" y="407" width="8" height="22" rx="4" fill="#fff"/>
+    <text class="display label" x="196" y="523" font-size="22" font-weight="700" text-anchor="middle">Record</text>
+    <text class="font secondary" x="196" y="778" font-size="13" font-weight="500" text-anchor="middle">Swipe up for history</text>
+    <rect x="156" y="786" width="81" height="5" rx="3" fill="#d1d1d6"/>
+    <text class="display label" x="196" y="910" font-size="25" font-weight="700" text-anchor="middle">Home</text>
+  </g>
+
+  <g transform="translate(560 210)">
+    <rect class="phone" width="393" height="852" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <rect x="156" y="832" width="81" height="5" rx="3" fill="#000" opacity=".72"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Recording</text>
+    <circle cx="351" cy="82" r="22" fill="#fff" stroke="#d1d1d6"/>
+    <text class="font label" x="351" y="90" font-size="21" text-anchor="middle">⚙</text>
+    <circle class="redsoft" cx="196" cy="372" r="92"/>
+    <circle class="red" cx="196" cy="372" r="72"/>
+    <rect x="174" y="350" width="44" height="44" rx="10" fill="#fff"/>
+    <text class="display label" x="196" y="523" font-size="22" font-weight="700" text-anchor="middle">Recording</text>
+    <rect x="28" y="562" width="337" height="52" rx="26" fill="#e5e5ea"/>
+    <text class="font label" x="196" y="595" font-size="15" font-weight="600" text-anchor="middle">Cancel</text>
+    <text class="font secondary" x="196" y="680" font-size="13" text-anchor="middle">Haptic/audio cue on start and stop</text>
+    <text class="display label" x="196" y="910" font-size="25" font-weight="700" text-anchor="middle">Recording</text>
+  </g>
+
+  <g transform="translate(1030 210)">
+    <rect class="phone" width="393" height="852" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <rect x="156" y="832" width="81" height="5" rx="3" fill="#000" opacity=".72"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Processing</text>
+    <circle cx="196" cy="346" r="84" fill="#e5e5ea"/>
+    <circle cx="196" cy="346" r="57" fill="#f2f2f7"/>
+    <rect x="186" y="315" width="20" height="45" rx="10" fill="#ff3b30"/>
+    <rect x="168" y="354" width="56" height="9" rx="4.5" fill="#ff3b30"/>
+    <rect x="192" y="362" width="8" height="20" rx="4" fill="#ff3b30"/>
+    <text class="display label" x="196" y="505" font-size="25" font-weight="700" text-anchor="middle">Cleaning it up</text>
+    <text class="font secondary" x="196" y="546" font-size="16" text-anchor="middle">Finding the best format.</text>
+    <text class="display label" x="196" y="910" font-size="25" font-weight="700" text-anchor="middle">Processing</text>
+  </g>
+
+  <g transform="translate(1500 210)">
+    <rect class="phone" width="393" height="852" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <rect x="156" y="832" width="81" height="5" rx="3" fill="#000" opacity=".72"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Ready</text>
+    <text class="font secondary" x="28" y="168" font-size="12" font-weight="700">SUGGESTED OUTPUT</text>
+    <text class="display label" x="28" y="224" font-size="44" font-weight="700">Email</text>
+    <text class="font secondary" x="28" y="276" font-size="17">This sounds like a client follow-up.</text>
+    <text class="font secondary" x="28" y="304" font-size="17">Generate it now or choose another format.</text>
+    <rect x="28" y="590" width="337" height="56" rx="28" fill="#111114"/>
+    <text class="font" x="196" y="625" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">Generate Email</text>
+    <rect x="28" y="660" width="337" height="52" rx="26" fill="#e5e5ea"/>
+    <text class="font label" x="196" y="693" font-size="15" font-weight="600" text-anchor="middle">Change Type</text>
+    <text class="display label" x="196" y="910" font-size="25" font-weight="700" text-anchor="middle">Suggest</text>
+  </g>
+
+  <g transform="translate(90 1180)">
+    <rect class="phone" width="393" height="520" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Ready</text>
+    <rect class="group" x="0" y="170" width="393" height="350" rx="30"/>
+    <rect x="162" y="184" width="69" height="5" rx="3" fill="#d1d1d6"/>
+    <text class="display label" x="28" y="236" font-size="28" font-weight="700">Change Type</text>
+    <g transform="translate(20 270)">
+      <rect class="group" width="353" height="58" rx="14"/>
+      <text class="font label" x="58" y="36" font-size="16" font-weight="500">Note</text>
+      <text class="blue" x="26" y="37" font-size="19" text-anchor="middle">✎</text>
+      <text class="tertiary" x="332" y="38" font-size="26">›</text>
+    </g>
+    <g transform="translate(20 338)">
+      <rect class="group" width="353" height="58" rx="14"/>
+      <text class="font label" x="58" y="36" font-size="16" font-weight="500">Todo List</text>
+      <text x="26" y="37" font-size="19" fill="#34a853" text-anchor="middle">✓</text>
+      <text class="tertiary" x="332" y="38" font-size="26">›</text>
+    </g>
+    <text class="display label" x="196" y="578" font-size="25" font-weight="700" text-anchor="middle">Type Sheet</text>
+  </g>
+
+  <g transform="translate(560 1180)">
+    <rect class="phone" width="393" height="520" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <text class="tertiary" x="28" y="88" font-size="30">‹</text>
+    <text class="font label" x="196" y="88" font-size="17" font-weight="600" text-anchor="middle">Email</text>
+    <text class="display label" x="28" y="148" font-size="32" font-weight="700">Client follow-up</text>
+    <rect class="group" x="20" y="190" width="353" height="205" rx="18"/>
+    <text class="font label" x="40" y="224" font-size="16" font-weight="700">Subject: Updated proposal</text>
+    <line x1="40" y1="256" x2="353" y2="256" stroke="#d1d1d6"/>
+    <text class="font label" x="40" y="292" font-size="16">Hi Sarah, thanks again for the call...</text>
+    <circle cx="76" cy="452" r="22" fill="#e5e5ea"/>
+    <text class="font label" x="76" y="459" font-size="18" text-anchor="middle">▣</text>
+    <circle cx="196" cy="452" r="22" fill="#e5e5ea"/>
+    <text class="font label" x="196" y="459" font-size="18" text-anchor="middle">↥</text>
+    <circle cx="316" cy="452" r="22" fill="#111114"/>
+    <text x="316" y="459" font-size="18" fill="#fff" text-anchor="middle">↓</text>
+    <text class="display label" x="196" y="578" font-size="25" font-weight="700" text-anchor="middle">Edit</text>
+  </g>
+
+  <g transform="translate(1030 1180)">
+    <rect class="phone" width="393" height="520" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <text class="font label" x="24" y="88" font-size="17" font-weight="600">Voice Notes</text>
+    <circle class="redsoft" cx="196" cy="225" r="76"/>
+    <circle class="red" cx="196" cy="225" r="55"/>
+    <rect class="group" x="0" y="310" width="393" height="210" rx="30"/>
+    <rect x="162" y="324" width="69" height="5" rx="3" fill="#d1d1d6"/>
+    <text class="display label" x="28" y="376" font-size="28" font-weight="700">Recent outputs</text>
+    <text class="font label" x="40" y="426" font-size="16" font-weight="600">Updated proposal email</text>
+    <text class="font secondary" x="40" y="451" font-size="13">Email · Today</text>
+    <text class="display label" x="196" y="578" font-size="25" font-weight="700" text-anchor="middle">History</text>
+  </g>
+
+  <g transform="translate(1500 1180)">
+    <rect class="phone" width="393" height="520" rx="44"/>
+    <rect class="island" x="151" y="16" width="91" height="27" rx="14"/>
+    <text class="display label" x="28" y="100" font-size="34" font-weight="700">Settings</text>
+    <text class="font secondary" x="28" y="162" font-size="12" font-weight="700">AUDIO</text>
+    <rect class="group" x="20" y="182" width="353" height="58" rx="14"/>
+    <text class="font label" x="78" y="217" font-size="16" font-weight="500">Delete audio after transcription</text>
+    <text class="font tertiary" x="350" y="218" font-size="26">›</text>
+    <rect x="34" y="195" width="32" height="32" rx="8" fill="#ff3b30"/>
+    <text x="50" y="217" font-size="17" fill="#fff" text-anchor="middle">⌫</text>
+    <rect class="group" x="20" y="250" width="353" height="58" rx="14"/>
+    <text class="font label" x="78" y="285" font-size="16" font-weight="500">Start/stop cues</text>
+    <text class="font tertiary" x="350" y="286" font-size="26">›</text>
+    <rect x="34" y="263" width="32" height="32" rx="8" fill="#007aff"/>
+    <text x="50" y="285" font-size="17" fill="#fff" text-anchor="middle">◉</text>
+    <text class="display label" x="196" y="578" font-size="25" font-weight="700" text-anchor="middle">Settings</text>
+  </g>
+</svg>

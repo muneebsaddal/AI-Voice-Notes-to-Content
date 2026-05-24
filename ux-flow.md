@@ -1,10 +1,10 @@
 # AI Voice Notes To Content UX Flow
 
 Last updated: 2026-05-24
-Status: Draft v0.1
+Status: Draft v0.3
 Figma design: https://www.figma.com/design/i2YJriFfE0abcoljVGF2uT
 
-Design note: the Figma file includes an `HIG Applied v1` page with safe-area-aware iPhone frames, native-style sheets/settings, 44pt+ controls, clear hierarchy, and implementation annotations based on Apple's Human Interface Guidelines.
+Design note: the Figma file should include an `Apple Native v3` page that copies the attached HIG-applied screen layouts, then applies Apple-native typography, SF Symbol references, Apple system colors, native sheets, and stable 44pt+ controls.
 
 ## 1. UX Philosophy
 
@@ -24,8 +24,8 @@ Everything else, including history, settings, output type selection, editing, an
 - The same primary button starts and stops recording.
 - No recording timer is shown anywhere in the core experience.
 - Haptic and/or audio cues confirm recording start and stop by default.
-- A smaller cancel action appears while recording.
-- Settings are accessible from the top right.
+- The recording state follows the attached reference: same centered record control becomes stop, with a secondary `Cancel` pill below.
+- Top-right overflow uses an SF Symbol-style `ellipsis` control.
 - History/task list is secondary and opens by swiping up from the recording home screen.
 - Auto-start recording on app open is not the default. It is a future power-user setting.
 - The user should never need to write a prompt.
@@ -82,7 +82,7 @@ Purpose: make recording feel immediately available.
 
 Layout:
 
-- Top right: Settings icon.
+- Top right: More toolbar button using SF Symbol `ellipsis`.
 - Center: large record button.
 - Bottom/edge: subtle swipe affordance for history, if needed.
 - No dashboard cards.
@@ -101,7 +101,8 @@ Default copy:
 
 Recommendation:
 
-- Use a large icon-first record control with a clear accessibility label.
+- Use a large icon-first record control with SF Symbol `mic.fill` in the default state and `stop.fill` in the active state.
+- The record control's outer size, inner hit area, and center point must not change between start and stop states.
 - Keep visible text minimal so the home screen feels confident, not instructional.
 
 ## 6. Active Recording State
@@ -112,8 +113,8 @@ Behavior:
 
 1. App starts recording.
 2. App gives haptic and/or audio start cue.
-3. Primary button visually changes into stop state.
-4. Cancel action appears below the primary button.
+3. Primary button visually changes into stop state using `stop.fill`, while keeping the same frame and center point.
+4. A secondary `Cancel` pill appears below the fixed centered stop control, matching the attached reference.
 5. No timer appears.
 6. User taps the same primary button to stop.
 7. App gives haptic and/or audio stop cue.
@@ -121,8 +122,9 @@ Behavior:
 
 Cancel behavior:
 
-- Cancel discards the current recording.
-- Cancel should require either a confirm state or a deliberate secondary action if accidental cancellation feels likely during testing.
+- `Cancel` discards the current recording.
+- Apple platforms support a native cancel button role. In this design, `Cancel` is used as a secondary action in the temporary active-recording state. For a production build, discard confirmation can be added after a minimum recording duration if accidental loss appears in testing.
+- Do not use a text `Back` button. Hierarchical screens use the standard chevron back control; modal/temporary screens may use leading `Cancel` or trailing `Done` depending on the task.
 - After cancel, user returns to recording home.
 
 State labels:
@@ -350,11 +352,10 @@ flowchart TD
 
 ## 16. Design Notes For Figma
 
-Initial Figma design should include:
+Updated Figma design should include these reference-faithful frames:
 
-- iPhone frame for recording home.
-- Active recording state.
-- Processing state.
+- Home.
+- Active recording.
 - Suggested output confirmation.
 - Change type sheet.
 - Output preview/edit.
@@ -370,12 +371,13 @@ Visual direction:
 - No timer.
 - No prompt box.
 - Smooth sheet-based navigation.
-- Warm but restrained palette.
+- Current Apple-native interaction language: SF Pro Text/Display, SF Symbol references, Apple system background, Apple system red record control, black primary action pills, 24pt horizontal margins where shown in the reference, 44pt minimum hit targets, native sheets, standard chevron back, and subtle system material texture.
+- Avoid custom emoji icons, shifting controls, handmade back glyphs, and boxed layouts that overlap safe areas.
 
 ## 17. Open UX Questions
 
-- Should the record button be icon-only or icon plus a short state label?
+- Should the record button remain icon-only, or should a short state label be shown above it for accessibility testing?
 - Should start/stop use both haptic and audio cues by default, or haptic by default with audio cue optional?
-- Should cancel require confirmation?
+- Should recording cancel require confirmation immediately, or only after a minimum recording duration?
 - Should selecting an output type in `Change Type` immediately generate or return to confirmation?
 - Should history sheet show generated outputs only, or also pending/failed recordings?

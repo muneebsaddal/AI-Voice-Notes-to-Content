@@ -545,7 +545,7 @@ Usability:
 
 - Main screen must prioritize recording.
 - Main screen should not feel like a dashboard.
-- The first visible interactive element should be the large record button.
+- The first visible interactive element should be the large listening control.
 - Do not show a recording timer.
 - Output type selection must be simple.
 - Empty states must invite recording, not explain too much.
@@ -722,7 +722,7 @@ UX constraints:
 - No prompt box as the primary experience.
 - No dashboard-first home screen.
 - No helper line such as `Speak naturally` under the record button by default.
-- Keep home-screen copy minimal; the primary button and state should carry the experience.
+- Keep home-screen copy minimal; the primary listening control and state should carry the experience.
 - Candidate home-screen microcopy, if needed for later testing: `Ready`, `Record`, `Hold that thought`, `Start`, or no text at all beyond the button label/accessibility label.
 - History/task list should be accessible by swiping up from the recording home screen.
 - Settings should use native-feeling iOS settings patterns and remain accessible from the top right.
@@ -731,6 +731,8 @@ UX constraints:
 - Avoid long forms in MVP.
 - Output editing should happen in a familiar text editor style.
 - Export actions should be visible from the output screen.
+- The main control should use a blue listening identity rather than a red record-button identity. Red should be reserved for destructive actions and true error states.
+- Light and dark themes should both be represented in design assets before frontend implementation.
 
 ## 19. App Store And Deployment Requirements
 
@@ -889,7 +891,8 @@ UX backlog:
 
 - Add a power-user setting for `Start recording when app opens` after the default one-tap recording flow is stable.
 - Use swipe up from the recording home screen to reveal history/task list as a secondary sheet or drawer.
-- Test whether the record button should use text, icon-only, or icon plus subtle state label.
+- Test whether the main listening control should use text, icon-only, or icon plus subtle state label.
+- Explore a main app/control icon based on a listening orb, voice aperture, wave lens, or abstract pulse instead of a literal microphone or record dot.
 
 ## 23. Testing Requirements
 
@@ -957,6 +960,7 @@ When requirements change:
 
 ## 26. Change Log
 
+- 2026-05-24: Updated visual direction from red recording identity to blue listening identity; added dark theme requirement and main icon exploration direction.
 - 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no recording timer, cancel during recording, haptic/audio start-stop cues by default, swipe up for history/task list, auto-start only as a future power-user setting.
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.
 - 2026-05-23: Refined cloud-processing positioning: do not highlight cloud transcription/generation in marketing or primary UX, but keep required privacy disclosures accurate and accessible.

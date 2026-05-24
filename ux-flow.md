@@ -1,13 +1,16 @@
 # AI Voice Notes To Content UX Flow
 
 Last updated: 2026-05-24
-Status: Draft v0.3
+Status: Draft v0.4
 Figma design: https://www.figma.com/design/i2YJriFfE0abcoljVGF2uT
-Canva design: https://www.canva.com/d/R6lagcWHgpjNMop
+Canva light design: https://www.canva.com/d/PGwZdkSDjhg0Y-N
+Canva dark design: https://www.canva.com/d/TTKKCVlA7_DaI6j
 
 Design note: the Figma file should include an `Apple Native v3` page that copies the attached HIG-applied screen layouts, then applies Apple-native typography, SF Symbol references, Apple system colors, native sheets, and stable 44pt+ controls.
 
 Canva font note: Canva may render the mockups with Aptos/Segoe UI fallback if SF Pro is unavailable. The production iOS app should use the platform system font so typography resolves to Apple's native San Francisco family on device.
+
+Theme note: the app should move from a red recording identity to a blue listening identity. Red should be reserved for destructive actions and true error states.
 
 ## 1. UX Philosophy
 
@@ -23,8 +26,8 @@ Everything else, including history, settings, output type selection, editing, an
 
 ## 2. Core Interaction Rules
 
-- The first visible interactive element on the home screen is one large record button.
-- The same primary button starts and stops recording.
+- The first visible interactive element on the home screen is one large listening control.
+- The same primary control starts and stops recording.
 - No recording timer is shown anywhere in the core experience.
 - Haptic and/or audio cues confirm recording start and stop by default, but this should not be explained as visible helper text on the recording screen.
 - The recording state follows the attached reference: same centered record control becomes stop, with a secondary `Cancel` pill below.
@@ -86,7 +89,7 @@ Purpose: make recording feel immediately available.
 Layout:
 
 - Top right: More toolbar button using SF Symbol `ellipsis`.
-- Center: large record button.
+- Center: large listening control.
 - Bottom/edge: subtle chevron-up affordance for history, using two wide angled strokes with no text label.
 - No dashboard cards.
 - No prompt input.
@@ -104,14 +107,15 @@ Default copy:
 
 Recommendation:
 
-- Use a large icon-first record control with SF Symbol `mic.fill` in the default state and `stop.fill` in the active state.
-- The record control's outer size, inner hit area, and center point must not change between start and stop states.
-- The record/stop button uses a refined warm red rather than default system red, and that same red family should be used consistently anywhere recording state appears.
+- Use a large icon-first listening control rather than a literal red record button.
+- The listening control's outer size, inner hit area, and center point must not change between start and stop states.
+- The primary accent should be Apple-style blue (`#007AFF` in light mode, `#0A84FF` in dark mode) and should stay consistent across idle, listening, processing, and primary share/export actions.
+- The default icon direction should feel like active listening: a calm orb, waveform, aperture, or pulse mark. Avoid making the main identity feel like a generic record button.
 - Keep visible text minimal so the home screen feels confident, not instructional.
 
 ## 6. Active Recording State
 
-Trigger: user taps the large record button.
+Trigger: user taps the large listening control.
 
 Behavior:
 
@@ -252,7 +256,7 @@ Behavior:
 UX requirements:
 
 - History must never dominate the initial home screen.
-- The record button remains the emotional center of the app.
+- The listening control remains the emotional center of the app.
 - Search and tags are non-MVP unless needed after usage testing.
 
 ## 12. History Detail
@@ -341,7 +345,7 @@ Usage limit reached:
 ```mermaid
 flowchart TD
   A["Open app"] --> B["Recording home"]
-  B --> C["Tap large record button"]
+  B --> C["Tap large listening control"]
   C --> D["Active recording"]
   D --> E["Tap same button to stop"]
   D --> F["Cancel recording"]
@@ -375,17 +379,31 @@ Visual direction:
 
 - Premium, quiet, iOS-native.
 - Minimal text.
-- Strong central record control.
+- Strong central listening control.
 - No dashboard-first layout.
 - No timer.
 - No prompt box.
 - Smooth sheet-based navigation.
-- Current Apple-native interaction language: SF Pro Text/Display, SF Symbol references, Apple system background, Apple system red record control, black primary action pills, 24pt horizontal margins where shown in the reference, 44pt minimum hit targets, native sheets, standard chevron back, and subtle system material texture.
+- Current Apple-native interaction language: SF Pro Text/Display, SF Symbol references, Apple system background, blue listening control, black or blue primary action pills depending on context, 24pt horizontal margins where shown in the reference, 44pt minimum hit targets, native sheets, standard chevron back, and subtle system material texture.
 - Avoid custom emoji icons, shifting controls, handmade back glyphs, and boxed layouts that overlap safe areas.
+
+Main icon directions to explore:
+
+- Listening orb: a blue circular mark with a subtle inner pulse or waveform. Best fit for the app because it feels calm, premium, and not tied to old-school recording.
+- Voice aperture: curved segments around a center dot, suggesting sound entering the app and being transformed.
+- Wave lens: a simple waveform contained inside a circular or rounded-square field, useful for an app icon and in-app control.
+- Ear/signal mark: an abstract ear curve with two listening rings. Clear, but more literal and potentially less premium.
+
+State recommendation:
+
+- Idle: calm blue orb/listening mark.
+- Listening: same center point, with breathing ring or animated pulse.
+- Stop: same outer control, with a simple stop indicator inside so the tap target does not shift.
+- Processing: same mark transitions into a subtle analysis ring or pulse.
 
 ## 17. Open UX Questions
 
-- Should the record button remain icon-only, or should a short state label be shown above it for accessibility testing?
+- Should the listening control remain icon-only, or should a short state label be shown above it for accessibility testing?
 - Should start/stop use both haptic and audio cues by default, or haptic by default with audio cue optional?
 - Should recording cancel require confirmation immediately, or only after a minimum recording duration?
 - Should selecting an output type in `Change Type` immediately generate or return to confirmation?

@@ -7,7 +7,7 @@ Canva design: https://www.canva.com/d/8KxesScLwFDpSjy
 
 Design note: the Figma file should include an `Apple Native v3` page that copies the attached HIG-applied screen layouts, then applies Apple-native typography, SF Symbol references, Apple system colors, native sheets, and stable 44pt+ controls.
 
-Canva font note: Canva may render the mockups with Helvetica/Arial fallback if SF Pro is unavailable. The production iOS app should use the platform system font so typography resolves to Apple's native San Francisco family on device.
+Canva font note: Canva may render the mockups with Aptos/Segoe UI fallback if SF Pro is unavailable. The production iOS app should use the platform system font so typography resolves to Apple's native San Francisco family on device.
 
 ## 1. UX Philosophy
 
@@ -205,7 +205,8 @@ UX requirements:
 
 - Use plain language.
 - Keep the sheet short and easy to scan.
-- Each option may include a tiny descriptor only if needed.
+- Use single-line rows in the current design; do not show secondary descriptor lines under each option.
+- Current row icons are placeholders. Later, this surface can reuse the same row style for real app/service destinations and names such as Notion, Gmail, Reminders, Calendar, and similar integrations.
 - Selecting a type returns to confirmation or immediately generates, depending on testing.
 
 Recommended behavior:
@@ -297,6 +298,7 @@ Future related settings:
 Settings should feel native:
 
 - Simple grouped rows.
+- Single-line rows by default; avoid secondary explanatory lines unless a setting is risky or unclear.
 - Plain language labels.
 - No marketing copy.
 - No complex configuration before first use.

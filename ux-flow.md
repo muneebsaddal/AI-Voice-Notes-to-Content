@@ -3,7 +3,7 @@
 Last updated: 2026-05-24
 Status: Draft v0.3
 Figma design: https://www.figma.com/design/i2YJriFfE0abcoljVGF2uT
-Canva design: https://www.canva.com/d/OYNx36PtdCImmiE
+Canva design: https://www.canva.com/d/YQMCQ_6dClL6ERt
 
 Design note: the Figma file should include an `Apple Native v3` page that copies the attached HIG-applied screen layouts, then applies Apple-native typography, SF Symbol references, Apple system colors, native sheets, and stable 44pt+ controls.
 

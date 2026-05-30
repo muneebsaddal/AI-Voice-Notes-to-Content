@@ -4,6 +4,8 @@ These briefs define the specialist agents used to build AI Voice Notes To Conten
 
 They are project-local operating instructions, not separate runtime services. Use them when a task needs a focused role, clear deliverables, and a tighter review surface than the lead developer thread.
 
+The lead developer coordinates specialist chats by writing prompts stored in `prompts/agent-prompts/`. Specialist agents should not decide the global roadmap independently; they complete bounded tasks and report back.
+
 ## Build Direction
 
 The Lovable design in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30` is the preferred UI direction.
@@ -30,6 +32,8 @@ The MVP should now move from planning into implementation in this order:
 ## Coordination Rules
 
 - The lead developer owns final coherence and cross-agent decisions.
+- The lead developer writes specialist prompts using `skills/prompt-orchestration/SKILL.md`.
+- Specialist prompts should be saved under `prompts/agent-prompts/` when they are likely to be reused.
 - Each agent must read `AGENTS.md`, `product-context.md`, `requirements.md`, and `ux-flow.md` before making recommendations.
 - Agents should produce concrete deliverables: files changed, test cases, risks, or implementation notes.
 - Agents should keep the core promise in view: **Say it once. Use it everywhere.**

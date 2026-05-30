@@ -83,6 +83,19 @@ Focus on:
 - TestFlight feedback
 - Instagram launch content
 
+### prompt-orchestration
+
+Use when the lead developer needs to create prompts for specialist task-agent chats.
+
+Focus on:
+
+- Writing self-contained agent prompts
+- Assigning one bounded task per specialist chat
+- Making agents read the correct project memory files
+- Defining deliverables, verification, and handoff format
+- Keeping the lead developer as coordinator
+- Updating project memory when agent outputs change decisions
+
 ## Dedicated Task-Agent Briefs
 
 When work becomes specialized, create a task-agent brief under `task-agents/`.
@@ -96,6 +109,15 @@ Examples:
 - `task-agents/privacy-review-agent.md`
 - `task-agents/app-store-launch-agent.md`
 
+Current specialist briefs:
+
+- `task-agents/frontend-agent.md`
+- `task-agents/backend-agent.md`
+- `task-agents/voice-ai-agent.md`
+- `task-agents/testing-agent.md`
+- `task-agents/product-ux-agent.md`
+- `task-agents/privacy-release-agent.md`
+
 Each task-agent brief should include:
 
 - Mission
@@ -105,3 +127,4 @@ Each task-agent brief should include:
 - Constraints
 - Definition of done
 
+Reusable specialist prompts should be stored under `prompts/agent-prompts/`.

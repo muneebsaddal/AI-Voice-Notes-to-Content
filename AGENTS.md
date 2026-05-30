@@ -47,8 +47,22 @@ Always treat these files as persistent project memory:
 - `product-context.md` - full product vision, user problems, case studies, integrations, monetization, and strategic decisions.
 - `requirements.md` - formal requirements/specification. Create this before coding.
 - `skills/README.md` - project-local skill guidance for specialized work.
+- `task-agents/` - specialist task-agent briefs for frontend, backend, voice AI, testing, product UX, and privacy/release.
+- `prompts/agent-prompts/` - reusable prompts written by the lead developer for specialist chats.
 
 If project decisions change, update `product-context.md` or `requirements.md` so future sessions keep the same context.
+
+## Current Build Direction
+
+The Lovable design direction is final for the MVP UI unless the user explicitly changes it.
+
+If the local folder exists, use it as the primary UI reference:
+
+- `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
+
+The older Figma/Canva/SVG designs are historical references. They should not override the Lovable direction.
+
+The first implementation step is the frontend: scaffold Expo and port the Lovable UI into a clickable mock flow. Backend work starts after the mock frontend flow exists.
 
 ## Product Direction
 
@@ -327,3 +341,27 @@ Dedicated task-agent briefs should be created under `task-agents/` when needed. 
 - Definition of done
 
 The lead developer remains responsible for coherence across all task agents.
+
+## Multi-Chat Coordination Workflow
+
+The user may clear the main chat and start new specialist chats for each task agent.
+
+When acting as lead developer/coordinator:
+
+1. Read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and `task-agents/README.md`.
+2. Use `skills/prompt-orchestration/SKILL.md` when creating prompts for specialist chats.
+3. Give each specialist chat one bounded task with context files, scope, constraints, deliverables, verification, and handoff format.
+4. Store reusable prompts under `prompts/agent-prompts/`.
+5. Review specialist outputs before integrating them into the roadmap.
+6. Update `requirements.md`, `ux-flow.md`, task-agent briefs, or prompt files when decisions change.
+
+The lead developer should usually assign work in this order:
+
+1. Frontend Agent: scaffold Expo and port the Lovable mock flow.
+2. Frontend Agent plus Voice AI Agent: add recording lifecycle interfaces and mock audio states.
+3. Backend Agent: add backend API skeleton with mock transcription/generation.
+4. Voice AI Agent: define output schemas, intent routing, and generation contracts.
+5. Frontend Agent: connect frontend to mocked API.
+6. Backend Agent: integrate real provider calls when keys/environment are ready.
+7. Testing Agent: add automated tests and manual QA gates.
+8. Privacy Release Agent: prepare TestFlight/App Store privacy and release checklist.

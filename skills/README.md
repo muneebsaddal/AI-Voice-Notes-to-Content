@@ -127,4 +127,4 @@ Each task-agent `AGENT.md` should include:
 - Constraints
 - Definition of done
 
-Reusable specialist prompts should be stored under `prompts/agent-prompts/`.
+Reusable specialist prompts should be stored beside their agent under `task-agents/<agent>/prompts/`.

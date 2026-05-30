@@ -1,4 +1,4 @@
-# Prompt 001 - Frontend Scaffold And Lovable UI Port
+# Frontend Prompt 001 - Scaffold And Lovable UI Port
 
 Use this prompt in a new specialist chat for the frontend agent.
 

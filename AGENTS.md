@@ -48,7 +48,7 @@ Always treat these files as persistent project memory:
 - `requirements.md` - formal requirements/specification. Create this before coding.
 - `skills/README.md` - project-local skill guidance for specialized work.
 - `task-agents/` - specialist task-agent briefs for frontend, backend, voice AI, testing, product UX, and privacy/release.
-- `prompts/agent-prompts/` - reusable prompts written by the lead developer for specialist chats.
+- `task-agents/<agent>/prompts/` - reusable prompts written by the lead developer for specialist chats.
 
 If project decisions change, update `product-context.md` or `requirements.md` so future sessions keep the same context.
 
@@ -351,7 +351,7 @@ When acting as lead developer/coordinator:
 1. Read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and `task-agents/README.md`.
 2. Use `skills/prompt-orchestration/SKILL.md` when creating prompts for specialist chats.
 3. Give each specialist chat one bounded task with context files, scope, constraints, deliverables, verification, and handoff format.
-4. Store reusable prompts under `prompts/agent-prompts/`.
+4. Store reusable prompts under the relevant agent folder, such as `task-agents/frontend/prompts/`.
 5. Review specialist outputs before integrating them into the roadmap.
 6. Update `requirements.md`, `ux-flow.md`, task-agent briefs, or prompt files when decisions change.
 

@@ -45,6 +45,8 @@ Use this shape:
 - Prefer mock data before real provider integration.
 - Never ask an agent to make broad unrelated refactors.
 - Make agents update `requirements.md`, `ux-flow.md`, or task-agent briefs only when a decision changes.
+- Store reusable prompts beside the relevant agent under `task-agents/<agent>/prompts/`.
+- Use global prompt folders only for cross-agent coordinator prompts.
 - Ask agents to commit only when the lead explicitly wants that chat to own a commit.
 - The coordinator should commit integration points and project-memory updates.
 

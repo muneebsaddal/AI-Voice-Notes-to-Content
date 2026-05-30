@@ -98,27 +98,27 @@ Focus on:
 
 ## Dedicated Task-Agent Briefs
 
-When work becomes specialized, create a task-agent brief under `task-agents/`.
+When work becomes specialized, create a task-agent folder under `task-agents/`.
 
 Examples:
 
-- `task-agents/requirements-agent.md`
-- `task-agents/ios-ux-agent.md`
-- `task-agents/voice-ai-agent.md`
-- `task-agents/integrations-agent.md`
-- `task-agents/privacy-review-agent.md`
-- `task-agents/app-store-launch-agent.md`
+- `task-agents/requirements/AGENT.md`
+- `task-agents/ios-ux/AGENT.md`
+- `task-agents/voice-ai/AGENT.md`
+- `task-agents/integrations/AGENT.md`
+- `task-agents/privacy-review/AGENT.md`
+- `task-agents/app-store-launch/AGENT.md`
 
 Current specialist briefs:
 
-- `task-agents/frontend-agent.md`
-- `task-agents/backend-agent.md`
-- `task-agents/voice-ai-agent.md`
-- `task-agents/testing-agent.md`
-- `task-agents/product-ux-agent.md`
-- `task-agents/privacy-release-agent.md`
+- `task-agents/frontend/AGENT.md`
+- `task-agents/backend/AGENT.md`
+- `task-agents/voice-ai/AGENT.md`
+- `task-agents/testing/AGENT.md`
+- `task-agents/product-ux/AGENT.md`
+- `task-agents/privacy-release/AGENT.md`
 
-Each task-agent brief should include:
+Each task-agent `AGENT.md` should include:
 
 - Mission
 - Context files to read

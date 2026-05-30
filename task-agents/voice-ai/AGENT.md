@@ -10,8 +10,8 @@ Own the audio, transcription, intent detection, and structured output behavior f
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
-- `task-agents/backend-agent.md`
-- `task-agents/frontend-agent.md`
+- `task-agents/backend/AGENT.md`
+- `task-agents/frontend/AGENT.md`
 
 ## Scope
 

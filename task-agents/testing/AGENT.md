@@ -9,9 +9,9 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 - `AGENTS.md`
 - `requirements.md`
 - `ux-flow.md`
-- `task-agents/frontend-agent.md`
-- `task-agents/backend-agent.md`
-- `task-agents/voice-ai-agent.md`
+- `task-agents/frontend/AGENT.md`
+- `task-agents/backend/AGENT.md`
+- `task-agents/voice-ai/AGENT.md`
 
 ## Scope
 

@@ -10,8 +10,8 @@ Prepare the app for privacy-sensitive handling of voice data, TestFlight distrib
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
-- `task-agents/backend-agent.md`
-- `task-agents/voice-ai-agent.md`
+- `task-agents/backend/AGENT.md`
+- `task-agents/voice-ai/AGENT.md`
 
 ## Scope
 

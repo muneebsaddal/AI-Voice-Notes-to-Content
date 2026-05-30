@@ -1,6 +1,6 @@
 # Task Agents
 
-These briefs define the specialist agents used to build AI Voice Notes To Content.
+These folders define the specialist agents used to build AI Voice Notes To Content.
 
 They are project-local operating instructions, not separate runtime services. Use them when a task needs a focused role, clear deliverables, and a tighter review surface than the lead developer thread.
 
@@ -22,12 +22,22 @@ The MVP should now move from planning into implementation in this order:
 
 ## Agents
 
-- `frontend-agent.md` - Expo app, UI system, navigation, Lovable design port, animations.
-- `backend-agent.md` - API, provider integration, audio upload, transcription/generation endpoints.
-- `voice-ai-agent.md` - audio lifecycle, transcription contract, output schemas, prompt behavior.
-- `testing-agent.md` - automated tests, manual QA, regression risk, release gates.
-- `product-ux-agent.md` - requirements, UX coherence, copy, App Store-facing product decisions.
-- `privacy-release-agent.md` - privacy, data retention, App Store review, TestFlight readiness.
+- `frontend/AGENT.md` - Expo app, UI system, navigation, Lovable design port, animations.
+- `backend/AGENT.md` - API, provider integration, audio upload, transcription/generation endpoints.
+- `voice-ai/AGENT.md` - audio lifecycle, transcription contract, output schemas, prompt behavior.
+- `testing/AGENT.md` - automated tests, manual QA, regression risk, release gates.
+- `product-ux/AGENT.md` - requirements, UX coherence, copy, App Store-facing product decisions.
+- `privacy-release/AGENT.md` - privacy, data retention, App Store review, TestFlight readiness.
+
+## Folder Convention
+
+Each specialist agent owns one folder:
+
+- `AGENT.md` - role, scope, constraints, deliverables, definition of done.
+- `prompts/` - reusable task prompts for that specific agent.
+- `handoffs/` - optional summaries from completed specialist chats.
+
+The `prompts/` and `handoffs/` folders may be created when needed. Do not add empty placeholder folders just for appearance.
 
 ## Coordination Rules
 

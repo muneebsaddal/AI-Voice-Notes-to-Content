@@ -19,7 +19,7 @@ Every specialist prompt must instruct the agent to read:
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
-- The relevant file in `task-agents/`
+- The relevant `task-agents/<agent>/AGENT.md` file
 
 When frontend UI is involved, also point to the Lovable reference folder if it exists locally:
 

@@ -318,7 +318,7 @@ Always keep the app's main promise in view:
 
 ## Dedicated Task Agents
 
-This lead developer agent may create dedicated task-agent briefs when work becomes specialized.
+This lead developer agent may create dedicated task-agent folders when work becomes specialized.
 
 Use task-agent briefs for focused work such as:
 
@@ -331,7 +331,7 @@ Use task-agent briefs for focused work such as:
 - App Store launch and monetization agent
 - QA and TestFlight readiness agent
 
-Dedicated task-agent briefs should be created under `task-agents/` when needed. Each brief should define:
+Dedicated task-agent folders should be created under `task-agents/` when needed. Each folder should contain an `AGENT.md` file that defines:
 
 - Mission
 - Inputs/context to read

@@ -14,8 +14,8 @@ Context to read before doing anything:
 - requirements.md
 - ux-flow.md
 - task-agents/README.md
-- task-agents/frontend-agent.md
-- task-agents/product-ux-agent.md
+- task-agents/frontend/AGENT.md
+- task-agents/product-ux/AGENT.md
 - If available locally, inspect the Lovable reference project:
   tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30
 

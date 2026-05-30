@@ -10,8 +10,8 @@ Build the backend foundation for secure audio upload, transcription, AI transfor
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
-- `task-agents/voice-ai-agent.md`
-- `task-agents/privacy-release-agent.md`
+- `task-agents/voice-ai/AGENT.md`
+- `task-agents/privacy-release/AGENT.md`
 
 ## Scope
 

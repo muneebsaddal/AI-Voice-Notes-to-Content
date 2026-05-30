@@ -10,7 +10,7 @@ Keep the product experience coherent, premium, and aligned with the promise: **S
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
-- `task-agents/frontend-agent.md`
+- `task-agents/frontend/AGENT.md`
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
 
 ## Scope

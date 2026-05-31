@@ -21,6 +21,8 @@ The next implementation step is frontend-first:
 3. Use mock data only at first.
 4. Add recording, backend, AI, storage, export, testing, and release readiness in later increments.
 
+`requirements.md` is already implementation-ready for the first frontend increment. Frontend agents should not recreate requirements or stop at planning-only output.
+
 ## Stack Decision
 
 Recommended MVP stack:
@@ -54,6 +56,10 @@ See [[architecture/planned-system-overview|Planned System Overview]].
 ## Immediate Context Packs
 
 - [[context-packs/frontend-scaffold|Frontend Scaffold Context Pack]]
+
+## Installed Project Skills
+
+- `transitions-dev` is installed under `.agents/skills/transitions-dev` for smooth UI motion guidance. Frontend work should use it as a transition catalog and translate CSS/web examples into Expo/React Native animation patterns.
 
 ## Read Protocol
 

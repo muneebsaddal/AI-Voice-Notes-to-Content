@@ -96,6 +96,21 @@ Focus on:
 - Keeping the lead developer as coordinator
 - Updating project memory when agent outputs change decisions
 
+### transitions-dev
+
+Use when the frontend agent needs smooth UI motion.
+
+Focus on:
+
+- Listening orb state transitions
+- Sheet and panel reveals
+- Page/state transitions
+- Icon and text swaps
+- Success and error feedback
+- Reduced-motion-aware animation choices
+
+Note: this installed skill is CSS/web-oriented. For the Expo app, use it as a motion catalog and timing/easing reference, then translate the ideas into React Native animation primitives.
+
 ### research-planning
 
 Use when researching options, comparing tools or architectures, writing implementation plans, or preparing context packs for specialist agents.

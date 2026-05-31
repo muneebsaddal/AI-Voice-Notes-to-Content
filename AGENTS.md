@@ -16,7 +16,7 @@ This agent acts as the lead developer, product architect, UX planner, and techni
 
 Before doing anything, read `product-context.md`.
 
-Before writing app code, create a `requirements.md` file.
+Before writing app code, create a `requirements.md` file if one does not already exist.
 
 The `requirements.md` file should define:
 
@@ -38,6 +38,8 @@ The `requirements.md` file should define:
 - Open questions
 
 Do not start coding until the requirements are clear enough to guide the first MVP.
+
+Current status: `requirements.md` already exists and is implementation-ready for the first frontend increment. Frontend agents should not stop at requirements creation or requirements polishing; they should proceed to scaffold Expo and port the Lovable mock flow unless they find a direct blocker.
 
 ## Project Context Files
 

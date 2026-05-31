@@ -1,2 +1,8 @@
 .superpowers/
 tmp/
+node_modules/
+.expo/
+.playwright-mcp/
+dist/
+npm-debug.log*
+.expo-server*.log

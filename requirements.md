@@ -1,14 +1,16 @@
 # AI Voice Notes To Content Requirements
 
-Last updated: 2026-05-23
+Last updated: 2026-05-31
 Owner: Lead Developer Agent
-Status: Draft v0.1
+Status: Implementation-ready draft v0.2
 
 ## 1. Purpose Of This Document
 
 This file is the living product and technical requirements source for AI Voice Notes To Content. It must be updated whenever product decisions, MVP scope, integrations, pricing, deadlines, architecture, privacy rules, or launch requirements change.
 
 No app code should be written until this file is clear enough to guide the first MVP.
+
+As of 2026-05-31, these requirements are clear enough to begin the first frontend implementation increment: scaffold Expo, port the Lovable mock flow into a clickable mobile UI, and use mock data before backend or provider integration work begins.
 
 ## 2. Product Vision
 
@@ -719,6 +721,8 @@ Important states:
 
 UX constraints:
 
+- The Lovable design in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30` is the primary MVP UI reference.
+- Older Figma, Canva, and SVG design explorations are historical references and should not override the Lovable direction unless the user explicitly changes the design source of truth.
 - No prompt box as the primary experience.
 - No dashboard-first home screen.
 - No helper line such as `Speak naturally` under the record button by default.
@@ -823,47 +827,59 @@ Target MVP deadline: 2026-07-15.
 
 Milestones:
 
-1. Requirements complete and approved.
+1. Requirements baseline complete.
    - Target: 2026-05-23.
    - Deliverable: `requirements.md`.
+   - Status: Done.
 
 2. UX flow and wireframe plan.
-   - Target: 2026-05-26.
-   - Deliverable: screen map, core user flows, MVP UI requirements.
+   - Target: 2026-05-24.
+   - Deliverable: `ux-flow.md` with screen map, core user flows, and MVP UI requirements.
+   - Status: Done.
 
-3. Technical setup.
+3. Lovable UI direction finalized.
    - Target: 2026-05-30.
-   - Deliverable: app project, backend skeleton, environment setup, build scripts.
+   - Deliverable: local Lovable reference under `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`.
+   - Status: Done.
 
-4. Recording prototype.
+4. Frontend scaffold and clickable mock flow.
+   - Target: 2026-06-02.
+   - Deliverable: Expo / React Native / TypeScript app scaffold, navigation, reusable UI primitives, and Lovable-inspired clickable flow using mock data.
+   - Status: Next.
+
+5. Recording lifecycle prototype.
    - Target: 2026-06-04.
-   - Deliverable: record, stop, playback, local temporary audio handling.
+   - Deliverable: record, stop, cancel, playback, permission states, and local temporary audio handling.
 
-5. Transcription prototype.
+6. Backend API skeleton.
+   - Target: 2026-06-07.
+   - Deliverable: backend project structure, mock transcription endpoint, mock generation endpoint, typed contracts, and environment setup.
+
+7. Transcription prototype.
    - Target: 2026-06-10.
    - Deliverable: audio upload, transcript result, failure handling.
 
-6. AI output prototype.
+8. AI output prototype.
    - Target: 2026-06-16.
    - Deliverable: five output modes using structured generation.
 
-7. MVP UI integration.
+9. MVP UI integration.
    - Target: 2026-06-24.
    - Deliverable: main flow from recording to editable output.
 
-8. History and export.
+10. History and export.
    - Target: 2026-06-30.
    - Deliverable: local history, delete, copy, share, basic Notion path.
 
-9. Privacy, settings, and usage limits.
+11. Privacy, settings, and usage limits.
    - Target: 2026-07-05.
    - Deliverable: settings, audio retention controls, free-tier counters, privacy text.
 
-10. QA and TestFlight readiness.
+12. QA and TestFlight readiness.
     - Target: 2026-07-10.
     - Deliverable: bug fixes, crash reporting, TestFlight build.
 
-11. App Store launch preparation.
+13. App Store launch preparation.
     - Target: 2026-07-15.
     - Deliverable: App Store listing assets, privacy policy, review-ready build.
 
@@ -960,6 +976,7 @@ When requirements change:
 
 ## 26. Change Log
 
+- 2026-05-31: Marked requirements as implementation-ready for the first frontend increment; documented Lovable as the MVP UI source of truth; updated milestones to reflect frontend-first build order and backend-after-mock-flow sequencing.
 - 2026-05-24: Updated visual direction from red recording identity to blue listening identity; added dark theme requirement and main icon exploration direction.
 - 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no recording timer, cancel during recording, haptic/audio start-stop cues by default, swipe up for history/task list, auto-start only as a future power-user setting.
 - 2026-05-23: Locked v1 output selection approach: hybrid suggested output type, with explicit user intent taking priority and a visible change-type option before generation.

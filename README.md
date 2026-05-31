@@ -21,21 +21,53 @@ The goal is not simple transcription. The goal is turning thought into action wi
 
 ## Current Status
 
-Planning phase.
+Frontend implementation has started.
 
-The initial product context and formal requirements are in place. App implementation has not started yet.
+The current app is an Expo / React Native / TypeScript clickable mock that ports the final Lovable direction into the first MVP flow. It uses mock state and mock data only; recording, transcription, AI generation, auth, payments, analytics, backend calls, and real exports are intentionally not wired yet.
 
-Before app code is written, the project should continue from:
+Current flow:
 
-1. Requirements approval
-2. UX flow and screen plan
-3. Technical setup
-4. Recording prototype
-5. Transcription prototype
-6. AI output prototype
-7. MVP UI
-8. Export/share
-9. TestFlight and App Store readiness
+1. Permission pre-prompt
+2. Recording home
+3. Active listening
+4. Processing
+5. Suggested output confirmation
+6. Change output type sheet
+7. Output preview/edit
+8. History sheet
+9. Settings
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start Expo:
+
+```bash
+npm run start
+```
+
+Typecheck:
+
+```bash
+npm run typecheck
+```
+
+Lint:
+
+```bash
+npm run lint
+```
+
+Test:
+
+```bash
+npm test
+```
 
 ## MVP Scope
 

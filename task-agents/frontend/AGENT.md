@@ -19,6 +19,7 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 ## Relevant Skills
 
 - Use `frontend-design` for UI implementation and interaction quality.
+- Use `.agents/skills/transitions-dev/SKILL.md` when planning or implementing smooth UI motion, including state swaps, page transitions, sheets, panels, success checks, and error feedback.
 - Use `e2e-testing` or `playwright` when validating clickable flows.
 - Use `verification-loop` before claiming the frontend is ready.
 
@@ -30,6 +31,7 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - Light/dark theme tokens.
 - Recording home, active recording, processing, suggested output, change type sheet, output editor, history sheet, settings.
 - Native-feeling iOS spacing, typography, gestures, sheets, haptics, and share flow.
+- Smooth transition behavior for the listening orb, sheet reveals, output type changes, page/state transitions, success moments, and recoverable error feedback.
 
 ## Constraints
 
@@ -39,13 +41,14 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - No prompt-box-first UI.
 - Use blue as the listening identity. Use red only for destructive actions and true errors.
 - Keep UI implementation compatible with future Android unless iOS-specific behavior is required.
+- `transitions-dev` is a CSS/web skill; for Expo/React Native, translate its timing, easing, reduced-motion, and interaction ideas into React Native animation primitives instead of pasting CSS snippets directly.
 
 ## Deliverables
 
 - Expo project scaffold.
 - Reusable UI primitives and theme tokens.
 - Screen components for the MVP flow.
-- Animation plan and implementation using proven React Native libraries.
+- Animation plan and implementation using proven Expo-compatible React Native libraries or built-in primitives.
 - Accessibility labels for icon-only controls.
 
 ## Verification

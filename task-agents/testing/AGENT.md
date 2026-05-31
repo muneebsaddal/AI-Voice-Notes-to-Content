@@ -7,11 +7,20 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 ## Context To Read
 
 - `AGENTS.md`
+- `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
+- `skills/README.md`
+- `task-agents/README.md`
 - `task-agents/frontend/AGENT.md`
 - `task-agents/backend/AGENT.md`
 - `task-agents/voice-ai/AGENT.md`
+
+## Relevant Skills
+
+- Use `verification-loop` for release gates and evidence collection.
+- Use `e2e-testing` for Playwright/manual browser or app flow checks when applicable.
+- Use `ai-regression-testing` for AI output contracts and golden examples.
 
 ## Scope
 
@@ -36,6 +45,29 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 - Manual QA checklist.
 - Release readiness checklist.
 - Bug reports with reproduction steps.
+
+## Verification
+
+- Run all available automated tests relevant to the changed surface.
+- Confirm manual QA steps cover permission denial, offline/provider failures, and export/share.
+- Keep test runs mock/provider-free by default.
+- Report any commands that could not be run and why.
+
+## Handoff Format
+
+Before finishing, report:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

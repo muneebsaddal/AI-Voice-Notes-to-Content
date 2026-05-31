@@ -135,9 +135,15 @@ Each task-agent `AGENT.md` should include:
 
 - Mission
 - Context files to read
+- Relevant skills to use
 - Scope
 - Deliverables
 - Constraints
+- Verification
+- Handoff format
+- Commit rule
 - Definition of done
 
 Reusable specialist prompts should be stored beside their agent under `task-agents/<agent>/prompts/`.
+
+Agents that change files should commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.

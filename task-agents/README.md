@@ -39,11 +39,29 @@ Each specialist agent owns one folder:
 
 The `prompts/` and `handoffs/` folders may be created when needed. Do not add empty placeholder folders just for appearance.
 
+## Agent Brief Standard
+
+Each `AGENT.md` should include:
+
+- Mission
+- Context to read
+- Relevant skills
+- Scope
+- Constraints
+- Deliverables
+- Verification
+- Handoff format
+- Definition of done
+
+Specialist agents should use relevant ECC skills by default. They should load only what they need, then report the skill used in their handoff.
+
 ## Coordination Rules
 
 - The lead developer owns final coherence and cross-agent decisions.
 - The lead developer writes specialist prompts using `skills/prompt-orchestration/SKILL.md`.
 - Specialist prompts should be saved under `task-agents/<agent>/prompts/` when they are likely to be reused.
-- Each agent must read `AGENTS.md`, `product-context.md`, `requirements.md`, and `ux-flow.md` before making recommendations.
+- Each agent must read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and this file before making recommendations.
 - Agents should produce concrete deliverables: files changed, test cases, risks, or implementation notes.
 - Agents should keep the core promise in view: **Say it once. Use it everywhere.**
+- Agents that change files must commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
+- Every handoff should include the skill used, what changed, what was verified, files touched, commit status, risks/open questions, and the recommended next task prompt.

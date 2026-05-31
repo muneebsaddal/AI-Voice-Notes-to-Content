@@ -10,8 +10,15 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
+- `skills/README.md`
 - `task-agents/README.md`
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
+
+## Relevant Skills
+
+- Use `frontend-design` for UI implementation and interaction quality.
+- Use `e2e-testing` or `playwright` when validating clickable flows.
+- Use `verification-loop` before claiming the frontend is ready.
 
 ## Scope
 
@@ -38,6 +45,29 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - Screen components for the MVP flow.
 - Animation plan and implementation using proven React Native libraries.
 - Accessibility labels for icon-only controls.
+
+## Verification
+
+- Run the available install, typecheck, lint, build, or test commands for the scaffold.
+- Start the local dev server when practical and report the URL.
+- Verify key screens fit mobile viewports without overlap.
+- Verify the clickable mock flow is nonblank and navigable.
+
+## Handoff Format
+
+Before finishing, report:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

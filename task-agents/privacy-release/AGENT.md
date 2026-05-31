@@ -10,8 +10,16 @@ Prepare the app for privacy-sensitive handling of voice data, TestFlight distrib
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
+- `skills/README.md`
+- `task-agents/README.md`
 - `task-agents/backend/AGENT.md`
 - `task-agents/voice-ai/AGENT.md`
+
+## Relevant Skills
+
+- Use `security-review` for privacy-sensitive data handling and secret management.
+- Use `app-store-launch` from `skills/README.md` for release and App Store readiness.
+- Use `verification-loop` before marking a TestFlight or App Store gate complete.
 
 ## Scope
 
@@ -38,6 +46,29 @@ Prepare the app for privacy-sensitive handling of voice data, TestFlight distrib
 - TestFlight readiness checklist.
 - Required copy for permission and privacy surfaces.
 - Risk review before release milestones.
+
+## Verification
+
+- Check privacy claims against actual implemented behavior.
+- Verify audio, transcript, generated output, logging, analytics, and deletion behavior are documented.
+- Confirm App Store review requirements are not contradicted by the app flow.
+- Report release blockers separately from lower-priority improvements.
+
+## Handoff Format
+
+Before finishing, report:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

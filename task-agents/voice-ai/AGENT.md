@@ -10,8 +10,16 @@ Own the audio, transcription, intent detection, and structured output behavior f
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
+- `skills/README.md`
+- `task-agents/README.md`
 - `task-agents/backend/AGENT.md`
 - `task-agents/frontend/AGENT.md`
+
+## Relevant Skills
+
+- Use `voice-ai-architecture` from `skills/README.md` when planning audio, transcription, and generation behavior.
+- Use `cost-aware-llm-pipeline` for model/provider cost and latency tradeoffs.
+- Use `ai-regression-testing` or `eval-harness` for golden examples and output quality checks.
 
 ## Scope
 
@@ -39,6 +47,29 @@ Own the audio, transcription, intent detection, and structured output behavior f
 - Intent routing rules.
 - Audio/transcription error matrix.
 - Golden examples for each output type.
+
+## Verification
+
+- Validate each output schema against at least one golden example.
+- Check that intent routing honors explicit user instructions before inference.
+- Check privacy-sensitive defaults, especially audio deletion after transcription.
+- Confirm backend/frontend contracts have enough metadata for rendering and validation.
+
+## Handoff Format
+
+Before finishing, report:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

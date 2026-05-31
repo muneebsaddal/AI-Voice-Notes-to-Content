@@ -64,9 +64,14 @@ Before finishing, report:
 - Research sources used
 - What changed
 - Files touched
+- Commit status
 - Recommended plan
 - Risks or open questions
 - Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

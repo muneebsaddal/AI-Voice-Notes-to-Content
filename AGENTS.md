@@ -52,6 +52,30 @@ Always treat these files as persistent project memory:
 
 If project decisions change, update `product-context.md` or `requirements.md` so future sessions keep the same context.
 
+## ECC Skill Usage
+
+Use the newly added ECC skills as the default operating layer for non-trivial work.
+
+At the start of each significant task:
+
+- Read `product-context.md` first.
+- Check `skills/README.md` for project-local guidance.
+- Choose the most relevant installed ECC skill or project-local skill.
+- Load only the skill instructions needed for the task.
+- Mention which skill is being used and why.
+
+Recommended mappings:
+
+- Agent/task-agent setup audit: `workspace-surface-audit` plus `agent-harness-construction`.
+- Specialist prompt creation: `skills/prompt-orchestration/SKILL.md`.
+- Frontend implementation: `frontend-design`, plus `verification-loop` before completion.
+- Bug fixing: `systematic-debugging` or `tdd-workflow`.
+- Security or privacy-sensitive changes: `security-review`.
+- Test strategy and release gates: `verification-loop`, `ai-regression-testing`, or `e2e-testing`.
+- Research with current external facts: `research-ops`, `deep-research`, or `exa-search`.
+
+Do not force a skill when the task is a tiny direct command, but for planning, coding, review, release, privacy, prompt orchestration, or agent configuration work, assume a relevant skill should be used.
+
 ## Current Build Direction
 
 The Lovable design direction is final for the MVP UI unless the user explicitly changes it.
@@ -335,12 +359,34 @@ Dedicated task-agent folders should be created under `task-agents/` when needed.
 
 - Mission
 - Inputs/context to read
+- Relevant skills to use
 - Scope
 - Deliverables
 - Constraints
+- Verification
+- Handoff format
 - Definition of done
 
 The lead developer remains responsible for coherence across all task agents.
+
+Every specialist agent must return a concise handoff with:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Discipline
+
+Every agent that changes files must either:
+
+- Commit the approved changes after the user reviews them or a reviewer agent reviews them.
+- Ask for review and commit approval if the changes have not yet been reviewed.
+
+Do not silently leave file changes uncommitted. Do not commit before review unless the task prompt or user explicitly says to commit now.
 
 ## Multi-Chat Coordination Workflow
 
@@ -349,11 +395,12 @@ The user may clear the main chat and start new specialist chats for each task ag
 When acting as lead developer/coordinator:
 
 1. Read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and `task-agents/README.md`.
-2. Use `skills/prompt-orchestration/SKILL.md` when creating prompts for specialist chats.
-3. Give each specialist chat one bounded task with context files, scope, constraints, deliverables, verification, and handoff format.
-4. Store reusable prompts under the relevant agent folder, such as `task-agents/frontend/prompts/`.
-5. Review specialist outputs before integrating them into the roadmap.
-6. Update `requirements.md`, `ux-flow.md`, task-agent briefs, or prompt files when decisions change.
+2. Choose and load the relevant ECC skill for the coordination task.
+3. Use `skills/prompt-orchestration/SKILL.md` when creating prompts for specialist chats.
+4. Give each specialist chat one bounded task with context files, relevant skills, scope, constraints, deliverables, verification, and handoff format.
+5. Store reusable prompts under the relevant agent folder, such as `task-agents/frontend/prompts/`.
+6. Review specialist outputs before integrating them into the roadmap.
+7. Update `requirements.md`, `ux-flow.md`, task-agent briefs, or prompt files when decisions change.
 
 The lead developer should usually assign work in this order:
 

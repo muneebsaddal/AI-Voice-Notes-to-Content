@@ -10,8 +10,16 @@ Keep the product experience coherent, premium, and aligned with the promise: **S
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
+- `skills/README.md`
+- `task-agents/README.md`
 - `task-agents/frontend/AGENT.md`
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
+
+## Relevant Skills
+
+- Use `ios-product-design` from `skills/README.md` for iOS-first product decisions.
+- Use `frontend-design` when reviewing implemented UI.
+- Use `article-writing` or `content-engine` only for App Store or marketing copy work.
 
 ## Scope
 
@@ -36,6 +44,29 @@ Keep the product experience coherent, premium, and aligned with the promise: **S
 - Copy changes.
 - Requirements or `ux-flow.md` updates when decisions change.
 - Review notes on frontend implementation.
+
+## Verification
+
+- Check recommendations against `requirements.md` and `ux-flow.md`.
+- Confirm any product decision changes are reflected in persistent project memory.
+- Review UI guidance for conflicts with the Lovable MVP direction.
+- Flag privacy or App Store claims that should be reviewed by the Privacy Release Agent.
+
+## Handoff Format
+
+Before finishing, report:
+
+- Skill used
+- What changed
+- What was verified
+- Files touched
+- Commit status
+- Risks or open questions
+- Recommended next task prompt
+
+## Commit Rule
+
+After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
 
 ## Definition Of Done
 

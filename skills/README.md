@@ -96,6 +96,18 @@ Focus on:
 - Keeping the lead developer as coordinator
 - Updating project memory when agent outputs change decisions
 
+### research-planning
+
+Use when researching options, comparing tools or architectures, writing implementation plans, or preparing context packs for specialist agents.
+
+Focus on:
+
+- Current external research with source links
+- Option comparisons
+- Smallest useful next step
+- Markdown plans under `task-agents/research-planning/plans/`
+- Context packs that reduce future token usage
+
 ## Dedicated Task-Agent Briefs
 
 When work becomes specialized, create a task-agent folder under `task-agents/`.
@@ -117,6 +129,7 @@ Current specialist briefs:
 - `task-agents/testing/AGENT.md`
 - `task-agents/product-ux/AGENT.md`
 - `task-agents/privacy-release/AGENT.md`
+- `task-agents/research-planning/AGENT.md`
 
 Each task-agent `AGENT.md` should include:
 

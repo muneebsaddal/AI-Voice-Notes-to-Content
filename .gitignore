@@ -3,6 +3,7 @@ tmp/
 node_modules/
 .expo/
 .playwright-mcp/
+.playwright-cli/
 dist/
 npm-debug.log*
 .expo-server*.log

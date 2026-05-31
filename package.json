@@ -8,9 +8,13 @@
     "ios": "expo start --ios",
     "android": "expo start --android",
     "web": "expo start --web",
+    "backend:build": "tsc -p backend/tsconfig.json",
+    "backend:dev": "npm run backend:build && node backend/dist/src/server.js",
+    "backend:start": "node backend/dist/src/server.js",
+    "backend:test": "npm run backend:build && node --test --experimental-test-isolation=none backend/dist/test/*.test.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck"
+    "test": "npm run typecheck && npm run backend:test"
   },
   "dependencies": {
     "@expo/metro-runtime": "^56.0.13",

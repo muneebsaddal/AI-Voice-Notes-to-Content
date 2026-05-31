@@ -73,6 +73,80 @@ Test:
 npm test
 ```
 
+Build the mock backend:
+
+```bash
+npm run backend:build
+```
+
+Run the mock backend locally:
+
+```bash
+npm run backend:dev
+```
+
+The local backend listens on `http://127.0.0.1:3333` by default. Set `PORT` or `HOST` for a different local binding. The current backend is mock-only: it does not call AI, transcription, storage, Notion, auth, payment, or cloud providers, and it does not write uploaded audio to disk.
+
+## Mock Backend API
+
+`GET /api/health`
+
+Returns:
+
+```json
+{ "ok": true, "service": "voice-notes-api", "mode": "mock" }
+```
+
+`POST /api/transcriptions`
+
+Accepts:
+
+```json
+{ "audioId": "mock-audio-1", "durationMs": 42000 }
+```
+
+Returns:
+
+```json
+{
+  "transcript": "Quick note before Thursday...",
+  "language": "en",
+  "durationMs": 42000,
+  "suggestedOutputType": "email"
+}
+```
+
+`POST /api/generations`
+
+Accepts:
+
+```json
+{ "transcript": "Please turn this into something useful.", "outputType": "note" }
+```
+
+`outputType` must be one of `note`, `todo`, `email`, `journal`, or `content`.
+
+Returns:
+
+```json
+{
+  "id": "mock-note-1",
+  "outputType": "note",
+  "title": "Thursday Workshop Plan",
+  "body": "Summary\nOpen Thursday's workshop...",
+  "preview": "Open with onboarding flow, then move into pricing discussion.",
+  "createdAtLabel": "Today"
+}
+```
+
+Structured errors use:
+
+```json
+{ "error": { "code": "invalid_request_body", "message": "Invalid request body." } }
+```
+
+Supported mock error codes are `recording_upload_failed`, `transcription_failed`, `generation_failed`, `unsupported_output_type`, `invalid_request_body`, `not_found`, and `method_not_allowed`. Permission denial remains a frontend/local state, not a backend error.
+
 ## MVP Scope
 
 Version 1 should include:

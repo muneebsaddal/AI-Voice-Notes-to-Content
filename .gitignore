@@ -5,5 +5,6 @@ node_modules/
 .playwright-mcp/
 .playwright-cli/
 dist/
+backend/dist/
 npm-debug.log*
 .expo-server*.log

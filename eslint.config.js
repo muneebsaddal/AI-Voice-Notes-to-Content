@@ -8,6 +8,7 @@ module.exports = defineConfig([
       ".agents/**",
       ".expo/**",
       ".superpowers/**",
+      "backend/dist/**",
       "dist/**",
       "node_modules/**",
       "tmp/**",

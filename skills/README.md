@@ -146,4 +146,6 @@ Each task-agent `AGENT.md` should include:
 
 Reusable specialist prompts should be stored beside their agent under `task-agents/<agent>/prompts/`.
 
+Every specialist agent should start with `memory/current-state.md` and then follow only the memory links or long project files needed for the task.
+
 Agents that change files should commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.

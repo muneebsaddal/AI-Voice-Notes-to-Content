@@ -7,6 +7,7 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`

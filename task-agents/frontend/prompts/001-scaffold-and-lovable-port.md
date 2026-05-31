@@ -10,6 +10,8 @@ Build the first Expo/React Native frontend foundation and port the final Lovable
 
 Context to read before doing anything:
 - AGENTS.md
+- memory/current-state.md
+- memory/context-packs/frontend-scaffold.md
 - product-context.md
 - requirements.md
 - ux-flow.md

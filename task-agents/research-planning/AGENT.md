@@ -9,6 +9,7 @@ This agent does not lead the project and does not implement production code by d
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`

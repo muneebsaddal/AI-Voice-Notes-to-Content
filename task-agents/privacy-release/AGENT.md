@@ -7,6 +7,7 @@ Prepare the app for privacy-sensitive handling of voice data, TestFlight distrib
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`

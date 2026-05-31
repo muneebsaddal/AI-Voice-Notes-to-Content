@@ -28,6 +28,7 @@ The MVP should now move from planning into implementation in this order:
 - `testing/AGENT.md` - automated tests, manual QA, regression risk, release gates.
 - `product-ux/AGENT.md` - requirements, UX coherence, copy, App Store-facing product decisions.
 - `privacy-release/AGENT.md` - privacy, data retention, App Store review, TestFlight readiness.
+- `research-planning/AGENT.md` - current research, option comparisons, implementation plans, and context packs.
 
 ## Folder Convention
 
@@ -60,7 +61,8 @@ Specialist agents should use relevant ECC skills by default. They should load on
 - The lead developer owns final coherence and cross-agent decisions.
 - The lead developer writes specialist prompts using `skills/prompt-orchestration/SKILL.md`.
 - Specialist prompts should be saved under `task-agents/<agent>/prompts/` when they are likely to be reused.
-- Each agent must read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and this file before making recommendations.
+- Each agent must read `AGENTS.md`, `memory/current-state.md`, its own `task-agents/<agent>/AGENT.md`, and the assigned prompt before starting.
+- Agents should read `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, this file, and relevant `memory/context-packs/` when the task needs that detail.
 - Agents should produce concrete deliverables: files changed, test cases, risks, or implementation notes.
 - Agents should keep the core promise in view: **Say it once. Use it everywhere.**
 - Agents that change files must commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.

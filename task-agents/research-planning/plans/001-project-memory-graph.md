@@ -1,5 +1,7 @@
 # Project Memory Graph Plan
 
+Status: implemented through Phase 3 on 2026-05-31. Optional search tooling remains deferred.
+
 ## Purpose
 
 Create a lightweight, Obsidian-compatible project memory graph so specialist chats can resume faster, read less context, and understand decisions without scanning every long document.

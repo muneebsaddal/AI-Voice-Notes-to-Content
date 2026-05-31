@@ -44,6 +44,8 @@ Do not start coding until the requirements are clear enough to guide the first M
 Always treat these files as persistent project memory:
 
 - `AGENTS.md` - operating instructions for the lead developer agent.
+- `memory/current-state.md` - short project status and decision graph entrypoint.
+- `memory/` - Obsidian-compatible project memory graph for decisions, agents, flows, sessions, and context packs.
 - `product-context.md` - full product vision, user problems, case studies, integrations, monetization, and strategic decisions.
 - `requirements.md` - formal requirements/specification. Create this before coding.
 - `skills/README.md` - project-local skill guidance for specialized work.
@@ -59,6 +61,7 @@ Use the newly added ECC skills as the default operating layer for non-trivial wo
 At the start of each significant task:
 
 - Read `product-context.md` first.
+- Read `memory/current-state.md` after product context when the task benefits from current project status.
 - Check `skills/README.md` for project-local guidance.
 - Choose the most relevant installed ECC skill or project-local skill.
 - Load only the skill instructions needed for the task.
@@ -394,7 +397,7 @@ The user may clear the main chat and start new specialist chats for each task ag
 
 When acting as lead developer/coordinator:
 
-1. Read `AGENTS.md`, `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and `task-agents/README.md`.
+1. Read `AGENTS.md`, `product-context.md`, `memory/current-state.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, and `task-agents/README.md`.
 2. Choose and load the relevant ECC skill for the coordination task.
 3. Use `skills/prompt-orchestration/SKILL.md` when creating prompts for specialist chats.
 4. Give each specialist chat one bounded task with context files, relevant skills, scope, constraints, deliverables, verification, and handoff format.

@@ -7,11 +7,13 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`
 - `skills/README.md`
 - `task-agents/README.md`
+- `memory/context-packs/frontend-scaffold.md` for the first scaffold task
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
 
 ## Relevant Skills

@@ -7,6 +7,7 @@ Build the backend foundation for secure audio upload, transcription, AI transfor
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`

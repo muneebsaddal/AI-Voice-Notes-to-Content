@@ -7,6 +7,7 @@ Keep the product experience coherent, premium, and aligned with the promise: **S
 ## Context To Read
 
 - `AGENTS.md`
+- `memory/current-state.md`
 - `product-context.md`
 - `requirements.md`
 - `ux-flow.md`

@@ -75,6 +75,8 @@ See `requirements.md` for tradeoffs and decision notes.
 These files are treated as persistent project memory:
 
 - `AGENTS.md` - operating instructions for the lead developer agent
+- `memory/current-state.md` - short current project state and decision graph entrypoint
+- `memory/` - lightweight Markdown memory graph for decisions, flows, agents, sessions, and context packs
 - `product-context.md` - product vision, users, strategy, roadmap, and monetization
 - `requirements.md` - living product and technical requirements
 - `skills/README.md` - project-local guidance for specialized work
@@ -88,4 +90,3 @@ Target MVP deadline: 2026-07-15.
 ## Definition Of Done
 
 The MVP is done when a user can record a voice note on iPhone, receive an accurate transcription, convert it into at least five useful output types, edit the result, save it, share/export it, and understand what happened if something fails.
-

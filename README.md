@@ -145,7 +145,7 @@ Structured errors use:
 { "error": { "code": "invalid_request_body", "message": "Invalid request body." } }
 ```
 
-Supported mock error codes are `recording_upload_failed`, `transcription_failed`, `generation_failed`, `unsupported_output_type`, `invalid_request_body`, `not_found`, and `method_not_allowed`. Permission denial remains a frontend/local state, not a backend error.
+Supported mock error codes are `recording_upload_failed`, `transcription_failed`, `generation_failed`, `internal_error`, `unsupported_output_type`, `invalid_request_body`, `not_found`, and `method_not_allowed`. Permission denial remains a frontend/local state, not a backend error.
 
 ## MVP Scope
 

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { request as httpRequest } from "node:http";
 import { createServer, type Server } from "node:http";
 import { after, before, describe, it } from "node:test";
 
@@ -23,6 +24,44 @@ async function requestJson(
     status: response.status,
     json: (await response.json()) as JsonRecord,
   };
+}
+
+async function requestChunkedJson(
+  path: string,
+  chunks: Buffer[],
+): Promise<{ status: number; json: JsonRecord }> {
+  const url = new URL(`${baseUrl}${path}`);
+
+  return await new Promise((resolve, reject) => {
+    const request = httpRequest(
+      {
+        hostname: url.hostname,
+        port: url.port,
+        path: url.pathname,
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+      },
+      (response) => {
+        const responseChunks: Buffer[] = [];
+
+        response.on("data", (chunk: Buffer) => responseChunks.push(chunk));
+        response.on("end", () => {
+          resolve({
+            status: response.statusCode ?? 0,
+            json: JSON.parse(Buffer.concat(responseChunks).toString("utf8")) as JsonRecord,
+          });
+        });
+      },
+    );
+
+    request.on("error", reject);
+    for (const chunk of chunks) {
+      request.write(chunk);
+    }
+    request.end();
+  });
 }
 
 before(async () => {
@@ -91,6 +130,58 @@ describe("mock API contracts", () => {
     }
   });
 
+  it("parses valid chunked Unicode JSON without corrupting transcript text", async () => {
+    let receivedTranscript = "";
+    const unicodeServer = createServer(
+      createApp({
+        generateOutput: async (request) => {
+          receivedTranscript = request.transcript;
+          return {
+            id: "unicode-note",
+            outputType: request.outputType,
+            title: "Unicode Note",
+            body: "ok",
+            preview: "ok",
+            createdAtLabel: "Today",
+          };
+        },
+      }),
+    );
+
+    await new Promise<void>((resolve) => {
+      unicodeServer.listen(0, "127.0.0.1", resolve);
+    });
+
+    const originalBaseUrl = baseUrl;
+    const address = unicodeServer.address();
+    assert(address && typeof address === "object");
+    baseUrl = `http://127.0.0.1:${address.port}`;
+
+    try {
+      const transcript = "Voice note with café, 🚀, and اردو text.";
+      const payload = Buffer.from(
+        JSON.stringify({
+          transcript,
+          outputType: "note",
+        }),
+        "utf8",
+      );
+      const splitAt = payload.indexOf(Buffer.from("🚀", "utf8")) + 1;
+      const response = await requestChunkedJson("/api/generations", [
+        payload.subarray(0, splitAt),
+        payload.subarray(splitAt),
+      ]);
+
+      assert.equal(response.status, 200);
+      assert.equal(receivedTranscript, transcript);
+    } finally {
+      baseUrl = originalBaseUrl;
+      await new Promise<void>((resolve, reject) => {
+        unicodeServer.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
+  });
+
   it("rejects unsupported output types with a structured error", async () => {
     const response = await requestJson("/api/generations", {
       method: "POST",
@@ -107,6 +198,52 @@ describe("mock API contracts", () => {
         message: "Unsupported output type.",
       },
     });
+  });
+
+  it("returns internal_error for unhandled exceptions", async () => {
+    const originalConsoleError = console.error;
+    console.error = () => undefined;
+
+    const failingServer = createServer(
+      createApp({
+        generateOutput: async () => {
+          throw new Error("unexpected failure");
+        },
+      }),
+    );
+
+    await new Promise<void>((resolve) => {
+      failingServer.listen(0, "127.0.0.1", resolve);
+    });
+
+    const originalBaseUrl = baseUrl;
+    const address = failingServer.address();
+    assert(address && typeof address === "object");
+    baseUrl = `http://127.0.0.1:${address.port}`;
+
+    try {
+      const response = await requestJson("/api/generations", {
+        method: "POST",
+        body: {
+          transcript: "Please turn this into something useful.",
+          outputType: "note",
+        },
+      });
+
+      assert.equal(response.status, 500);
+      assert.deepEqual(response.json, {
+        error: {
+          code: "internal_error",
+          message: "The mock API could not complete the request.",
+        },
+      });
+    } finally {
+      console.error = originalConsoleError;
+      baseUrl = originalBaseUrl;
+      await new Promise<void>((resolve, reject) => {
+        failingServer.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
   });
 
   it("returns a structured recording upload failure when requested", async () => {

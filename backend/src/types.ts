@@ -42,6 +42,7 @@ export type ApiErrorCode =
   | "recording_upload_failed"
   | "transcription_failed"
   | "generation_failed"
+  | "internal_error"
   | "unsupported_output_type"
   | "invalid_request_body"
   | "not_found"

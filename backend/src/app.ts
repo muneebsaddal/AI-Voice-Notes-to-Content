@@ -4,11 +4,23 @@ import { validateGenerationRequest, validateTranscriptionRequest } from "./contr
 import { ApiError, invalidRequestBodyError, toErrorResponse } from "./errors";
 import { generateMockOutput } from "./services/generationService";
 import { transcribeMockAudio } from "./services/transcriptionService";
-import type { ApiErrorResponse, HealthResponse } from "./types";
+import type {
+  ApiErrorResponse,
+  GeneratedOutput,
+  GenerationRequest,
+  HealthResponse,
+  TranscriptionRequest,
+  TranscriptionResponse,
+} from "./types";
 
 const maxJsonBodyBytes = 128 * 1024;
 
 type AppHandler = (request: IncomingMessage, response: ServerResponse) => Promise<void>;
+
+type AppDependencies = {
+  transcribeAudio?: (request: TranscriptionRequest) => Promise<TranscriptionResponse>;
+  generateOutput?: (request: GenerationRequest) => Promise<GeneratedOutput>;
+};
 
 function setBaseHeaders(response: ServerResponse): void {
   response.setHeader("content-type", "application/json; charset=utf-8");
@@ -24,15 +36,21 @@ function sendJson(response: ServerResponse, status: number, payload: unknown): v
 }
 
 async function readJsonBody(request: IncomingMessage): Promise<unknown> {
-  let body = "";
+  const chunks: Buffer[] = [];
+  let totalBytes = 0;
 
   for await (const chunk of request) {
-    body += chunk;
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    totalBytes += buffer.byteLength;
 
-    if (Buffer.byteLength(body) > maxJsonBodyBytes) {
+    if (totalBytes > maxJsonBodyBytes) {
       throw invalidRequestBodyError;
     }
+
+    chunks.push(buffer);
   }
+
+  const body = Buffer.concat(chunks, totalBytes).toString("utf8");
 
   if (body.trim().length === 0) {
     throw invalidRequestBodyError;
@@ -58,6 +76,7 @@ async function handleHealth(response: ServerResponse): Promise<void> {
 async function handleTranscriptions(
   request: IncomingMessage,
   response: ServerResponse,
+  dependencies: Required<AppDependencies>,
 ): Promise<void> {
   const body = await readJsonBody(request);
   const validation = validateTranscriptionRequest(body);
@@ -67,13 +86,14 @@ async function handleTranscriptions(
     return;
   }
 
-  const transcription = await transcribeMockAudio(validation.value);
+  const transcription = await dependencies.transcribeAudio(validation.value);
   sendJson(response, 200, transcription);
 }
 
 async function handleGenerations(
   request: IncomingMessage,
   response: ServerResponse,
+  dependencies: Required<AppDependencies>,
 ): Promise<void> {
   const body = await readJsonBody(request);
   const validation = validateGenerationRequest(body);
@@ -83,7 +103,7 @@ async function handleGenerations(
     return;
   }
 
-  const generatedOutput = await generateMockOutput(validation.value);
+  const generatedOutput = await dependencies.generateOutput(validation.value);
   sendJson(response, 200, generatedOutput);
 }
 
@@ -121,13 +141,18 @@ function handleError(error: unknown, response: ServerResponse): void {
 
   sendJson(response, 500, {
     error: {
-      code: "generation_failed",
+      code: "internal_error",
       message: "The mock API could not complete the request.",
     },
   });
 }
 
-export function createApp(): AppHandler {
+export function createApp(dependencies: AppDependencies = {}): AppHandler {
+  const resolvedDependencies: Required<AppDependencies> = {
+    transcribeAudio: dependencies.transcribeAudio ?? transcribeMockAudio,
+    generateOutput: dependencies.generateOutput ?? generateMockOutput,
+  };
+
   return async (request, response) => {
     try {
       const url = new URL(request.url ?? "/", "http://localhost");
@@ -155,7 +180,7 @@ export function createApp(): AppHandler {
           return;
         }
 
-        await handleTranscriptions(request, response);
+        await handleTranscriptions(request, response, resolvedDependencies);
         return;
       }
 
@@ -165,7 +190,7 @@ export function createApp(): AppHandler {
           return;
         }
 
-        await handleGenerations(request, response);
+        await handleGenerations(request, response, resolvedDependencies);
         return;
       }
 

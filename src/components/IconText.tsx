@@ -2,7 +2,7 @@ import { StyleSheet, Text } from "react-native";
 import type { Theme } from "../types";
 
 type IconTextProps = {
-  name: "ellipsis" | "back" | "forward" | "check" | "chevronUp" | "copy" | "share" | "close";
+  name: "ellipsis" | "back" | "forward" | "check" | "chevronUp" | "copy" | "share" | "close" | "play";
   color?: string;
   size?: number;
   theme: Theme;
@@ -17,6 +17,7 @@ const glyphs: Record<IconTextProps["name"], string> = {
   copy: "⧉",
   share: "↗",
   close: "×",
+  play: "▶",
 };
 
 export function IconText({ name, color, size = 24, theme }: IconTextProps) {

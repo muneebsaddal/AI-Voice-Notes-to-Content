@@ -1,4 +1,4 @@
-import type { GeneratedOutput, OutputType } from "../types";
+import type { GeneratedOutput, LifecyclePreviewState, OutputType } from "../types";
 
 export const outputTypeLabels: Record<OutputType, string> = {
   note: "Note",
@@ -10,6 +10,19 @@ export const outputTypeLabels: Record<OutputType, string> = {
 
 export const mockTranscript =
   "Quick note before Thursday. I want to walk Jamie through the onboarding flow first, then discuss pricing. Ask them to send the agenda by tomorrow so I can add the wireframes and a couple of metrics.";
+
+export const mockRecording = {
+  durationLabel: "0:42",
+  qualityLabel: "Clear voice detected",
+  fileSizeLabel: "820 KB",
+};
+
+export const lifecyclePreviewLabels: Record<LifecyclePreviewState, string> = {
+  recordingFailed: "Recording failed",
+  playbackAvailable: "Playback ready",
+  transcriptionFailed: "Transcription failed",
+  generationFailed: "Generation failed",
+};
 
 export const mockGeneratedOutput: Record<OutputType, GeneratedOutput> = {
   note: {

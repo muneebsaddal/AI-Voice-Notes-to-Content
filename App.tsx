@@ -16,7 +16,13 @@ import { HistorySheet } from "./src/components/HistorySheet";
 import { Toast } from "./src/components/Toast";
 import { mockGeneratedOutput, outputTypeLabels } from "./src/mock/mockData";
 import { darkTheme, lightTheme } from "./src/theme/theme";
-import type { GeneratedOutput, OutputType } from "./src/types";
+import type {
+  AudioLifecycleState,
+  GeneratedOutput,
+  LifecyclePreviewState,
+  OutputType,
+  PermissionStatus,
+} from "./src/types";
 
 type AppScreen = "permission" | "listening" | "settings" | "output";
 type Sheet = "changeType" | "history" | null;
@@ -26,8 +32,10 @@ export default function App() {
   const [screen, setScreen] = useState<AppScreen>("permission");
   const [sheet, setSheet] = useState<Sheet>(null);
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
+  const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>("prompt");
   const [selectedType, setSelectedType] = useState<OutputType>("email");
   const [output, setOutput] = useState<GeneratedOutput>(() => mockGeneratedOutput.email);
+  const [lifecyclePreview, setLifecyclePreview] = useState<AudioLifecycleState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   const theme = themeMode === "dark" ? darkTheme : lightTheme;
@@ -46,8 +54,14 @@ export default function App() {
   const showOutputForType = (type: OutputType) => {
     setSelectedType(type);
     setOutput(mockGeneratedOutput[type]);
+    setLifecyclePreview(null);
     setSheet(null);
     setScreen("output");
+  };
+
+  const previewLifecycleState = (state: LifecyclePreviewState) => {
+    setLifecyclePreview(state);
+    setScreen("listening");
   };
 
   return (
@@ -59,7 +73,18 @@ export default function App() {
           style={styles.keyboardAvoiding}
         >
           {screen === "permission" && (
-            <PermissionScreen theme={theme} onContinue={() => setScreen("listening")} />
+            <PermissionScreen
+              theme={theme}
+              status={permissionStatus}
+              onAllow={() => {
+                setPermissionStatus("granted");
+                setScreen("listening");
+              }}
+              onDeny={() => {
+                setPermissionStatus("denied");
+                setToast("Microphone permission denied");
+              }}
+            />
           )}
 
           {screen === "listening" && (
@@ -71,6 +96,8 @@ export default function App() {
               onOpenHistory={() => setSheet("history")}
               onChangeType={() => setSheet("changeType")}
               onGenerate={() => showOutputForType(selectedType)}
+              previewState={lifecyclePreview}
+              onPreviewStateConsumed={() => setLifecyclePreview(null)}
             />
           )}
 
@@ -81,6 +108,7 @@ export default function App() {
               onBack={() => setScreen("listening")}
               onToggleTheme={() => setThemeMode(themeMode === "dark" ? "light" : "dark")}
               onShowToast={setToast}
+              onPreviewLifecycleState={previewLifecycleState}
             />
           )}
 

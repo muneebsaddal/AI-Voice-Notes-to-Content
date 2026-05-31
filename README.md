@@ -28,14 +28,18 @@ The current app is an Expo / React Native / TypeScript clickable mock that ports
 Current flow:
 
 1. Permission pre-prompt
-2. Recording home
-3. Active listening
-4. Processing
-5. Suggested output confirmation
-6. Change output type sheet
-7. Output preview/edit
-8. History sheet
-9. Settings
+2. Permission denied retry state
+3. Recording home
+4. Active listening
+5. Playback-ready review
+6. Transcription processing
+7. Suggested output confirmation
+8. Generation processing
+9. Retryable recording, transcription, and generation failure states
+10. Change output type sheet
+11. Output preview/edit
+12. History sheet
+13. Settings with mock lifecycle previews
 
 ## Local Development
 

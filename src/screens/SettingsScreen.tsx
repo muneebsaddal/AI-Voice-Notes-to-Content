@@ -2,7 +2,8 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-nat
 import { IconText } from "../components/IconText";
 import { TopBar } from "../components/TopBar";
 import { spacing } from "../theme/theme";
-import type { Theme } from "../types";
+import { lifecyclePreviewLabels } from "../mock/mockData";
+import type { LifecyclePreviewState, Theme } from "../types";
 
 type SettingsScreenProps = {
   theme: Theme;
@@ -10,6 +11,7 @@ type SettingsScreenProps = {
   onBack: () => void;
   onToggleTheme: () => void;
   onShowToast: (message: string) => void;
+  onPreviewLifecycleState: (state: LifecyclePreviewState) => void;
 };
 
 export function SettingsScreen({
@@ -18,6 +20,7 @@ export function SettingsScreen({
   onBack,
   onToggleTheme,
   onShowToast,
+  onPreviewLifecycleState,
 }: SettingsScreenProps) {
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
@@ -34,8 +37,20 @@ export function SettingsScreen({
           <SettingsRow label="Start recording when app opens" value="Off" theme={theme} />
         </SettingsGroup>
 
+        <SettingsGroup title="Mock States" theme={theme}>
+          {(Object.keys(lifecyclePreviewLabels) as LifecyclePreviewState[]).map((state) => (
+            <Pressable
+              key={state}
+              accessibilityRole="button"
+              onPress={() => onPreviewLifecycleState(state)}
+            >
+              <SettingsRow label={lifecyclePreviewLabels[state]} theme={theme} />
+            </Pressable>
+          ))}
+        </SettingsGroup>
+
         <SettingsGroup title="Display" theme={theme}>
-          <Pressable onPress={onToggleTheme}>
+          <Pressable accessibilityRole="button" onPress={onToggleTheme}>
             <SettingsRow label="Theme" value={themeMode === "dark" ? "Dark" : "Light"} theme={theme} />
           </Pressable>
         </SettingsGroup>
@@ -47,7 +62,7 @@ export function SettingsScreen({
         </SettingsGroup>
 
         <SettingsGroup title="" theme={theme}>
-          <Pressable onPress={() => onShowToast("History delete mocked")}>
+          <Pressable accessibilityRole="button" onPress={() => onShowToast("History delete mocked")}>
             <SettingsRow label="Delete all history" danger theme={theme} />
           </Pressable>
         </SettingsGroup>

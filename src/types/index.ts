@@ -1,5 +1,24 @@
 export type OutputType = "note" | "todo" | "email" | "journal" | "content";
 
+export type PermissionStatus = "prompt" | "granted" | "denied";
+
+export type AudioLifecycleState =
+  | "idle"
+  | "recording"
+  | "recordingFailed"
+  | "playbackAvailable"
+  | "transcribing"
+  | "transcriptionFailed"
+  | "suggested"
+  | "generating"
+  | "generationFailed";
+
+export type LifecyclePreviewState =
+  | "recordingFailed"
+  | "playbackAvailable"
+  | "transcriptionFailed"
+  | "generationFailed";
+
 export type GeneratedOutput = {
   id: string;
   outputType: OutputType;

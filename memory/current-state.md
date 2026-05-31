@@ -12,16 +12,17 @@ The MVP should let a user record a voice note, transcribe it, transform it into 
 
 ## Current Phase
 
-Planning is complete enough to begin implementation.
+Planning is complete enough to continue implementation.
 
-The next implementation step is frontend-first:
+The frontend-first implementation is underway:
 
-1. Scaffold Expo / React Native / TypeScript.
-2. Port the Lovable mock flow into a clickable mobile UI.
-3. Use mock data only at first.
-4. Add recording, backend, AI, storage, export, testing, and release readiness in later increments.
+1. Expo / React Native / TypeScript has been scaffolded.
+2. The Lovable mock flow has been ported into a clickable mobile UI.
+3. The UI uses mock data only.
+4. The mock flow now covers permission denied, active recording, playback-ready audio, transcription processing/failure, suggested output confirmation, generation processing/failure, output editing, history, and settings.
+5. Recording providers, backend calls, AI providers, storage, export, testing depth, and release readiness remain later increments.
 
-`requirements.md` is already implementation-ready for the first frontend increment. Frontend agents should not recreate requirements or stop at planning-only output.
+`requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
 ## Stack Decision
 

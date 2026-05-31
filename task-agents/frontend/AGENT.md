@@ -57,6 +57,9 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - Start the local dev server when practical and report the URL.
 - Verify key screens fit mobile viewports without overlap.
 - Verify the clickable mock flow is nonblank and navigable.
+- Browser/Playwright verification must be timeboxed. If Playwright, the browser extension, or a browser profile blocks progress for more than 10 minutes, stop waiting, record the blocker, finish the handoff, and ask the lead developer whether to retry.
+- Stop any local dev servers or background processes you started before finishing unless the lead developer explicitly asked you to leave them running.
+- Do not end a task after starting Playwright or a dev server without a final handoff.
 
 ## Handoff Format
 
@@ -73,6 +76,8 @@ Before finishing, report:
 ## Commit Rule
 
 After changing files, commit the approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
+
+Do not leave implementation changes uncommitted with no status. If waiting for review, say exactly that and list the dirty files.
 
 ## Definition Of Done
 

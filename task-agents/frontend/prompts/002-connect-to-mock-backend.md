@@ -138,12 +138,16 @@ Verification:
   2. The happy path reaches output preview using backend data.
   3. At least one backend/network failure falls back to the existing retry/error UI.
   4. A narrow iPhone-sized viewport has no obvious overlap or broken layout.
+- Timebox Playwright/browser verification to 10 minutes. If the browser extension, profile, or MCP bridge blocks progress, stop waiting, report the blocker, and finish the handoff instead of hanging.
+- Stop any backend, Expo, or browser helper processes you started unless the lead developer explicitly asks you to keep them running.
 - Report any command you could not run and why.
 
 Commit discipline:
 - Do not silently leave file changes uncommitted.
+- Do not end the task after starting Playwright or local dev servers without a final handoff.
 - If the lead developer or a reviewer has approved the changes and asked you to commit, commit after verification and report the commit hash.
 - If review has not happened yet, ask for review and commit approval before finishing.
+- If waiting for review or commit approval, list the dirty files.
 - Never commit secrets or local-only tokens.
 
 Before you finish, report:

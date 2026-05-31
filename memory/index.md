@@ -38,3 +38,4 @@
 - [[sessions/README|Session Notes]]
 - [[sessions/2026-05-31-lead-project-memory-graph|Lead Project Memory Graph]]
 - [[sessions/2026-05-31-lead-agent-coordination-log|Lead Agent Coordination Log]]
+- [[sessions/2026-06-01-frontend-agent-stale-verification|Frontend Agent Stale Verification]]

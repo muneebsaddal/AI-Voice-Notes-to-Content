@@ -15,4 +15,10 @@ Start with:
 - [[voice-ai|Voice AI Agent]]
 - [[privacy-release|Privacy Release Agent]]
 
+Current status:
+
+- Mock backend API skeleton is implemented and committed.
+- Backend supports `GET /api/health`, `POST /api/transcriptions`, and `POST /api/generations`.
+- Backend JSON parsing, structured `internal_error`, simulated failure paths, tests, build, lint, typecheck, and high-severity audit checks have passed.
+
 Do not overbuild integrations before the core voice-to-output loop works.

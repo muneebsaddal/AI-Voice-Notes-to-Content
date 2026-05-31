@@ -17,4 +17,10 @@ Default startup:
 
 Current priority:
 
-- Move from planning into frontend-first implementation.
+- Coordinate the frontend backend-connection task using [Frontend Prompt 002](../../task-agents/frontend/prompts/002-connect-to-mock-backend.md).
+
+Logging discipline:
+
+- After writing or updating specialist prompts, reviews, commits, or roadmap decisions, add a concise session note under `memory/sessions/`.
+- Keep [[../current-state|Current State]] accurate when implementation status or next-task prompts change.
+- Record commit hashes for specialist work when available so future lead sessions can reconstruct the handoff chain.

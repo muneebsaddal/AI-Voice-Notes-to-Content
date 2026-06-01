@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,10 +14,22 @@ import { SettingsScreen } from "./src/screens/SettingsScreen";
 import { ChangeTypeSheet } from "./src/components/ChangeTypeSheet";
 import { HistorySheet } from "./src/components/HistorySheet";
 import { Toast } from "./src/components/Toast";
-import { mockGeneratedOutput, outputTypeLabels } from "./src/mock/mockData";
+import {
+  mockGeneratedOutput,
+  mockRecording,
+  mockTranscript,
+  outputTypeLabels,
+} from "./src/mock/mockData";
+import {
+  generateMockOutput,
+  MockBackendClientError,
+  transcribeMockAudio,
+} from "./src/api/mockBackendClient";
 import { darkTheme, lightTheme } from "./src/theme/theme";
 import type {
   AudioLifecycleState,
+  BackendFlowFailure,
+  BackendFlowResult,
   GeneratedOutput,
   LifecyclePreviewState,
   OutputType,
@@ -34,6 +46,7 @@ export default function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>("prompt");
   const [selectedType, setSelectedType] = useState<OutputType>("email");
+  const [transcript, setTranscript] = useState(mockTranscript);
   const [output, setOutput] = useState<GeneratedOutput>(() => mockGeneratedOutput.email);
   const [lifecyclePreview, setLifecyclePreview] = useState<AudioLifecycleState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -51,18 +64,63 @@ export default function App() {
 
   const generatedForType = useMemo(() => mockGeneratedOutput[selectedType], [selectedType]);
 
-  const showOutputForType = (type: OutputType) => {
-    setSelectedType(type);
-    setOutput(mockGeneratedOutput[type]);
+  const previewLifecycleState = useCallback((state: LifecyclePreviewState) => {
+    setLifecyclePreview(state);
+    setScreen("listening");
+  }, []);
+
+  const handleTranscribe = useCallback(async (): Promise<BackendFlowResult> => {
+    try {
+      const response = await transcribeMockAudio({
+        audioId: "mock-audio-1",
+        durationMs: parseDurationLabel(mockRecording.durationLabel),
+      });
+
+      setTranscript(response.transcript);
+      setSelectedType(response.suggestedOutputType);
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        failure: mapBackendErrorToFlowFailure(error, "transcription"),
+      };
+    }
+  }, []);
+
+  const handleGenerate = useCallback(async (): Promise<BackendFlowResult> => {
+    try {
+      const response = await generateMockOutput({
+        transcript,
+        outputType: selectedType,
+      });
+
+      setOutput(response);
+      setLifecyclePreview(null);
+      setSheet(null);
+      setScreen("output");
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        failure: mapBackendErrorToFlowFailure(error, "generation"),
+      };
+    }
+  }, [selectedType, transcript]);
+
+  const useMockFallback = useCallback((state: BackendFlowFailure["state"]) => {
+    if (state === "recordingFailed" || state === "transcriptionFailed") {
+      setTranscript(mockTranscript);
+      setSelectedType("email");
+      setToast("Using local mock transcript");
+      return;
+    }
+
+    setOutput(mockGeneratedOutput[selectedType]);
     setLifecyclePreview(null);
     setSheet(null);
     setScreen("output");
-  };
-
-  const previewLifecycleState = (state: LifecyclePreviewState) => {
-    setLifecyclePreview(state);
-    setScreen("listening");
-  };
+    setToast("Using local mock output");
+  }, [selectedType]);
 
   return (
     <View style={[styles.app, { backgroundColor: theme.colors.background }]}>
@@ -92,10 +150,13 @@ export default function App() {
               theme={theme}
               selectedTypeLabel={outputTypeLabels[selectedType]}
               suggestedOutput={generatedForType}
+              transcript={transcript}
               onOpenSettings={() => setScreen("settings")}
               onOpenHistory={() => setSheet("history")}
               onChangeType={() => setSheet("changeType")}
-              onGenerate={() => showOutputForType(selectedType)}
+              onTranscribe={handleTranscribe}
+              onGenerate={handleGenerate}
+              onUseMockFallback={useMockFallback}
               previewState={lifecyclePreview}
               onPreviewStateConsumed={() => setLifecyclePreview(null)}
             />
@@ -171,3 +232,65 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+function parseDurationLabel(label: string): number {
+  const [minutes = "0", seconds = "0"] = label.split(":");
+  return (Number(minutes) * 60 + Number(seconds)) * 1000;
+}
+
+function mapBackendErrorToFlowFailure(
+  error: unknown,
+  stage: "transcription" | "generation",
+): BackendFlowFailure {
+  if (error instanceof MockBackendClientError) {
+    if (error.code === "recording_upload_failed") {
+      return {
+        state: "recordingFailed",
+        kind: "recordingUploadFailed",
+        message: "The mock API could not receive the recording. Try again or continue with local mock data.",
+        canUseMockFallback: true,
+      };
+    }
+
+    if (error.code === "backend_unavailable") {
+      return {
+        state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
+        kind: "backendUnavailable",
+        message: "Start `npm run backend:dev`, then try again. You can also continue with local mock data.",
+        canUseMockFallback: true,
+      };
+    }
+
+    if (error.code === "transcription_failed") {
+      return {
+        state: "transcriptionFailed",
+        kind: "transcriptionFailed",
+        message: "Could not transcribe this recording. The audio is still available.",
+        canUseMockFallback: false,
+      };
+    }
+
+    if (error.code === "generation_failed") {
+      return {
+        state: "generationFailed",
+        kind: "generationFailed",
+        message: "Could not create the output from this transcript.",
+        canUseMockFallback: true,
+      };
+    }
+
+    return {
+      state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
+      kind: "serverError",
+      message: "The local mock API returned a server error. Try again or continue with local mock data.",
+      canUseMockFallback: true,
+    };
+  }
+
+  return {
+    state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
+    kind: "serverError",
+    message: "The mock flow hit an unexpected error. Try again or continue with local mock data.",
+    canUseMockFallback: true,
+  };
+}

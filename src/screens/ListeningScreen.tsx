@@ -5,19 +5,28 @@ import { Badge } from "../components/Badge";
 import { IconText } from "../components/IconText";
 import { ListeningOrb, type ListeningOrbState } from "../components/ListeningOrb";
 import { TopBar } from "../components/TopBar";
-import { mockRecording, mockTranscript } from "../mock/mockData";
+import { mockRecording } from "../mock/mockData";
 import { motion } from "../theme/motion";
 import { spacing } from "../theme/theme";
-import type { AudioLifecycleState, GeneratedOutput, Theme } from "../types";
+import type {
+  AudioLifecycleState,
+  BackendFlowFailure,
+  BackendFlowResult,
+  GeneratedOutput,
+  Theme,
+} from "../types";
 
 type ListeningScreenProps = {
   theme: Theme;
   selectedTypeLabel: string;
   suggestedOutput: GeneratedOutput;
+  transcript: string;
   onOpenSettings: () => void;
   onOpenHistory: () => void;
   onChangeType: () => void;
-  onGenerate: () => void;
+  onTranscribe: () => Promise<BackendFlowResult>;
+  onGenerate: () => Promise<BackendFlowResult>;
+  onUseMockFallback: (state: BackendFlowFailure["state"]) => void;
   previewState: AudioLifecycleState | null;
   onPreviewStateConsumed: () => void;
 };
@@ -26,14 +35,18 @@ export function ListeningScreen({
   theme,
   selectedTypeLabel,
   suggestedOutput,
+  transcript,
   onOpenSettings,
   onOpenHistory,
   onChangeType,
+  onTranscribe,
   onGenerate,
+  onUseMockFallback,
   previewState,
   onPreviewStateConsumed,
 }: ListeningScreenProps) {
   const [captureState, setCaptureState] = useState<AudioLifecycleState>("idle");
+  const [failure, setFailure] = useState<BackendFlowFailure | null>(null);
   const [contentOpacity] = useState(() => new Animated.Value(1));
   const [errorShake] = useState(() => new Animated.Value(0));
 
@@ -42,6 +55,7 @@ export function ListeningScreen({
       return;
     }
 
+    setFailure(null);
     setCaptureState(previewState);
     onPreviewStateConsumed();
   }, [onPreviewStateConsumed, previewState]);
@@ -51,17 +65,52 @@ export function ListeningScreen({
       return;
     }
 
-    const timeout = setTimeout(() => setCaptureState("suggested"), 1150);
-    return () => clearTimeout(timeout);
-  }, [captureState]);
+    let active = true;
+
+    onTranscribe().then((result) => {
+      if (!active) {
+        return;
+      }
+
+      if (result.ok) {
+        setFailure(null);
+        setCaptureState("suggested");
+        return;
+      }
+
+      setFailure(result.failure);
+      setCaptureState(result.failure.state);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [captureState, onTranscribe]);
 
   useEffect(() => {
     if (captureState !== "generating") {
       return;
     }
 
-    const timeout = setTimeout(onGenerate, 850);
-    return () => clearTimeout(timeout);
+    let active = true;
+
+    onGenerate().then((result) => {
+      if (!active) {
+        return;
+      }
+
+      if (result.ok) {
+        setFailure(null);
+        return;
+      }
+
+      setFailure(result.failure);
+      setCaptureState(result.failure.state);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [captureState, onGenerate]);
 
   useEffect(() => {
@@ -119,6 +168,7 @@ export function ListeningScreen({
 
   const handleOrbPress = () => {
     if (captureState === "idle") {
+      setFailure(null);
       setCaptureState("recording");
       return;
     }
@@ -129,6 +179,8 @@ export function ListeningScreen({
   };
 
   const retryFailure = () => {
+    setFailure(null);
+
     if (captureState === "recordingFailed") {
       setCaptureState("recording");
       return;
@@ -145,7 +197,7 @@ export function ListeningScreen({
   };
 
   if (isFailureState(captureState)) {
-    const error = errorCopy[captureState];
+    const error = getErrorCopy(captureState, failure);
     const translateX = errorShake.interpolate({
       inputRange: [0, 1, 2, 3],
       outputRange: [0, -6, 6, 0],
@@ -173,9 +225,19 @@ export function ListeningScreen({
             label={error.secondaryLabel}
             theme={theme}
             variant="secondary"
-            onPress={() =>
-              captureState === "transcriptionFailed" ? setCaptureState("playbackAvailable") : setCaptureState("idle")
-            }
+            onPress={() => {
+              if (failure?.canUseMockFallback) {
+                onUseMockFallback(captureState);
+                if (captureState === "recordingFailed" || captureState === "transcriptionFailed") {
+                  setFailure(null);
+                  setCaptureState("suggested");
+                }
+                return;
+              }
+
+              setFailure(null);
+              setCaptureState(captureState === "transcriptionFailed" ? "playbackAvailable" : "idle");
+            }}
           />
         </View>
       </View>
@@ -193,7 +255,7 @@ export function ListeningScreen({
               {suggestedOutput.title}
             </Text>
             <Text numberOfLines={6} style={[styles.transcript, { color: theme.colors.mutedForeground }]}>
-              {mockTranscript}
+              {transcript}
             </Text>
           </View>
           <Text style={[styles.suggestionLine, { color: theme.colors.mutedForeground }]}>
@@ -228,7 +290,7 @@ export function ListeningScreen({
               <MetaPill label={mockRecording.fileSizeLabel} theme={theme} />
             </View>
             <Text numberOfLines={5} style={[styles.transcript, { color: theme.colors.mutedForeground }]}>
-              {mockTranscript}
+              {transcript}
             </Text>
           </View>
           <Pressable
@@ -243,7 +305,14 @@ export function ListeningScreen({
           </Pressable>
         </Animated.View>
         <View style={styles.suggestedActions}>
-          <AppButton label="Transcribe" theme={theme} onPress={() => setCaptureState("transcribing")} />
+          <AppButton
+            label="Transcribe"
+            theme={theme}
+            onPress={() => {
+              setFailure(null);
+              setCaptureState("transcribing");
+            }}
+          />
           <AppButton
             label="Record Again"
             theme={theme}
@@ -301,14 +370,9 @@ function isFailureState(
   return state === "recordingFailed" || state === "transcriptionFailed" || state === "generationFailed";
 }
 
-const errorCopy: Record<
-  "recordingFailed" | "transcriptionFailed" | "generationFailed",
-  {
-    title: string;
-    body: string;
-    primaryLabel: string;
-    secondaryLabel: string;
-  }
+const defaultErrorCopy: Record<
+  BackendFlowFailure["state"],
+  ErrorCopy
 > = {
   recordingFailed: {
     title: "Recording did not start",
@@ -329,6 +393,61 @@ const errorCopy: Record<
     secondaryLabel: "Back to Home",
   },
 };
+
+type ErrorCopy = {
+  title: string;
+  body: string;
+  primaryLabel: string;
+  secondaryLabel: string;
+};
+
+function getErrorCopy(state: BackendFlowFailure["state"], failure: BackendFlowFailure | null): ErrorCopy {
+  if (!failure) {
+    return defaultErrorCopy[state];
+  }
+
+  const secondaryLabel = failure.canUseMockFallback
+    ? "Use Mock Data"
+    : defaultErrorCopy[state].secondaryLabel;
+
+  switch (failure.kind) {
+    case "recordingUploadFailed":
+      return {
+        title: "Recording upload failed",
+        body: failure.message,
+        primaryLabel: "Try Again",
+        secondaryLabel,
+      };
+    case "backendUnavailable":
+      return {
+        title: "Mock backend unavailable",
+        body: failure.message,
+        primaryLabel: "Try Again",
+        secondaryLabel,
+      };
+    case "serverError":
+      return {
+        title: "Server error",
+        body: failure.message,
+        primaryLabel: "Try Again",
+        secondaryLabel,
+      };
+    case "transcriptionFailed":
+      return {
+        title: "Transcription failed",
+        body: failure.message,
+        primaryLabel: "Try Transcription",
+        secondaryLabel,
+      };
+    case "generationFailed":
+      return {
+        title: "Output was not created",
+        body: failure.message,
+        primaryLabel: "Try Again",
+        secondaryLabel,
+      };
+  }
+}
 
 function MetaPill({ label, theme }: { label: string; theme: Theme }) {
   return (

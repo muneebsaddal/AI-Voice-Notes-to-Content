@@ -23,7 +23,7 @@ The goal is not simple transcription. The goal is turning thought into action wi
 
 Frontend implementation has started.
 
-The current app is an Expo / React Native / TypeScript clickable mock that ports the final Lovable direction into the first MVP flow. It uses mock state and mock data only; recording, transcription, AI generation, auth, payments, analytics, backend calls, and real exports are intentionally not wired yet.
+The current app is an Expo / React Native / TypeScript clickable mock that ports the final Lovable direction into the first MVP flow. It calls the local mock backend for transcription and generation when `npm run backend:dev` is running, while keeping local mock fallbacks available for frontend-only work. Real recording, provider calls, auth, payments, analytics, storage, and real exports are intentionally not wired yet.
 
 Current flow:
 

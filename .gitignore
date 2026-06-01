@@ -10,3 +10,4 @@ npm-debug.log*
 .expo-server*.log
 backend-dev*.log
 expo-web*.log
+static-web*.log

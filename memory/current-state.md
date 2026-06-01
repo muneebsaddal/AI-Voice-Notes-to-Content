@@ -14,7 +14,7 @@ The MVP should let a user record a voice note, transcribe it, transform it into 
 
 Planning is complete enough to continue implementation.
 
-The frontend-first implementation has produced the first mock app and backend foundation:
+The frontend-first implementation has produced the first mock app, backend foundation, and frontend-to-mock-backend connection:
 
 1. Expo / React Native / TypeScript has been scaffolded.
 2. The Lovable mock flow has been ported into a clickable mobile UI.
@@ -22,13 +22,14 @@ The frontend-first implementation has produced the first mock app and backend fo
 4. Lint/test/typecheck scripts exist at the root.
 5. A mock Node/TypeScript backend exists under `backend/` with health, transcription, and generation endpoints.
 6. Backend JSON parsing, structured errors, contract tests, and mock failure simulations have been reviewed and polished.
-7. Real recording, real backend provider calls, AI providers, storage, export, and release readiness remain later increments.
+7. The frontend calls the local mock backend for transcription and generation when available, with local mock fallbacks retained.
+8. Real recording, real backend provider calls, AI providers, storage, export, and release readiness remain later increments.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
-Next frontend task:
+Next task:
 
-- Use [Frontend Prompt 002](../task-agents/frontend/prompts/002-connect-to-mock-backend.md) to connect the existing Expo mock flow to the local mock backend API while preserving mock fallbacks.
+- Review the frontend backend-connection commit, then move to recording lifecycle/provider interface planning or Voice AI output-schema contracts.
 
 ## Stack Decision
 
@@ -69,6 +70,7 @@ See [[architecture/planned-system-overview|Planned System Overview]].
 - [[sessions/2026-05-31-lead-project-memory-graph|Lead Project Memory Graph]]
 - [[sessions/2026-05-31-lead-agent-coordination-log|Lead Agent Coordination Log]]
 - [[sessions/2026-06-01-frontend-agent-stale-verification|Frontend Agent Stale Verification]]
+- [[sessions/2026-06-01-frontend-backend-connection-recovered|Frontend Backend Connection Recovered]]
 
 ## Installed Project Skills
 

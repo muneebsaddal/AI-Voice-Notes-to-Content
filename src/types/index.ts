@@ -19,6 +19,22 @@ export type LifecyclePreviewState =
   | "transcriptionFailed"
   | "generationFailed";
 
+export type BackendFlowFailureKind =
+  | "recordingUploadFailed"
+  | "transcriptionFailed"
+  | "generationFailed"
+  | "serverError"
+  | "backendUnavailable";
+
+export type BackendFlowFailure = {
+  state: "recordingFailed" | "transcriptionFailed" | "generationFailed";
+  kind: BackendFlowFailureKind;
+  message: string;
+  canUseMockFallback: boolean;
+};
+
+export type BackendFlowResult = { ok: true } | { ok: false; failure: BackendFlowFailure };
+
 export type GeneratedOutput = {
   id: string;
   outputType: OutputType;

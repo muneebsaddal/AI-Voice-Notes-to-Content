@@ -46,6 +46,7 @@ Current status: `requirements.md` exists and is implementation-ready. The Expo f
 Always treat these files as persistent project memory:
 
 - `AGENTS.md` - operating instructions for the lead developer agent.
+- `HANDOFF.md` - quick fresh-chat resume point for what has been built and what comes next.
 - `memory/current-state.md` - short project status and decision graph entrypoint.
 - `memory/` - Obsidian-compatible project memory graph for decisions, agents, flows, sessions, and context packs.
 - `product-context.md` - full product vision, user problems, case studies, integrations, monetization, and strategic decisions.

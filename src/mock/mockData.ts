@@ -19,7 +19,6 @@ export const mockRecording = {
 
 export const lifecyclePreviewLabels: Record<LifecyclePreviewState, string> = {
   recordingFailed: "Recording failed",
-  playbackAvailable: "Playback ready",
   transcriptionFailed: "Transcription failed",
   generationFailed: "Generation failed",
 };

@@ -39,7 +39,7 @@ The `requirements.md` file should define:
 
 Do not start coding until the requirements are clear enough to guide the first MVP.
 
-Current status: `requirements.md` already exists and is implementation-ready for the first frontend increment. Frontend agents should not stop at requirements creation or requirements polishing; they should proceed to scaffold Expo and port the Lovable mock flow unless they find a direct blocker.
+Current status: `requirements.md` exists and is implementation-ready. The Expo frontend mock flow, mock backend API, frontend-to-mock-backend connection, direct post-recording output flow, Geist font preview, and Expo vector icon pass are implemented. Future agents should not recreate requirements, scaffold a second app, or repeat completed mock-backend wiring.
 
 ## Project Context Files
 
@@ -91,7 +91,19 @@ If the local folder exists, use it as the primary UI reference:
 
 The older Figma/Canva/SVG designs are historical references. They should not override the Lovable direction.
 
-The first implementation step is the frontend: scaffold Expo and port the Lovable UI into a clickable mock flow. Backend work starts after the mock frontend flow exists.
+Current implementation is in the repo root as an Expo / React Native / TypeScript app with a mock Node/TypeScript backend under `backend/`.
+
+Completed foundation:
+
+- Expo app scaffold.
+- Lovable-inspired clickable mock flow.
+- Mock backend API for health, transcription, and generation.
+- Frontend calls to the mock backend with local fallbacks.
+- Direct flow from completed recording to processing to output preview.
+- Geist font loading for web preview.
+- Expo vector icons for UI controls.
+
+The next implementation step should be real recording lifecycle/provider interfaces and/or Voice AI output-schema contracts. Do not start by rebuilding the mock frontend.
 
 ## Product Direction
 
@@ -407,13 +419,21 @@ When acting as lead developer/coordinator:
 6. Review specialist outputs before integrating them into the roadmap.
 7. Update `requirements.md`, `ux-flow.md`, task-agent briefs, or prompt files when decisions change.
 
-The lead developer should usually assign work in this order:
+Completed coordination steps:
 
-1. Frontend Agent: scaffold Expo and port the Lovable mock flow.
-2. Frontend Agent plus Voice AI Agent: add recording lifecycle interfaces and mock audio states.
-3. Backend Agent: add backend API skeleton with mock transcription/generation.
-4. Voice AI Agent: define output schemas, intent routing, and generation contracts.
-5. Frontend Agent: connect frontend to mocked API.
-6. Backend Agent: integrate real provider calls when keys/environment are ready.
-7. Testing Agent: add automated tests and manual QA gates.
-8. Privacy Release Agent: prepare TestFlight/App Store privacy and release checklist.
+1. Frontend Agent: scaffolded Expo and ported the Lovable mock flow.
+2. Frontend Agent: added mocked recording lifecycle states.
+3. Backend Agent: added backend API skeleton with mock transcription/generation.
+4. Backend Agent: polished backend JSON/error handling.
+5. Frontend Agent / Lead Agent recovery: connected frontend to mocked API.
+6. Lead Agent: simplified normal flow to go directly from recording completion to processing/output.
+7. Lead Agent: added Geist preview fonts and Expo vector icons.
+
+Recommended next order:
+
+1. Review the current UI manually and commit/adjust any final mock-flow polish.
+2. Voice AI Agent: define output schemas, intent routing, and generation contracts.
+3. Frontend Agent plus Voice/Audio Agent: add real recording lifecycle/provider interfaces without provider calls if keys are not ready.
+4. Backend Agent: integrate real transcription/generation provider calls when environment keys are ready.
+5. Testing Agent: add automated frontend interaction tests and manual QA gates.
+6. Privacy Release Agent: prepare privacy, TestFlight, and App Store readiness checklist.

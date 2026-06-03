@@ -31,15 +31,13 @@ Current flow:
 2. Permission denied retry state
 3. Recording home
 4. Active listening
-5. Playback-ready review
-6. Transcription processing
-7. Suggested output confirmation
-8. Generation processing
-9. Retryable recording, transcription, and generation failure states
-10. Change output type sheet
-11. Output preview/edit
-12. History sheet
-13. Settings with mock lifecycle previews
+5. Transcription processing
+6. Generation processing
+7. Retryable recording, transcription, and generation failure states
+8. Output preview/edit
+9. Change output type sheet
+10. History sheet
+11. Settings with mock lifecycle previews
 
 ## Local Development
 

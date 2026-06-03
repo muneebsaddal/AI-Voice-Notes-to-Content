@@ -3,6 +3,7 @@ import { AppButton } from "./AppButton";
 import { IconText } from "./IconText";
 import { Sheet } from "./Sheet";
 import { outputTypeLabels } from "../mock/mockData";
+import { fonts } from "../theme/theme";
 import type { OutputType, Theme } from "../types";
 
 type ChangeTypeSheetProps = {
@@ -65,8 +66,8 @@ export function ChangeTypeSheet({
 
 const styles = StyleSheet.create({
   kicker: {
+    fontFamily: fonts.extraBold,
     fontSize: 12,
-    fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
     marginBottom: 10,
@@ -92,13 +93,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   typeIconText: {
+    fontFamily: fonts.extraBold,
     fontSize: 14,
-    fontWeight: "800",
   },
   rowLabel: {
     flex: 1,
+    fontFamily: fonts.medium,
     fontSize: 17,
-    fontWeight: "500",
   },
   cancel: {
     marginTop: 16,

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { AppButton } from "../components/AppButton";
 import { ListeningOrb } from "../components/ListeningOrb";
-import { spacing } from "../theme/theme";
+import { fonts, spacing } from "../theme/theme";
 import type { PermissionStatus, Theme } from "../types";
 
 type PermissionScreenProps = {
@@ -57,14 +57,15 @@ const styles = StyleSheet.create({
     gap: 26,
   },
   title: {
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: "800",
+    fontFamily: fonts.semiBold,
+    fontSize: 30,
+    lineHeight: 32,
     textAlign: "center",
     letterSpacing: 0,
   },
   body: {
     maxWidth: 320,
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 21,
     textAlign: "center",

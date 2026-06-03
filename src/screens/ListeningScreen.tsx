@@ -5,9 +5,8 @@ import { Badge } from "../components/Badge";
 import { IconText } from "../components/IconText";
 import { ListeningOrb, type ListeningOrbState } from "../components/ListeningOrb";
 import { TopBar } from "../components/TopBar";
-import { mockRecording } from "../mock/mockData";
 import { motion } from "../theme/motion";
-import { spacing } from "../theme/theme";
+import { fonts, spacing } from "../theme/theme";
 import type {
   AudioLifecycleState,
   BackendFlowFailure,
@@ -74,7 +73,7 @@ export function ListeningScreen({
 
       if (result.ok) {
         setFailure(null);
-        setCaptureState("suggested");
+        setCaptureState("generating");
         return;
       }
 
@@ -174,7 +173,7 @@ export function ListeningScreen({
     }
 
     if (captureState === "recording") {
-      setCaptureState("playbackAvailable");
+      setCaptureState("transcribing");
     }
   };
 
@@ -236,7 +235,7 @@ export function ListeningScreen({
               }
 
               setFailure(null);
-              setCaptureState(captureState === "transcriptionFailed" ? "playbackAvailable" : "idle");
+              setCaptureState("idle");
             }}
           />
         </View>
@@ -274,56 +273,6 @@ export function ListeningScreen({
     );
   }
 
-  if (captureState === "playbackAvailable") {
-    return (
-      <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-        <TopBar theme={theme} onBack={() => setCaptureState("idle")} onMore={onOpenSettings} />
-        <Animated.View style={[styles.suggestedContent, { opacity: contentOpacity }]}>
-          <View style={[styles.transcriptCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-            <Badge label="Audio Ready" theme={theme} />
-            <Text style={[styles.suggestedTitle, { color: theme.colors.foreground }]}>
-              Ready to transform
-            </Text>
-            <View style={styles.recordingMeta}>
-              <MetaPill label={mockRecording.durationLabel} theme={theme} />
-              <MetaPill label={mockRecording.qualityLabel} theme={theme} />
-              <MetaPill label={mockRecording.fileSizeLabel} theme={theme} />
-            </View>
-            <Text numberOfLines={5} style={[styles.transcript, { color: theme.colors.mutedForeground }]}>
-              {transcript}
-            </Text>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Play recorded audio"
-            style={[styles.playbackButton, { backgroundColor: theme.colors.secondary }]}
-          >
-            <IconText name="play" theme={theme} color={theme.colors.secondaryForeground} size={18} />
-            <Text style={[styles.playbackButtonText, { color: theme.colors.secondaryForeground }]}>
-              Play Recording
-            </Text>
-          </Pressable>
-        </Animated.View>
-        <View style={styles.suggestedActions}>
-          <AppButton
-            label="Transcribe"
-            theme={theme}
-            onPress={() => {
-              setFailure(null);
-              setCaptureState("transcribing");
-            }}
-          />
-          <AppButton
-            label="Record Again"
-            theme={theme}
-            variant="secondary"
-            onPress={() => setCaptureState("recording")}
-          />
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
       <TopBar theme={theme} onMore={onOpenSettings} />
@@ -356,7 +305,7 @@ export function ListeningScreen({
             onPress={onOpenHistory}
             style={styles.historyAffordance}
           >
-            <IconText name="chevronUp" theme={theme} color={theme.colors.mutedForeground} size={42} />
+            <IconText name="chevronUp" theme={theme} color={theme.colors.mutedForeground} size={30} />
           </Pressable>
         )}
       </View>
@@ -384,7 +333,7 @@ const defaultErrorCopy: Record<
     title: "Transcription failed",
     body: "The audio is still available. Try again or record a cleaner note.",
     primaryLabel: "Try Transcription",
-    secondaryLabel: "Keep Audio",
+    secondaryLabel: "Back to Home",
   },
   generationFailed: {
     title: "Output was not created",
@@ -449,14 +398,6 @@ function getErrorCopy(state: BackendFlowFailure["state"], failure: BackendFlowFa
   }
 }
 
-function MetaPill({ label, theme }: { label: string; theme: Theme }) {
-  return (
-    <View style={[styles.metaPill, { backgroundColor: theme.colors.secondary }]}>
-      <Text style={[styles.metaPillText, { color: theme.colors.secondaryForeground }]}>{label}</Text>
-    </View>
-  );
-}
-
 function withArticle(label: string) {
   const lowerLabel = label.toLowerCase();
   return /^[aeiou]/.test(lowerLabel) ? `an ${lowerLabel}` : `a ${lowerLabel}`;
@@ -483,19 +424,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   errorMarkText: {
+    fontFamily: fonts.black,
     fontSize: 42,
     lineHeight: 46,
-    fontWeight: "900",
   },
   errorTitle: {
     marginTop: 4,
+    fontFamily: fonts.extraBold,
     fontSize: 24,
     lineHeight: 30,
-    fontWeight: "800",
     textAlign: "center",
   },
   errorBody: {
     maxWidth: 300,
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 21,
     textAlign: "center",
@@ -519,8 +461,8 @@ const styles = StyleSheet.create({
   processingText: {
     position: "absolute",
     top: "63%",
+    fontFamily: fonts.medium,
     fontSize: 15,
-    fontWeight: "500",
   },
   suggestedContent: {
     flex: 1,
@@ -537,49 +479,21 @@ const styles = StyleSheet.create({
   },
   suggestedTitle: {
     marginTop: 14,
+    fontFamily: fonts.extraBold,
     fontSize: 22,
     lineHeight: 28,
-    fontWeight: "800",
   },
   transcript: {
     marginTop: 10,
+    fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 22,
   },
   suggestionLine: {
     marginTop: 18,
+    fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 20,
-  },
-  recordingMeta: {
-    marginTop: 14,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  metaPill: {
-    minHeight: 28,
-    borderRadius: 14,
-    justifyContent: "center",
-    paddingHorizontal: 10,
-  },
-  metaPillText: {
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  playbackButton: {
-    alignSelf: "flex-start",
-    minHeight: 42,
-    borderRadius: 21,
-    marginTop: 18,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  playbackButtonText: {
-    fontSize: 15,
-    fontWeight: "700",
   },
   suggestedActions: {
     gap: 10,

@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { IconText } from "../components/IconText";
 import { TopBar } from "../components/TopBar";
-import { spacing } from "../theme/theme";
+import { fonts, spacing } from "../theme/theme";
 import { lifecyclePreviewLabels } from "../mock/mockData";
 import type { LifecyclePreviewState, Theme } from "../types";
 
@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
   groupTitle: {
     paddingHorizontal: 10,
     paddingBottom: 7,
+    fontFamily: fonts.bold,
     fontSize: 12,
-    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0,
   },
@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: 17,
   },
   rowValueGroup: {
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   rowValue: {
+    fontFamily: fonts.regular,
     fontSize: 15,
   },
 });

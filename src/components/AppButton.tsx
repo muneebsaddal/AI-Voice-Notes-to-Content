@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
+import { fonts } from "../theme/theme";
 import type { Theme } from "../types";
 
 type AppButtonProps = {
@@ -62,8 +63,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
   },
   label: {
+    fontFamily: fonts.medium,
     fontSize: 17,
-    fontWeight: "700",
     includeFontPadding: false,
   },
 });

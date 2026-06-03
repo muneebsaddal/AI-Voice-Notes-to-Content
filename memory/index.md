@@ -40,3 +40,4 @@
 - [[sessions/2026-05-31-lead-agent-coordination-log|Lead Agent Coordination Log]]
 - [[sessions/2026-06-01-frontend-agent-stale-verification|Frontend Agent Stale Verification]]
 - [[sessions/2026-06-01-frontend-backend-connection-recovered|Frontend Backend Connection Recovered]]
+- [[sessions/2026-06-04-chat-handoff-ui-polish|Chat Handoff UI Polish]]

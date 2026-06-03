@@ -6,7 +6,6 @@ export type AudioLifecycleState =
   | "idle"
   | "recording"
   | "recordingFailed"
-  | "playbackAvailable"
   | "transcribing"
   | "transcriptionFailed"
   | "suggested"
@@ -15,7 +14,6 @@ export type AudioLifecycleState =
 
 export type LifecyclePreviewState =
   | "recordingFailed"
-  | "playbackAvailable"
   | "transcriptionFailed"
   | "generationFailed";
 

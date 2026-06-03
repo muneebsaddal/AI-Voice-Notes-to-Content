@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-06-01
+Last updated: 2026-06-04
 
 ## Product
 
@@ -14,22 +14,23 @@ The MVP should let a user record a voice note, transcribe it, transform it into 
 
 Planning is complete enough to continue implementation.
 
-The frontend-first implementation has produced the first mock app, backend foundation, and frontend-to-mock-backend connection:
+The frontend-first implementation has produced the first mock app, backend foundation, frontend-to-mock-backend connection, and initial UI polish:
 
 1. Expo / React Native / TypeScript has been scaffolded.
 2. The Lovable mock flow has been ported into a clickable mobile UI.
-3. The mock flow covers permission denied, active recording, playback-ready audio, transcription processing/failure, suggested output confirmation, generation processing/failure, output editing, history, and settings.
+3. The mock flow covers permission denied, active recording, direct transcription/generation processing after recording, retryable failure states, output editing, history, and settings.
 4. Lint/test/typecheck scripts exist at the root.
 5. A mock Node/TypeScript backend exists under `backend/` with health, transcription, and generation endpoints.
 6. Backend JSON parsing, structured errors, contract tests, and mock failure simulations have been reviewed and polished.
 7. The frontend calls the local mock backend for transcription and generation when available, with local mock fallbacks retained.
-8. Real recording, real backend provider calls, AI providers, storage, export, and release readiness remain later increments.
+8. The UI now uses Geist as a web-preview font and Expo vector icons for controls.
+9. Real recording, real backend provider calls, AI providers, storage, export, and release readiness remain later increments.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
 Next task:
 
-- Review the frontend backend-connection commit, then move to recording lifecycle/provider interface planning or Voice AI output-schema contracts.
+- After final manual UI review, move to Voice AI output-schema contracts and real recording lifecycle/provider interface planning.
 
 ## Stack Decision
 
@@ -71,6 +72,7 @@ See [[architecture/planned-system-overview|Planned System Overview]].
 - [[sessions/2026-05-31-lead-agent-coordination-log|Lead Agent Coordination Log]]
 - [[sessions/2026-06-01-frontend-agent-stale-verification|Frontend Agent Stale Verification]]
 - [[sessions/2026-06-01-frontend-backend-connection-recovered|Frontend Backend Connection Recovered]]
+- [[sessions/2026-06-04-chat-handoff-ui-polish|Chat Handoff UI Polish]]
 
 ## Installed Project Skills
 

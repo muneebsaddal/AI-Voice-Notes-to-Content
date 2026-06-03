@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { fonts } from "../theme/theme";
 import type { Theme } from "../types";
 
 type BadgeProps = {
@@ -31,8 +32,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   text: {
+    fontFamily: fonts.extraBold,
     fontSize: 11,
-    fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },

@@ -2,6 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Badge } from "./Badge";
 import { Sheet } from "./Sheet";
 import { historyItems, outputTypeLabels } from "../mock/mockData";
+import { fonts } from "../theme/theme";
 import type { GeneratedOutput, Theme } from "../types";
 
 type HistorySheetProps = {
@@ -49,8 +50,8 @@ export function HistorySheet({ visible, theme, onClose, onSelect }: HistorySheet
 
 const styles = StyleSheet.create({
   title: {
+    fontFamily: fonts.extraBold,
     fontSize: 24,
-    fontWeight: "800",
     marginBottom: 14,
   },
   list: {
@@ -69,15 +70,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   date: {
+    fontFamily: fonts.medium,
     fontSize: 12,
-    fontWeight: "500",
   },
   cardTitle: {
+    fontFamily: fonts.extraBold,
     fontSize: 17,
-    fontWeight: "800",
     marginBottom: 5,
   },
   preview: {
+    fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 20,
   },

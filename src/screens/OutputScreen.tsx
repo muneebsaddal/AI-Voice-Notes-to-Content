@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -11,7 +10,7 @@ import { Badge } from "../components/Badge";
 import { IconText } from "../components/IconText";
 import { TopBar } from "../components/TopBar";
 import { outputTypeLabels } from "../mock/mockData";
-import { spacing } from "../theme/theme";
+import { fonts, spacing } from "../theme/theme";
 import type { GeneratedOutput, Theme } from "../types";
 
 type OutputScreenProps = {
@@ -51,11 +50,7 @@ export function OutputScreen({
         onMore={onChangeType}
         moreAccessibilityLabel="Change output type"
       />
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
-      >
+      <View style={styles.content}>
         <Badge label={outputTypeLabels[output.outputType]} theme={theme} />
         <TextInput
           accessibilityLabel="Output title"
@@ -70,12 +65,13 @@ export function OutputScreen({
           value={body}
           onChangeText={setBody}
           multiline
+          scrollEnabled={false}
           textAlignVertical="top"
           placeholder="Generated output"
           placeholderTextColor={theme.colors.mutedForeground}
           style={[styles.bodyInput, { color: theme.colors.foreground }]}
         />
-      </ScrollView>
+      </View>
       <View style={[styles.actionBar, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
         <AppButton
           label="Save"
@@ -106,20 +102,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flex: 1,
     paddingHorizontal: spacing.screenX,
     paddingTop: 8,
-    paddingBottom: 28,
+    paddingBottom: 12,
   },
   titleInput: {
     marginTop: 14,
+    fontFamily: fonts.extraBold,
     fontSize: 27,
     lineHeight: 34,
-    fontWeight: "800",
     paddingVertical: 0,
   },
   bodyInput: {
     marginTop: 18,
-    minHeight: 330,
+    flex: 1,
+    minHeight: 0,
+    fontFamily: fonts.regular,
     fontSize: 16,
     lineHeight: 24,
     padding: 0,

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { IconText } from "./IconText";
-import { spacing } from "../theme/theme";
+import { fonts, spacing } from "../theme/theme";
 import type { Theme } from "../types";
 
 type TopBarProps = {
@@ -28,7 +28,7 @@ export function TopBar({
             onPress={onBack}
             style={styles.iconButton}
           >
-            <IconText name="back" theme={theme} color={theme.colors.listen} size={34} />
+            <IconText name="back" theme={theme} color={theme.colors.listen} size={24} />
           </Pressable>
         )}
       </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
+    fontFamily: fonts.bold,
     fontSize: 17,
-    fontWeight: "700",
   },
 });

@@ -1,41 +1,39 @@
-import { StyleSheet, Text } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import type { ComponentProps } from "react";
 import type { Theme } from "../types";
 
+type IconName =
+  | "ellipsis"
+  | "back"
+  | "forward"
+  | "check"
+  | "chevronUp"
+  | "copy"
+  | "share"
+  | "close"
+  | "play";
+
+type IoniconName = ComponentProps<typeof Ionicons>["name"];
+
 type IconTextProps = {
-  name: "ellipsis" | "back" | "forward" | "check" | "chevronUp" | "copy" | "share" | "close" | "play";
+  name: IconName;
   color?: string;
   size?: number;
   theme: Theme;
 };
 
-const glyphs: Record<IconTextProps["name"], string> = {
-  ellipsis: "•••",
-  back: "‹",
-  forward: "›",
-  check: "✓",
-  chevronUp: "⌃",
-  copy: "⧉",
-  share: "↗",
-  close: "×",
-  play: "▶",
+const iconNames: Record<IconName, IoniconName> = {
+  ellipsis: "ellipsis-horizontal",
+  back: "arrow-back",
+  forward: "chevron-forward",
+  check: "checkmark",
+  chevronUp: "chevron-up",
+  copy: "copy-outline",
+  share: "share-outline",
+  close: "close",
+  play: "play",
 };
 
 export function IconText({ name, color, size = 24, theme }: IconTextProps) {
-  return (
-    <Text
-      accessibilityElementsHidden
-      importantForAccessibility="no"
-      style={[styles.icon, { color: color ?? theme.colors.foreground, fontSize: size, lineHeight: size + 2 }]}
-    >
-      {glyphs[name]}
-    </Text>
-  );
+  return <Ionicons name={iconNames[name]} color={color ?? theme.colors.foreground} size={size} />;
 }
-
-const styles = StyleSheet.create({
-  icon: {
-    fontWeight: "600",
-    includeFontPadding: false,
-    textAlign: "center",
-  },
-});

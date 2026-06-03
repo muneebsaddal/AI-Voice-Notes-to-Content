@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { IconText } from "./IconText";
 import { motion } from "../theme/motion";
+import { fonts } from "../theme/theme";
 import type { Theme } from "../types";
 
 type ToastProps = {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
+    fontFamily: fonts.bold,
     fontSize: 15,
-    fontWeight: "700",
   },
 });

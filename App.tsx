@@ -1,4 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFonts } from "@expo-google-fonts/geist/useFonts";
+import { Geist_400Regular } from "@expo-google-fonts/geist/400Regular";
+import { Geist_500Medium } from "@expo-google-fonts/geist/500Medium";
+import { Geist_600SemiBold } from "@expo-google-fonts/geist/600SemiBold";
+import { Geist_700Bold } from "@expo-google-fonts/geist/700Bold";
+import { Geist_800ExtraBold } from "@expo-google-fonts/geist/800ExtraBold";
+import { Geist_900Black } from "@expo-google-fonts/geist/900Black";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -41,6 +48,15 @@ type Sheet = "changeType" | "history" | null;
 type ThemeMode = "dark" | "light";
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Geist_400Regular,
+    Geist_500Medium,
+    Geist_600SemiBold,
+    Geist_700Bold,
+    Geist_800ExtraBold,
+    Geist_900Black,
+  });
+
   const [screen, setScreen] = useState<AppScreen>("permission");
   const [sheet, setSheet] = useState<Sheet>(null);
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
@@ -111,6 +127,10 @@ export default function App() {
     if (state === "recordingFailed" || state === "transcriptionFailed") {
       setTranscript(mockTranscript);
       setSelectedType("email");
+      setOutput(mockGeneratedOutput.email);
+      setLifecyclePreview(null);
+      setSheet(null);
+      setScreen("output");
       setToast("Using local mock transcript");
       return;
     }
@@ -121,6 +141,10 @@ export default function App() {
     setScreen("output");
     setToast("Using local mock output");
   }, [selectedType]);
+
+  if (!fontsLoaded) {
+    return <View style={[styles.app, { backgroundColor: theme.colors.background }]} />;
+  }
 
   return (
     <View style={[styles.app, { backgroundColor: theme.colors.background }]}>

@@ -119,7 +119,7 @@ Completed foundation:
 - Structured Voice AI contracts, deterministic intent routing, runtime validation, golden fixtures, and contract tests.
 - Real Expo microphone permission, recording start/stop/cancel, temporary audio retention, and cleanup through a provider-independent recording session.
 
-The next implementation step should be real audio upload and backend transcription provider integration. Do not start by rebuilding the mock frontend, redefining Voice AI output schemas, or replacing the recording lifecycle.
+The next implementation step should be local development transcription using a provider-neutral Node boundary and a localhost-only persistent Python `faster-whisper` service. Default to `base.en` on CPU `int8`, then add bounded audio upload while preserving retryable temporary audio. Follow `task-agents/research-planning/plans/real-transcription-integration.md`. Do not start by rebuilding the mock frontend, redefining Voice AI output schemas, replacing the recording lifecycle, or adding a cloud transcription provider.
 
 ## Product Direction
 
@@ -449,7 +449,7 @@ Completed coordination steps:
 
 Recommended next order:
 
-1. Backend plus Voice AI Agent: upload the captured audio and integrate a real transcription provider behind the existing backend contract.
+1. Backend plus Voice AI Agent: implement the provider seam and localhost `faster-whisper` service, then upload captured audio behind the existing backend contract.
 2. Backend Agent: integrate real structured generation provider calls.
 3. Add local history and native share/export behavior.
 4. Testing Agent: add automated frontend interaction tests and manual QA gates.

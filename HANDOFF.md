@@ -8,7 +8,7 @@ Use this file as the quick resume point for a fresh lead-developer chat. For dee
 
 Latest completed feature commit before this handoff update:
 
-- `7b3c76c` - Add Voice AI output contracts.
+- `05e1781` - Document local transcription development direction.
 
 The working tree should be clean before new work starts. Confirm with:
 
@@ -126,7 +126,7 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 ## Not Built Yet
 
 - Real audio upload to the backend.
-- Real transcription provider.
+- Local `faster-whisper` transcription integration.
 - Real AI generation provider.
 - Local persistent history.
 - Native share/export implementation.
@@ -142,7 +142,9 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 1. Real audio upload and transcription:
    - multipart audio upload from the Expo app.
    - backend file-size/type validation.
-   - backend-mediated transcription provider call.
+   - provider-neutral Node transcription boundary.
+   - localhost-only persistent Python `faster-whisper` service.
+   - `base.en` on CPU `int8` as the development default.
    - preserve temporary audio for retry on upload/transcription failure.
    - delete temporary audio after successful transcription.
 2. Real structured generation provider integration.
@@ -157,5 +159,5 @@ Read HANDOFF.md first, then AGENTS.md, memory/current-state.md, product-context.
 
 Confirm git status is clean. The current Expo mock UI, mock backend, Voice AI output contracts, and real recording lifecycle are implemented. Do not recreate requirements, scaffold another app, rebuild completed mock-backend wiring, redefine the five MVP output schemas, or replace the recording provider abstraction.
 
-Implement the next increment: multipart audio upload and backend-mediated real transcription, preserving the existing response contract and privacy defaults.
+Implement the next increment from `task-agents/research-planning/plans/real-transcription-integration.md`: provider seam and localhost `faster-whisper` service first, preserving the existing response contract and privacy defaults.
 ```

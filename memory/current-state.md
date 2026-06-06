@@ -32,7 +32,12 @@ The frontend-first implementation has produced the first mock app, backend found
 
 Next task:
 
-- Implement multipart audio upload and backend-mediated real transcription while preserving retryable temporary audio.
+- Implement local development transcription through a provider-neutral backend:
+  `LocalFasterWhisperProvider`, a localhost-only persistent Python service using
+  `base.en` on CPU `int8`, bounded multipart upload, and retryable temporary
+  audio.
+- Use `task-agents/research-planning/plans/real-transcription-integration.md`
+  as the implementation plan.
 
 ## Stack Decision
 

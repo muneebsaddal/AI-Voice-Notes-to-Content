@@ -39,7 +39,7 @@ The `requirements.md` file should define:
 
 Do not start coding until the requirements are clear enough to guide the first MVP.
 
-Current status: `requirements.md` exists and is implementation-ready. The Expo frontend mock flow, mock backend API, frontend-to-mock-backend connection, direct post-recording output flow, Geist font preview, and Expo vector icon pass are implemented. Future agents should not recreate requirements, scaffold a second app, or repeat completed mock-backend wiring.
+Current status: `requirements.md` exists and is implementation-ready. The Expo frontend mock flow, mock backend API, frontend-to-mock-backend connection, direct post-recording output flow, Geist font preview, Expo vector icon pass, and Voice AI output contracts are implemented. Future agents should not recreate requirements, scaffold a second app, repeat completed mock-backend wiring, or redefine the five MVP output schemas.
 
 ## Project Context Files
 
@@ -103,8 +103,9 @@ Completed foundation:
 - Direct flow from completed recording to processing to output preview.
 - Geist font loading for web preview.
 - Expo vector icons for UI controls.
+- Structured Voice AI contracts, deterministic intent routing, runtime validation, golden fixtures, and contract tests.
 
-The next implementation step should be real recording lifecycle/provider interfaces and/or Voice AI output-schema contracts. Do not start by rebuilding the mock frontend.
+The next implementation step should be real recording lifecycle/provider interfaces. Do not start by rebuilding the mock frontend or redefining Voice AI output schemas.
 
 ## Product Direction
 
@@ -429,12 +430,12 @@ Completed coordination steps:
 5. Frontend Agent / Lead Agent recovery: connected frontend to mocked API.
 6. Lead Agent: simplified normal flow to go directly from recording completion to processing/output.
 7. Lead Agent: added Geist preview fonts and Expo vector icons.
+8. Voice AI Agent / Lead Agent review: added structured output schemas, deterministic intent routing, runtime validation, golden fixtures, and contract tests.
 
 Recommended next order:
 
-1. Review the current UI manually and commit/adjust any final mock-flow polish.
-2. Voice AI Agent: define output schemas, intent routing, and generation contracts.
-3. Frontend Agent plus Voice/Audio Agent: add real recording lifecycle/provider interfaces without provider calls if keys are not ready.
-4. Backend Agent: integrate real transcription/generation provider calls when environment keys are ready.
-5. Testing Agent: add automated frontend interaction tests and manual QA gates.
-6. Privacy Release Agent: prepare privacy, TestFlight, and App Store readiness checklist.
+1. Frontend Agent plus Voice/Audio Agent: add real recording lifecycle/provider interfaces without provider calls if keys are not ready.
+2. Backend Agent: integrate real transcription/generation provider calls when environment keys are ready.
+3. Add local history and native share/export behavior.
+4. Testing Agent: add automated frontend interaction tests and manual QA gates.
+5. Privacy Release Agent: prepare privacy, TestFlight, and App Store readiness checklist.

@@ -1,14 +1,14 @@
 # AI Voice Notes To Content Handoff
 
-Last updated: 2026-06-04
+Last updated: 2026-06-06
 
 Use this file as the quick resume point for a fresh lead-developer chat. For deeper context, read `AGENTS.md`, `memory/current-state.md`, `product-context.md`, `requirements.md`, and `ux-flow.md`.
 
 ## Current Repo State
 
-Latest completed commit:
+Latest completed feature commit:
 
-- `0467b46` - Polish frontend UI and update handoff.
+- `7b3c76c` - Add Voice AI output contracts.
 
 The working tree should be clean before new work starts. Confirm with:
 
@@ -30,6 +30,10 @@ git status --short
 - Settings screen with mock lifecycle previews.
 - Geist font loading for web preview.
 - Expo vector icons for UI controls.
+- Structured output contracts for Note, Todo List, Email, Journal Entry, and Content Post.
+- Deterministic intent routing with user-selection and explicit-intent precedence.
+- Runtime validation and sanitization of generated output.
+- Golden Voice AI fixtures and focused contract/routing tests.
 - Root lint, typecheck, test, backend test/build, and web export scripts.
 - Project memory graph under `memory/`.
 - Specialist task-agent briefs under `task-agents/`.
@@ -74,6 +78,15 @@ The last full frontend polish verification before `0467b46` included:
 - `npx expo export --platform web`
 - `git diff --check`
 
+The Voice AI contract milestone was verified with:
+
+- `npm run typecheck`
+- `npm run lint`
+- `npm test` with 27 passing tests
+- `npm run backend:build`
+- `git diff --check`
+- `npm audit --audit-level=high` with zero vulnerabilities
+
 ## Important Implementation Notes
 
 - Do not recreate `requirements.md`.
@@ -113,28 +126,23 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 
 ## Recommended Next Steps
 
-1. Final manual UI review by the user.
-2. Voice AI output-schema contracts:
-   - output schemas for note, todo, email, journal, content.
-   - intent routing.
-   - generation request/response contract.
-   - failure and retry behavior.
-3. Real recording lifecycle/provider interfaces:
+1. Real recording lifecycle/provider interfaces:
    - permission flow.
    - recording start/stop/cancel.
    - recording failed.
    - playback availability if needed.
    - provider abstraction without real keys if keys are not ready.
-4. Backend real provider integration when environment keys are ready.
-5. Local history and share/export.
-6. Testing and privacy/release readiness.
+2. Backend real provider integration when environment keys are ready.
+3. Local history and share/export.
+4. Automated frontend interaction testing.
+5. Privacy and release readiness.
 
 ## Suggested Fresh Chat Instruction
 
 ```text
 Read HANDOFF.md first, then AGENTS.md, memory/current-state.md, product-context.md, requirements.md, ux-flow.md, and task-agents/README.md.
 
-Confirm git status is clean. The current Expo mock UI and mock backend are implemented through commit 0467b46. Do not recreate requirements, scaffold another app, or rebuild completed mock-backend wiring.
+Confirm git status is clean. The current Expo mock UI, mock backend, and Voice AI output contracts are implemented through commit 7b3c76c. Do not recreate requirements, scaffold another app, rebuild completed mock-backend wiring, or redefine the five MVP output schemas.
 
-Help plan or implement the next increment: Voice AI output-schema contracts and real recording lifecycle/provider interfaces.
+Implement the next increment: real recording lifecycle/provider interfaces without real provider calls unless environment keys are already available.
 ```

@@ -12,15 +12,18 @@
     "backend:dev": "npm run backend:build && node backend/dist/src/server.js",
     "backend:start": "node backend/dist/src/server.js",
     "backend:test": "npm run backend:build && node --test --experimental-test-isolation=none backend/dist/test/*.test.js",
+    "recording:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/recordingSession.test.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck && npm run backend:test"
+    "test": "npm run typecheck && npm run recording:test && npm run backend:test"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo/metro-runtime": "^56.0.13",
     "@expo/vector-icons": "^15.1.1",
     "expo": "^56.0.8",
+    "expo-audio": "~56.0.11",
+    "expo-file-system": "~56.0.7",
     "expo-font": "^56.0.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",

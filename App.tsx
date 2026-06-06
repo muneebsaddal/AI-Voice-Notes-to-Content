@@ -8,6 +8,7 @@ import { Geist_800ExtraBold } from "@expo-google-fonts/geist/800ExtraBold";
 import { Geist_900Black } from "@expo-google-fonts/geist/900Black";
 import {
   KeyboardAvoidingView,
+  Linking,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -23,10 +24,10 @@ import { HistorySheet } from "./src/components/HistorySheet";
 import { Toast } from "./src/components/Toast";
 import {
   mockGeneratedOutput,
-  mockRecording,
   mockTranscript,
   outputTypeLabels,
 } from "./src/mock/mockData";
+import { useExpoRecordingSession } from "./src/audio/useExpoRecordingSession";
 import {
   generateMockOutput,
   MockBackendClientError,
@@ -41,6 +42,8 @@ import type {
   LifecyclePreviewState,
   OutputType,
   PermissionStatus,
+  RecordingStartFlowResult,
+  RecordingStopFlowResult,
 } from "./src/types";
 
 type AppScreen = "permission" | "listening" | "settings" | "output";
@@ -60,14 +63,33 @@ export default function App() {
   const [screen, setScreen] = useState<AppScreen>("permission");
   const [sheet, setSheet] = useState<Sheet>(null);
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
-  const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>("prompt");
   const [selectedType, setSelectedType] = useState<OutputType>("email");
   const [transcript, setTranscript] = useState(mockTranscript);
   const [output, setOutput] = useState<GeneratedOutput>(() => mockGeneratedOutput.email);
   const [lifecyclePreview, setLifecyclePreview] = useState<AudioLifecycleState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const recording = useExpoRecordingSession();
+  const {
+    snapshot: recordingSnapshot,
+    getSnapshot: getRecordingSnapshot,
+    requestPermission: requestRecordingPermission,
+    start: startRecording,
+    stop: stopRecording,
+    cancel: cancelRecording,
+    discard: discardRecording,
+  } = recording;
 
   const theme = themeMode === "dark" ? darkTheme : lightTheme;
+  const permissionStatus: PermissionStatus =
+    recordingSnapshot.permission === "undetermined"
+      ? "prompt"
+      : recordingSnapshot.permission;
+
+  useEffect(() => {
+    if (recordingSnapshot.permission === "granted" && screen === "permission") {
+      setScreen("listening");
+    }
+  }, [recordingSnapshot.permission, screen]);
 
   useEffect(() => {
     if (!toast) {
@@ -87,13 +109,18 @@ export default function App() {
 
   const handleTranscribe = useCallback(async (): Promise<BackendFlowResult> => {
     try {
+      const recordingAsset = getRecordingSnapshot().asset;
       const response = await transcribeMockAudio({
-        audioId: "mock-audio-1",
-        durationMs: parseDurationLabel(mockRecording.durationLabel),
+        audioId: recordingAsset?.id ?? "mock-audio-1",
+        durationMs: recordingAsset?.durationMs ?? 42000,
       });
 
       setTranscript(response.transcript);
       setSelectedType(response.suggestedOutputType);
+      const discardResult = await discardRecording();
+      if (!discardResult.ok) {
+        setToast("Temporary audio cleanup needs attention");
+      }
       return { ok: true };
     } catch (error) {
       return {
@@ -101,7 +128,45 @@ export default function App() {
         failure: mapBackendErrorToFlowFailure(error, "transcription"),
       };
     }
-  }, []);
+  }, [discardRecording, getRecordingSnapshot]);
+
+  const handleStartRecording = useCallback(async (): Promise<RecordingStartFlowResult> => {
+    const result = await startRecording();
+
+    if (result.ok) {
+      return result;
+    }
+
+    return {
+      ok: false,
+      failure: {
+        state: "recordingFailed",
+        kind: "recordingCaptureFailed",
+        message: result.error.message,
+        canUseMockFallback: false,
+      },
+    };
+  }, [startRecording]);
+
+  const handleStopRecording = useCallback(async (): Promise<RecordingStopFlowResult> => {
+    const result = await stopRecording();
+
+    if (result.ok) {
+      return result;
+    }
+
+    await cancelRecording();
+
+    return {
+      ok: false,
+      failure: {
+        state: "recordingFailed",
+        kind: "recordingCaptureFailed",
+        message: result.error.message,
+        canUseMockFallback: false,
+      },
+    };
+  }, [cancelRecording, stopRecording]);
 
   const handleGenerate = useCallback(async (): Promise<BackendFlowResult> => {
     try {
@@ -125,6 +190,7 @@ export default function App() {
 
   const useMockFallback = useCallback((state: BackendFlowFailure["state"]) => {
     if (state === "recordingFailed" || state === "transcriptionFailed") {
+      void discardRecording();
       setTranscript(mockTranscript);
       setSelectedType("email");
       setOutput(mockGeneratedOutput.email);
@@ -140,7 +206,7 @@ export default function App() {
     setSheet(null);
     setScreen("output");
     setToast("Using local mock output");
-  }, [selectedType]);
+  }, [discardRecording, selectedType]);
 
   if (!fontsLoaded) {
     return <View style={[styles.app, { backgroundColor: theme.colors.background }]} />;
@@ -158,13 +224,22 @@ export default function App() {
             <PermissionScreen
               theme={theme}
               status={permissionStatus}
-              onAllow={() => {
-                setPermissionStatus("granted");
-                setScreen("listening");
+              onAllow={async () => {
+                if (permissionStatus === "denied" && Platform.OS !== "web") {
+                  await Linking.openSettings();
+                  return;
+                }
+
+                const result = await requestRecordingPermission();
+
+                if (result.ok) {
+                  setScreen("listening");
+                } else {
+                  setToast(result.error.message);
+                }
               }}
               onDeny={() => {
-                setPermissionStatus("denied");
-                setToast("Microphone permission denied");
+                setToast("Microphone permission not requested");
               }}
             />
           )}
@@ -178,6 +253,9 @@ export default function App() {
               onOpenSettings={() => setScreen("settings")}
               onOpenHistory={() => setSheet("history")}
               onChangeType={() => setSheet("changeType")}
+              onStartRecording={handleStartRecording}
+              onStopRecording={handleStopRecording}
+              onCancelRecording={cancelRecording}
               onTranscribe={handleTranscribe}
               onGenerate={handleGenerate}
               onUseMockFallback={useMockFallback}
@@ -256,11 +334,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-function parseDurationLabel(label: string): number {
-  const [minutes = "0", seconds = "0"] = label.split(":");
-  return (Number(minutes) * 60 + Number(seconds)) * 1000;
-}
 
 function mapBackendErrorToFlowFailure(
   error: unknown,

@@ -12,6 +12,9 @@ import type {
   BackendFlowFailure,
   BackendFlowResult,
   GeneratedOutput,
+  RecordingCancelFlowResult,
+  RecordingStartFlowResult,
+  RecordingStopFlowResult,
   Theme,
 } from "../types";
 
@@ -23,6 +26,9 @@ type ListeningScreenProps = {
   onOpenSettings: () => void;
   onOpenHistory: () => void;
   onChangeType: () => void;
+  onStartRecording: () => Promise<RecordingStartFlowResult>;
+  onStopRecording: () => Promise<RecordingStopFlowResult>;
+  onCancelRecording: () => Promise<RecordingCancelFlowResult>;
   onTranscribe: () => Promise<BackendFlowResult>;
   onGenerate: () => Promise<BackendFlowResult>;
   onUseMockFallback: (state: BackendFlowFailure["state"]) => void;
@@ -38,6 +44,9 @@ export function ListeningScreen({
   onOpenSettings,
   onOpenHistory,
   onChangeType,
+  onStartRecording,
+  onStopRecording,
+  onCancelRecording,
   onTranscribe,
   onGenerate,
   onUseMockFallback,
@@ -161,27 +170,54 @@ export function ListeningScreen({
       ? "idle"
       : captureState === "recording"
         ? "stop"
-        : captureState === "transcribing" || captureState === "generating"
+        : captureState === "starting" ||
+            captureState === "stopping" ||
+            captureState === "transcribing" ||
+            captureState === "generating"
           ? "processing"
           : "listening";
 
-  const handleOrbPress = () => {
+  const handleOrbPress = async () => {
     if (captureState === "idle") {
       setFailure(null);
-      setCaptureState("recording");
+      setCaptureState("starting");
+      const result = await onStartRecording();
+
+      if (result.ok) {
+        setCaptureState("recording");
+      } else {
+        setFailure(result.failure);
+        setCaptureState("recordingFailed");
+      }
       return;
     }
 
     if (captureState === "recording") {
-      setCaptureState("transcribing");
+      setCaptureState("stopping");
+      const result = await onStopRecording();
+
+      if (result.ok) {
+        setCaptureState("transcribing");
+      } else {
+        setFailure(result.failure);
+        setCaptureState("recordingFailed");
+      }
     }
   };
 
-  const retryFailure = () => {
+  const retryFailure = async () => {
     setFailure(null);
 
     if (captureState === "recordingFailed") {
-      setCaptureState("recording");
+      setCaptureState("starting");
+      const result = await onStartRecording();
+
+      if (result.ok) {
+        setCaptureState("recording");
+      } else {
+        setFailure(result.failure);
+        setCaptureState("recordingFailed");
+      }
       return;
     }
 
@@ -204,7 +240,16 @@ export function ListeningScreen({
 
     return (
       <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-        <TopBar theme={theme} onBack={() => setCaptureState("idle")} onMore={onOpenSettings} />
+        <TopBar
+          theme={theme}
+          onBack={() => {
+            void onCancelRecording().then(() => {
+              setFailure(null);
+              setCaptureState("idle");
+            });
+          }}
+          onMore={onOpenSettings}
+        />
         <Animated.View
           style={[
             styles.centerStage,
@@ -224,7 +269,7 @@ export function ListeningScreen({
             label={error.secondaryLabel}
             theme={theme}
             variant="secondary"
-            onPress={() => {
+            onPress={async () => {
               if (failure?.canUseMockFallback) {
                 onUseMockFallback(captureState);
                 if (captureState === "recordingFailed" || captureState === "transcriptionFailed") {
@@ -234,6 +279,7 @@ export function ListeningScreen({
                 return;
               }
 
+              await onCancelRecording();
               setFailure(null);
               setCaptureState("idle");
             }}
@@ -278,6 +324,16 @@ export function ListeningScreen({
       <TopBar theme={theme} onMore={onOpenSettings} />
       <Animated.View style={[styles.centerStage, { opacity: contentOpacity }]}>
         <ListeningOrb state={orbState} theme={theme} onPress={handleOrbPress} />
+        {captureState === "starting" && (
+          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
+            Opening the microphone
+          </Text>
+        )}
+        {captureState === "stopping" && (
+          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
+            Finishing your recording
+          </Text>
+        )}
         {captureState === "transcribing" && (
           <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
             Transcribing your note
@@ -295,7 +351,22 @@ export function ListeningScreen({
             label="Cancel"
             theme={theme}
             variant="secondary"
-            onPress={() => setCaptureState("idle")}
+            onPress={async () => {
+              const result = await onCancelRecording();
+
+              if (result.ok) {
+                setFailure(null);
+                setCaptureState("idle");
+              } else {
+                setFailure({
+                  state: "recordingFailed",
+                  kind: "recordingCaptureFailed",
+                  message: result.error.message,
+                  canUseMockFallback: false,
+                });
+                setCaptureState("recordingFailed");
+              }
+            }}
             style={styles.cancelButton}
           />
         ) : (
@@ -360,6 +431,13 @@ function getErrorCopy(state: BackendFlowFailure["state"], failure: BackendFlowFa
     : defaultErrorCopy[state].secondaryLabel;
 
   switch (failure.kind) {
+    case "recordingCaptureFailed":
+      return {
+        title: "Recording failed",
+        body: failure.message,
+        primaryLabel: "Try Recording",
+        secondaryLabel,
+      };
     case "recordingUploadFailed":
       return {
         title: "Recording upload failed",

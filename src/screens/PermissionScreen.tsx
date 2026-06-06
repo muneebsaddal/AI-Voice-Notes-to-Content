@@ -7,7 +7,7 @@ import type { PermissionStatus, Theme } from "../types";
 type PermissionScreenProps = {
   theme: Theme;
   status: PermissionStatus;
-  onAllow: () => void;
+  onAllow: () => void | Promise<void>;
   onDeny: () => void;
 };
 
@@ -23,13 +23,13 @@ export function PermissionScreen({ theme, status, onAllow, onDeny }: PermissionS
         </Text>
         <Text style={[styles.body, { color: theme.colors.mutedForeground }]}>
           {isDenied
-            ? "Turn it back on to record a thought. Your audio stays in this mock flow until real providers are connected."
+            ? "Turn it back on to record a thought. Temporary audio is deleted after successful transcription by default."
             : "Allow microphone access so you can capture a thought and turn it into a note, task list, email, journal entry, or post."}
         </Text>
       </View>
       <View style={styles.actions}>
         <AppButton
-          label={isDenied ? "Try Again" : "Allow Microphone"}
+          label={isDenied ? "Open Settings" : "Allow Microphone"}
           theme={theme}
           onPress={onAllow}
         />

@@ -25,13 +25,14 @@ The frontend-first implementation has produced the first mock app, backend found
 7. The frontend calls the local mock backend for transcription and generation when available, with local mock fallbacks retained.
 8. The UI now uses Geist as a web-preview font and Expo vector icons for controls.
 9. Voice AI output contracts now define structured payloads for all five MVP types, deterministic intent routing, runtime validation/sanitization, golden fixtures, and contract tests.
-10. Real recording, real backend provider calls, storage, export, and release readiness remain later increments.
+10. Real Expo microphone permission, recording start/stop/cancel, temporary asset retention, permission recovery, and audio cleanup are implemented behind a provider-independent session.
+11. Real audio upload, backend provider calls, storage, export, and release readiness remain later increments.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
 Next task:
 
-- Implement real recording lifecycle/provider interfaces without real provider calls unless environment keys are ready.
+- Implement multipart audio upload and backend-mediated real transcription while preserving retryable temporary audio.
 
 ## Stack Decision
 

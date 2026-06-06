@@ -39,7 +39,7 @@ The `requirements.md` file should define:
 
 Do not start coding until the requirements are clear enough to guide the first MVP.
 
-Current status: `requirements.md` exists and is implementation-ready. The Expo frontend mock flow, mock backend API, frontend-to-mock-backend connection, direct post-recording output flow, Geist font preview, Expo vector icon pass, and Voice AI output contracts are implemented. Future agents should not recreate requirements, scaffold a second app, repeat completed mock-backend wiring, or redefine the five MVP output schemas.
+Current status: `requirements.md` exists and is implementation-ready. The Expo frontend mock flow, mock backend API, frontend-to-mock-backend connection, direct post-recording output flow, Geist font preview, Expo vector icon pass, Voice AI output contracts, and real Expo recording lifecycle are implemented. Future agents should not recreate requirements, scaffold a second app, repeat completed mock-backend wiring, redefine the five MVP output schemas, or replace the recording provider abstraction.
 
 ## Project Context Files
 
@@ -82,6 +82,19 @@ Recommended mappings:
 
 Do not force a skill when the task is a tiny direct command, but for planning, coding, review, release, privacy, prompt orchestration, or agent configuration work, assume a relevant skill should be used.
 
+## Verification Timebox And Stop Rule
+
+Optional browser, simulator, device, DevTools, or other manual smoke checks must not delay an otherwise verified task indefinitely.
+
+- Make one bounded attempt at an optional manual verification step.
+- If the same environment or tooling failure occurs again, stop retrying immediately.
+- Do not keep changing launch commands, process wrappers, ports, or browser tooling to work around a repeated optional-check failure.
+- Stop any servers or background processes started for the check.
+- Report the blocker, the exact verification that did pass, and any remaining manual check.
+- When required automated gates pass, present the work for review instead of holding completion on optional browser tooling.
+- Respect the specialist-agent browser timebox as a hard ceiling, not a target. Stop sooner when the failure is clearly environmental.
+- When the user asks for a bounded action such as commit and push, complete that action and report it before beginning the next feature.
+
 ## Current Build Direction
 
 The Lovable design direction is final for the MVP UI unless the user explicitly changes it.
@@ -104,8 +117,9 @@ Completed foundation:
 - Geist font loading for web preview.
 - Expo vector icons for UI controls.
 - Structured Voice AI contracts, deterministic intent routing, runtime validation, golden fixtures, and contract tests.
+- Real Expo microphone permission, recording start/stop/cancel, temporary audio retention, and cleanup through a provider-independent recording session.
 
-The next implementation step should be real recording lifecycle/provider interfaces. Do not start by rebuilding the mock frontend or redefining Voice AI output schemas.
+The next implementation step should be real audio upload and backend transcription provider integration. Do not start by rebuilding the mock frontend, redefining Voice AI output schemas, or replacing the recording lifecycle.
 
 ## Product Direction
 
@@ -431,11 +445,12 @@ Completed coordination steps:
 6. Lead Agent: simplified normal flow to go directly from recording completion to processing/output.
 7. Lead Agent: added Geist preview fonts and Expo vector icons.
 8. Voice AI Agent / Lead Agent review: added structured output schemas, deterministic intent routing, runtime validation, golden fixtures, and contract tests.
+9. Lead Agent: added real Expo recording lifecycle, microphone permission recovery, temporary audio cleanup, and recording tests.
 
 Recommended next order:
 
-1. Frontend Agent plus Voice/Audio Agent: add real recording lifecycle/provider interfaces without provider calls if keys are not ready.
-2. Backend Agent: integrate real transcription/generation provider calls when environment keys are ready.
+1. Backend plus Voice AI Agent: upload the captured audio and integrate a real transcription provider behind the existing backend contract.
+2. Backend Agent: integrate real structured generation provider calls.
 3. Add local history and native share/export behavior.
 4. Testing Agent: add automated frontend interaction tests and manual QA gates.
 5. Privacy Release Agent: prepare privacy, TestFlight, and App Store readiness checklist.

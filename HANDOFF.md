@@ -6,7 +6,7 @@ Use this file as the quick resume point for a fresh lead-developer chat. For dee
 
 ## Current Repo State
 
-Latest completed feature commit:
+Latest completed feature commit before this handoff update:
 
 - `7b3c76c` - Add Voice AI output contracts.
 
@@ -34,6 +34,10 @@ git status --short
 - Deterministic intent routing with user-selection and explicit-intent precedence.
 - Runtime validation and sanitization of generated output.
 - Golden Voice AI fixtures and focused contract/routing tests.
+- Real Expo microphone permission and recording lifecycle.
+- Recording start, stop, cancel, temporary asset retention, and deletion.
+- Permission-denied recovery through device Settings.
+- Provider-independent recording session with focused lifecycle tests.
 - Root lint, typecheck, test, backend test/build, and web export scripts.
 - Project memory graph under `memory/`.
 - Specialist task-agent briefs under `task-agents/`.
@@ -87,6 +91,16 @@ The Voice AI contract milestone was verified with:
 - `git diff --check`
 - `npm audit --audit-level=high` with zero vulnerabilities
 
+The recording lifecycle milestone was verified with:
+
+- `npm run typecheck`
+- `npm run lint`
+- `npm test` with 35 passing tests
+- `npm run backend:build`
+- `npx expo export --platform web`
+- `npm audit --audit-level=high` with zero vulnerabilities
+- `git diff --check`
+
 ## Important Implementation Notes
 
 - Do not recreate `requirements.md`.
@@ -111,8 +125,7 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 
 ## Not Built Yet
 
-- Real microphone recording.
-- Real audio file handling/upload.
+- Real audio upload to the backend.
 - Real transcription provider.
 - Real AI generation provider.
 - Local persistent history.
@@ -126,13 +139,13 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 
 ## Recommended Next Steps
 
-1. Real recording lifecycle/provider interfaces:
-   - permission flow.
-   - recording start/stop/cancel.
-   - recording failed.
-   - playback availability if needed.
-   - provider abstraction without real keys if keys are not ready.
-2. Backend real provider integration when environment keys are ready.
+1. Real audio upload and transcription:
+   - multipart audio upload from the Expo app.
+   - backend file-size/type validation.
+   - backend-mediated transcription provider call.
+   - preserve temporary audio for retry on upload/transcription failure.
+   - delete temporary audio after successful transcription.
+2. Real structured generation provider integration.
 3. Local history and share/export.
 4. Automated frontend interaction testing.
 5. Privacy and release readiness.
@@ -142,7 +155,7 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 ```text
 Read HANDOFF.md first, then AGENTS.md, memory/current-state.md, product-context.md, requirements.md, ux-flow.md, and task-agents/README.md.
 
-Confirm git status is clean. The current Expo mock UI, mock backend, and Voice AI output contracts are implemented through commit 7b3c76c. Do not recreate requirements, scaffold another app, rebuild completed mock-backend wiring, or redefine the five MVP output schemas.
+Confirm git status is clean. The current Expo mock UI, mock backend, Voice AI output contracts, and real recording lifecycle are implemented. Do not recreate requirements, scaffold another app, rebuild completed mock-backend wiring, redefine the five MVP output schemas, or replace the recording provider abstraction.
 
-Implement the next increment: real recording lifecycle/provider interfaces without real provider calls unless environment keys are already available.
+Implement the next increment: multipart audio upload and backend-mediated real transcription, preserving the existing response contract and privacy defaults.
 ```

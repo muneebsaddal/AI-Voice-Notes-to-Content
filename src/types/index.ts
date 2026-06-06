@@ -3,6 +3,10 @@ import type {
   IntentRoutingResult as VoiceIntentRoutingResult,
   OutputType as VoiceOutputType,
 } from "../../backend/src/types";
+import type {
+  RecordingActionResult,
+  RecordingAsset,
+} from "../audio/recordingSession";
 
 export type OutputType = VoiceOutputType;
 export type GeneratedOutput = VoiceGeneratedOutput;
@@ -12,7 +16,9 @@ export type PermissionStatus = "prompt" | "granted" | "denied";
 
 export type AudioLifecycleState =
   | "idle"
+  | "starting"
   | "recording"
+  | "stopping"
   | "recordingFailed"
   | "transcribing"
   | "transcriptionFailed"
@@ -26,6 +32,7 @@ export type LifecyclePreviewState =
   | "generationFailed";
 
 export type BackendFlowFailureKind =
+  | "recordingCaptureFailed"
   | "recordingUploadFailed"
   | "transcriptionFailed"
   | "generationFailed"
@@ -40,6 +47,16 @@ export type BackendFlowFailure = {
 };
 
 export type BackendFlowResult = { ok: true } | { ok: false; failure: BackendFlowFailure };
+
+export type RecordingStartFlowResult =
+  | { ok: true }
+  | { ok: false; failure: BackendFlowFailure };
+
+export type RecordingStopFlowResult =
+  | { ok: true; asset: RecordingAsset }
+  | { ok: false; failure: BackendFlowFailure };
+
+export type RecordingCancelFlowResult = RecordingActionResult;
 
 export type Theme = {
   name: "dark" | "light";

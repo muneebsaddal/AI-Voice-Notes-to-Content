@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 
 ## Product
 
@@ -39,17 +39,40 @@ The frontend-first implementation has produced the first mock app, backend found
     reuses it for retry, and deletes it only after accepting a valid transcript.
 14. Mock transcription fallback is disabled by default and requires explicit
     development configuration and user action.
-15. Real structured generation, storage, export, and release readiness remain
-    later increments.
+15. Provider-neutral structured generation now supports the deterministic local
+    formatter and an OpenAI Responses API provider selected once at backend
+    startup.
+16. The post-transcription confirmation page is restored so the inferred output
+    type is visible and `Change Type` remains reachable before generation.
+17. The transcript-grounded local formatter is now behind the same
+    `GenerationProvider` boundary as the real provider.
+18. Native Expo `HIGH_QUALITY` recording metadata is centralized as
+    `.m4a`/`audio/mp4`, including Android `content://` and extensionless URIs.
+19. Upload diagnostics now use safe format metadata and request correlation IDs
+    without logging audio URIs, bytes, transcripts, prompts, or provider bodies.
+20. Multipart validation requires the extension and MIME type to agree while
+    accepting supported mobile MPEG-4 aliases.
+21. A durable five-output fixture matrix covers explicit, implicit,
+    change-type, sparse, and long transcript cases for all MVP output types.
+22. The OpenAI provider uses strict Structured Outputs, runtime contract
+    validation, bounded timeout, one narrow transient retry, safe error mapping,
+    and no silent local fallback.
+23. Real transcription remains confirmed on web. The Android Expo Go metadata
+    defect is implemented but still requires the user-run device acceptance
+    check. Real-provider generation also requires optional user-approved paid
+    smoke verification.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
 Next task:
 
-- Review and commit the combined local transcription milestone.
-- With explicit user approval, perform one bounded real-model and device/web
-  integration check.
-- Then implement real structured generation provider calls.
+- Run the bounded automated verification commands listed in
+  `task-agents/testing/immediate-flow-reliability-checklist.md`.
+- Complete the Android Expo Go and web acceptance matrix with the local
+  transcription services already running.
+- Optionally approve one paid OpenAI smoke call after automated verification.
+- Review the diff and commit only after the structured review verdict is
+  accepted.
 
 ## Stack Decision
 
@@ -77,6 +100,7 @@ See [[architecture/planned-system-overview|Planned System Overview]].
 - [[agents/backend|Backend]] owns secure provider-mediated APIs.
 - [[agents/voice-ai|Voice AI]] owns transcription, intent routing, output schemas, and prompt contracts.
 - [[agents/testing|Testing]] owns automated and manual QA gates.
+- [[agents/reviewer|Reviewer]] owns independent diff review, severity-ranked findings, and pre-commit approval verdicts.
 - [[agents/product-ux|Product UX]] owns UX coherence and copy decisions.
 - [[agents/privacy-release|Privacy Release]] owns privacy, TestFlight, and App Store readiness.
 - [[agents/research-planning|Research Planning]] researches options and writes implementation plans.
@@ -92,6 +116,7 @@ See [[architecture/planned-system-overview|Planned System Overview]].
 - [[sessions/2026-06-01-frontend-agent-stale-verification|Frontend Agent Stale Verification]]
 - [[sessions/2026-06-01-frontend-backend-connection-recovered|Frontend Backend Connection Recovered]]
 - [[sessions/2026-06-04-chat-handoff-ui-polish|Chat Handoff UI Polish]]
+- [[sessions/2026-06-07-android-flow-review|Android Flow Review]]
 
 ## Installed Project Skills
 
@@ -110,3 +135,18 @@ For new specialist chats:
 ## Commit Discipline
 
 Agents that change files must commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
+
+## Verification Execution
+
+The user runs test/build/lint/typecheck/service commands by default because
+agent-started commands can appear stuck with no response in this workspace.
+Agents provide exact commands, expected duration, and stop thresholds, then use
+the user's pasted results as evidence.
+
+Latest evidence:
+
+- `npm run backend:test`: 52/52 tests passed across 8 suites on 2026-06-07.
+- `npm run transcription:test`: 9/9 tests passed in 0.90 seconds on
+  2026-06-07. One upstream Starlette pending-deprecation warning remains.
+- `npm run recording:test`, `npm run frontend:test`, `npm run typecheck`, and
+  `npm run lint`: user-confirmed passing on 2026-06-07.

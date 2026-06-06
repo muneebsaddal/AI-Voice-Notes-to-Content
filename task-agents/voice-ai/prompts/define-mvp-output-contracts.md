@@ -27,7 +27,8 @@ Read these files before changing anything:
 - `src/api/mockBackendClient.ts`
 - `src/mock/mockData.ts`
 
-Use the project-local `voice-ai-architecture` guidance. Use `tdd-workflow` for contract behavior and `verification-loop` before completion.
+Use the ordered stack in `task-agents/voice-ai/AGENT.md`: `eval-harness`,
+`ai-regression-testing`, `tdd-workflow`, and `verification-loop`.
 
 ## Goal
 

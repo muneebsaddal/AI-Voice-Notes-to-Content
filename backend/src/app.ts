@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { randomUUID } from "node:crypto";
 
 import { validateGenerationRequest, validateTranscriptionRequest } from "./contracts";
 import {
@@ -8,7 +9,11 @@ import {
   toErrorResponse,
 } from "./errors";
 import { validateGeneratedOutput } from "./outputContracts";
-import { generateMockOutput } from "./services/generationService";
+import {
+  generateMockOutput,
+  generateWithProvider,
+} from "./services/generationService";
+import type { GenerationProvider } from "./generation/types";
 import {
   transcribeMockAudio,
   transcribeWithProvider,
@@ -33,6 +38,7 @@ type AppDependencies = {
   transcriptionProvider?: TranscriptionProvider;
   maxAudioUploadBytes?: number;
   generateOutput?: (request: GenerationRequest) => Promise<unknown>;
+  generationProvider?: GenerationProvider;
 };
 
 type ResolvedAppDependencies = {
@@ -46,7 +52,8 @@ function setBaseHeaders(response: ServerResponse): void {
   response.setHeader("content-type", "application/json; charset=utf-8");
   response.setHeader("access-control-allow-origin", "*");
   response.setHeader("access-control-allow-methods", "GET,POST,OPTIONS");
-  response.setHeader("access-control-allow-headers", "content-type");
+  response.setHeader("access-control-allow-headers", "content-type,x-request-id");
+  response.setHeader("access-control-expose-headers", "x-request-id");
 }
 
 function sendJson(response: ServerResponse, status: number, payload: unknown): void {
@@ -195,7 +202,11 @@ function notFound(response: ServerResponse): void {
   sendJson(response, 404, payload);
 }
 
-function handleError(error: unknown, response: ServerResponse): void {
+function handleError(
+  error: unknown,
+  response: ServerResponse,
+  requestId: string,
+): void {
   if (error instanceof ApiError) {
     sendJson(response, error.status, toErrorResponse(error));
     return;
@@ -203,6 +214,7 @@ function handleError(error: unknown, response: ServerResponse): void {
 
   console.error("Unhandled API error", {
     errorType: error instanceof Error ? error.name : "UnknownError",
+    requestId,
   });
 
   sendJson(response, 500, {
@@ -214,14 +226,23 @@ function handleError(error: unknown, response: ServerResponse): void {
 }
 
 export function createApp(dependencies: AppDependencies = {}): AppHandler {
+  const generationProvider = dependencies.generationProvider;
+  const generateOutput = dependencies.generateOutput ??
+    (generationProvider
+      ? async (request: GenerationRequest) =>
+          await generateWithProvider(generationProvider, request)
+      : generateMockOutput);
   const resolvedDependencies: ResolvedAppDependencies = {
     transcribeAudio: dependencies.transcribeAudio ?? transcribeMockAudio,
     transcriptionProvider: dependencies.transcriptionProvider ?? new MockTranscriptionProvider(),
     maxAudioUploadBytes: dependencies.maxAudioUploadBytes ?? 24 * 1024 * 1024,
-    generateOutput: dependencies.generateOutput ?? generateMockOutput,
+    generateOutput,
   };
 
   return async (request, response) => {
+    const requestId = resolveRequestId(request.headers["x-request-id"]);
+    response.setHeader("x-request-id", requestId);
+
     try {
       const url = new URL(request.url ?? "/", "http://localhost");
 
@@ -264,7 +285,15 @@ export function createApp(dependencies: AppDependencies = {}): AppHandler {
 
       notFound(response);
     } catch (error) {
-      handleError(error, response);
+      handleError(error, response, requestId);
     }
   };
+}
+
+function resolveRequestId(value: string | string[] | undefined): string {
+  const candidate = Array.isArray(value) ? value[0] : value;
+  if (candidate && /^[a-zA-Z0-9_-]{8,80}$/.test(candidate)) {
+    return candidate;
+  }
+  return `req-${randomUUID()}`;
 }

@@ -30,7 +30,15 @@ const supportedMimeTypes = new Set([
   "audio/mpeg",
   "audio/mp3",
 ]);
-const genericMimeTypes = new Set(["application/octet-stream", ""]);
+const mimeTypesByExtension = new Map<string, Set<string>>([
+  [".m4a", new Set(["audio/mp4", "video/mp4", "audio/x-m4a", "audio/m4a"])],
+  [".mp4", new Set(["audio/mp4", "video/mp4"])],
+  [".wav", new Set(["audio/wav", "audio/x-wav"])],
+  [".webm", new Set(["audio/webm", "video/webm"])],
+  [".mp3", new Set(["audio/mpeg", "audio/mp3"])],
+  [".mpeg", new Set(["audio/mpeg"])],
+  [".mpga", new Set(["audio/mpeg"])],
+]);
 
 type ParsedPart = {
   name: string;
@@ -176,9 +184,12 @@ export async function readMultipartTranscriptionUpload(
   const file = fileParts[0];
   const filename = basename(file.filename ?? "");
   const extension = extname(filename).toLowerCase();
+  const allowedMimeTypes = mimeTypesByExtension.get(extension);
   if (
     !supportedExtensions.has(extension) ||
-    (!supportedMimeTypes.has(file.contentType) && !genericMimeTypes.has(file.contentType))
+    !allowedMimeTypes ||
+    !supportedMimeTypes.has(file.contentType) ||
+    !allowedMimeTypes.has(file.contentType)
   ) {
     throw unsupportedAudioTypeError;
   }
@@ -203,7 +214,7 @@ export async function readMultipartTranscriptionUpload(
   return {
     filePath,
     filename,
-    mimeType: file.contentType || "application/octet-stream",
+    mimeType: file.contentType,
     durationMs,
     language,
     audioId,

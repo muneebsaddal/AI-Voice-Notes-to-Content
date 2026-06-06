@@ -1,4 +1,8 @@
 import type { RecordingAsset } from "../audio/recordingSession.ts";
+import {
+  resolveRecordingUploadFormat,
+  type RecordingUploadPlatform,
+} from "../audio/recordingFormat.ts";
 import type { IntentRoutingResult, OutputType } from "../types/index.ts";
 import {
   MockBackendClientError,
@@ -14,6 +18,7 @@ export {
   getApiBaseUrl,
   isMockFallbackEnabled,
   MockBackendClientError,
+  resolveRecordingUploadFormat,
 };
 
 export type TranscriptionResponse = {
@@ -35,20 +40,38 @@ type FormDataLike = {
 };
 
 type BuildFormDataOptions = {
-  platform: "web" | "native";
+  platform: RecordingUploadPlatform;
   language?: string;
   fetchImplementation?: typeof fetch;
   formDataFactory?: () => FormDataLike;
+  requestId?: string;
+  diagnosticLogger?: UploadDiagnosticLogger;
 };
 
 type TranscriptionClientOptions = BuildFormDataOptions & {
   apiBaseUrl?: string;
   timeoutMs?: number;
+  requestIdFactory?: () => string;
 };
 
 const defaultTimeoutMs = 120_000;
 const outputTypes = new Set<OutputType>(["note", "todo", "email", "journal", "content"]);
-const supportedExtensions = new Set(["m4a", "mp4", "wav", "webm", "mp3", "mpeg", "mpga"]);
+
+type UploadDiagnosticMetadata = {
+  requestId?: string;
+  platform: RecordingUploadPlatform;
+  durationMs: number;
+  extension: string;
+  mimeType: string;
+  byteSize?: number;
+  status?: number;
+  errorCode?: string;
+};
+
+type UploadDiagnosticLogger = (
+  event: "transcription_upload_prepared" | "transcription_upload_completed" | "transcription_upload_failed",
+  metadata: UploadDiagnosticMetadata,
+) => void;
 
 export async function buildTranscriptionFormData(
   asset: RecordingAsset,
@@ -63,8 +86,12 @@ export async function buildTranscriptionFormData(
   }
 
   const form = options.formDataFactory?.() ?? new FormData();
-  const filename = filenameForAsset(asset);
-  const mimeType = asset.mimeType || mimeTypeForFilename(filename);
+  let format = resolveRecordingUploadFormat({
+    platform: options.platform,
+    uri: asset.uri,
+    mimeType: asset.mimeType,
+  });
+  let byteSize: number | undefined;
 
   if (options.platform === "web") {
     const fetchImplementation = options.fetchImplementation ?? fetch;
@@ -72,31 +99,62 @@ export async function buildTranscriptionFormData(
     try {
       audioResponse = await fetchImplementation(asset.uri);
     } catch {
+      options.diagnosticLogger?.("transcription_upload_failed", {
+        requestId: options.requestId,
+        platform: options.platform,
+        durationMs: asset.durationMs,
+        extension: format.extension,
+        mimeType: format.mimeType,
+        errorCode: "recording_preparation_failed",
+      });
       throw new MockBackendClientError(
         "recording_upload_failed",
         "The recorded audio could not be prepared for upload.",
         0,
+        {
+          boundary: "preparation",
+          requestId: options.requestId,
+        },
       );
     }
 
     if (!audioResponse.ok) {
+      options.diagnosticLogger?.("transcription_upload_failed", {
+        requestId: options.requestId,
+        platform: options.platform,
+        durationMs: asset.durationMs,
+        extension: format.extension,
+        mimeType: format.mimeType,
+        status: audioResponse.status,
+        errorCode: "recording_preparation_failed",
+      });
       throw new MockBackendClientError(
         "recording_upload_failed",
         "The recorded audio could not be prepared for upload.",
         audioResponse.status,
+        {
+          boundary: "preparation",
+          requestId: options.requestId,
+        },
       );
     }
 
     const sourceBlob = await audioResponse.blob();
-    const audioBlob = sourceBlob.type || !mimeType
+    format = resolveRecordingUploadFormat({
+      platform: "web",
+      uri: asset.uri,
+      mimeType: sourceBlob.type || asset.mimeType,
+    });
+    const audioBlob = sourceBlob.type.toLowerCase() === format.mimeType
       ? sourceBlob
-      : sourceBlob.slice(0, sourceBlob.size, mimeType);
-    form.append("file", audioBlob, filename);
+      : sourceBlob.slice(0, sourceBlob.size, format.mimeType);
+    byteSize = audioBlob.size;
+    form.append("file", audioBlob, format.filename);
   } else {
     form.append("file", {
       uri: asset.uri,
-      name: filename,
-      type: mimeType || "application/octet-stream",
+      name: format.filename,
+      type: format.mimeType,
     });
   }
 
@@ -108,6 +166,15 @@ export async function buildTranscriptionFormData(
     form.append("language", options.language.trim());
   }
 
+  options.diagnosticLogger?.("transcription_upload_prepared", {
+    requestId: options.requestId,
+    platform: options.platform,
+    durationMs: asset.durationMs,
+    extension: format.extension,
+    mimeType: format.mimeType,
+    ...(byteSize === undefined ? {} : { byteSize }),
+  });
+
   return form as FormData;
 }
 
@@ -116,7 +183,18 @@ export async function transcribeRecordingAsset(
   options: TranscriptionClientOptions,
 ): Promise<TranscriptionResponse> {
   const fetchImplementation = options.fetchImplementation ?? fetch;
-  const form = await buildTranscriptionFormData(asset, options);
+  const requestId = options.requestId ?? options.requestIdFactory?.() ?? createRequestId();
+  const diagnosticLogger = options.diagnosticLogger ?? developmentDiagnosticLogger;
+  const form = await buildTranscriptionFormData(asset, {
+    ...options,
+    requestId,
+    diagnosticLogger,
+  });
+  const format = resolveRecordingUploadFormat({
+    platform: options.platform,
+    uri: asset.uri,
+    mimeType: asset.mimeType,
+  });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? defaultTimeoutMs);
   let response: Response;
@@ -126,23 +204,50 @@ export async function transcribeRecordingAsset(
       `${(options.apiBaseUrl ?? getApiBaseUrl()).replace(/\/+$/, "")}/api/transcriptions`,
       {
         method: "POST",
+        headers: {
+          "x-request-id": requestId,
+        },
         body: form,
         signal: controller.signal,
       },
     );
   } catch (error) {
     if (controller.signal.aborted || isAbortError(error)) {
+      diagnosticLogger?.("transcription_upload_failed", {
+        requestId,
+        platform: options.platform,
+        durationMs: asset.durationMs,
+        extension: format.extension,
+        mimeType: format.mimeType,
+        errorCode: "transcription_timeout",
+      });
       throw new MockBackendClientError(
         "transcription_unavailable",
         "Transcription timed out.",
         0,
+        {
+          boundary: "timeout",
+          requestId,
+        },
       );
     }
 
+    diagnosticLogger?.("transcription_upload_failed", {
+      requestId,
+      platform: options.platform,
+      durationMs: asset.durationMs,
+      extension: format.extension,
+      mimeType: format.mimeType,
+      errorCode: "backend_unavailable",
+    });
     throw new MockBackendClientError(
       "backend_unavailable",
       "The backend is unavailable.",
       0,
+      {
+        boundary: "network",
+        requestId,
+      },
     );
   } finally {
     clearTimeout(timeout);
@@ -158,10 +263,23 @@ export async function transcribeRecordingAsset(
       payload && typeof payload === "object" && "error" in payload
         ? payload.error
         : undefined;
+    diagnosticLogger?.("transcription_upload_failed", {
+      requestId: response.headers.get("x-request-id") ?? requestId,
+      platform: options.platform,
+      durationMs: asset.durationMs,
+      extension: format.extension,
+      mimeType: format.mimeType,
+      status: response.status,
+      errorCode: structuredError?.code ?? "unstructured_backend_error",
+    });
     throw new MockBackendClientError(
       toApiErrorCode(structuredError?.code),
       structuredError?.message ?? "Transcription could not be completed.",
       response.status,
+      {
+        boundary: boundaryForBackendError(structuredError?.code),
+        requestId: response.headers.get("x-request-id") ?? requestId,
+      },
     );
   }
 
@@ -170,62 +288,56 @@ export async function transcribeRecordingAsset(
       "transcription_failed",
       "The transcription response was invalid.",
       response.status,
+      {
+        boundary: "inference",
+        requestId: response.headers.get("x-request-id") ?? requestId,
+      },
     );
   }
+
+  diagnosticLogger?.("transcription_upload_completed", {
+    requestId: response.headers.get("x-request-id") ?? requestId,
+    platform: options.platform,
+    durationMs: asset.durationMs,
+    extension: format.extension,
+    mimeType: format.mimeType,
+    status: response.status,
+  });
 
   return payload;
 }
 
-function filenameForAsset(asset: RecordingAsset): string {
-  const path = asset.uri.split(/[?#]/, 1)[0];
-  const rawName = path.slice(path.lastIndexOf("/") + 1);
-  const extension = rawName.includes(".") ? rawName.split(".").pop()?.toLowerCase() : undefined;
-
-  if (rawName && extension && supportedExtensions.has(extension)) {
-    return rawName;
-  }
-
-  return `recording.${extensionForMimeType(asset.mimeType)}`;
+function createRequestId(): string {
+  return `req-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function extensionForMimeType(mimeType: string | undefined): string {
-  switch (mimeType?.toLowerCase()) {
-    case "audio/mp4":
-    case "audio/m4a":
-    case "audio/x-m4a":
-      return "m4a";
-    case "audio/wav":
-    case "audio/x-wav":
-      return "wav";
-    case "audio/mpeg":
-    case "audio/mp3":
-      return "mp3";
-    default:
-      return "webm";
-  }
-}
-
-function mimeTypeForFilename(filename: string): string | undefined {
-  const extension = filename.split(".").pop()?.toLowerCase();
-  switch (extension) {
-    case "m4a":
-    case "mp4":
-      return "audio/mp4";
-    case "wav":
-      return "audio/wav";
-    case "webm":
-      return "audio/webm";
-    case "mp3":
-    case "mpeg":
-    case "mpga":
-      return "audio/mpeg";
-    default:
-      return undefined;
+function developmentDiagnosticLogger(
+  event: Parameters<UploadDiagnosticLogger>[0],
+  metadata: UploadDiagnosticMetadata,
+): void {
+  if (typeof __DEV__ !== "undefined" && __DEV__) {
+    console.info(`[voice-notes] ${event}`, metadata);
   }
 }
 
 function isAbortError(error: unknown): boolean {
   return error instanceof Error && error.name === "AbortError";
+}
+
+function boundaryForBackendError(
+  code: string | undefined,
+): "backend_validation" | "sidecar" | "inference" {
+  switch (code) {
+    case "invalid_request_body":
+    case "unsupported_audio_type":
+    case "audio_too_large":
+    case "recording_upload_failed":
+      return "backend_validation";
+    case "transcription_unavailable":
+      return "sidecar";
+    default:
+      return "inference";
+  }
 }
 
 function isTranscriptionResponse(value: unknown): value is TranscriptionResponse {

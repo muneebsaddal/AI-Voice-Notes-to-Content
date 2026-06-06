@@ -16,11 +16,25 @@ Keep the product experience coherent, premium, and aligned with the promise: **S
 - `task-agents/frontend/AGENT.md`
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `ios-product-design` from `skills/README.md` for iOS-first product decisions.
-- Use `frontend-design` when reviewing implemented UI.
-- Use `article-writing` or `content-engine` only for App Store or marketing copy work.
+### Primary ECC
+
+- `product-capability` for translating product intent into scoped requirements and acceptance criteria.
+- `research-ops` for current platform, competitor, or App Store facts.
+- `market-research` when product positioning or competitor evidence is required.
+- `verification-loop` when UX changes include implementation.
+
+### Superpowers
+
+- `superpowers:brainstorming` for ambiguous product exploration before a direction is selected.
+- `superpowers:writing-plans` for multi-step accepted UX work.
+
+### Other And Project-Local
+
+- `frontend-design` and `ui-ux-pro-max` for implemented UI review.
+- `content-engine` or `article-writing` only for App Store or marketing copy.
+- `.agents/skills/structured-code-review/SKILL.md` when reviewing implemented UX changes.
 
 ## Scope
 
@@ -62,6 +76,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

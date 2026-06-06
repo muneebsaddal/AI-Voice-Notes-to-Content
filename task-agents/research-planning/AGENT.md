@@ -17,11 +17,26 @@ This agent does not lead the project and does not implement production code by d
 - `task-agents/README.md`
 - Any relevant specialist `task-agents/<agent>/AGENT.md`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `skills/research-planning/SKILL.md` for research-to-plan work.
-- Use web research when current external tools, libraries, platforms, or practices could affect the answer.
-- Use `skills/prompt-orchestration/SKILL.md` only when producing prompts for other agents.
+### Primary ECC
+
+- `research-ops` for evidence-first current-state research.
+- `deep-research` for multi-source investigations.
+- `exa-search` for neural search across web, code, companies, or papers.
+- `blueprint` or `product-capability` for turning accepted findings into scoped work.
+- `search-first` before proposing unfamiliar technical implementations.
+
+### Superpowers
+
+- `superpowers:writing-plans` for detailed accepted implementation plans.
+- `superpowers:dispatching-parallel-agents` for independent research streams when available.
+
+### Other And Project-Local
+
+- `skills/research-planning/SKILL.md` for project research-to-plan work.
+- `skills/prompt-orchestration/SKILL.md` only when producing prompts for other agents.
+- Use current external sources when tools, libraries, platforms, prices, policies, or practices could have changed.
 
 ## Scope
 
@@ -66,6 +81,7 @@ Before finishing, report:
 - What changed
 - Files touched
 - Commit status
+- Review status
 - Recommended plan
 - Risks or open questions
 - Recommended next task prompt

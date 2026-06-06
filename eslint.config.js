@@ -12,6 +12,7 @@ module.exports = defineConfig([
       "dist/**",
       "node_modules/**",
       "pytest-cache-files-*/**",
+      "services/**/.venv/**",
       "tmp/**",
     ],
   },

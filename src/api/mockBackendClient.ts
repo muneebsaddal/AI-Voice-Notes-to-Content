@@ -42,12 +42,14 @@ export async function generateMockOutput(
 
 async function postJson<ResponseBody>(path: string, body: unknown): Promise<ResponseBody> {
   let response: Response;
+  const requestId = createRequestId();
 
   try {
     response = await fetch(`${getApiBaseUrl()}${path}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        "x-request-id": requestId,
       },
       body: JSON.stringify(body),
     });
@@ -56,6 +58,10 @@ async function postJson<ResponseBody>(path: string, body: unknown): Promise<Resp
       "backend_unavailable",
       "The local mock backend is unavailable.",
       0,
+      {
+        boundary: "network",
+        requestId,
+      },
     );
   }
 
@@ -70,6 +76,10 @@ async function postJson<ResponseBody>(path: string, body: unknown): Promise<Resp
       toApiErrorCode(structuredError?.code),
       structuredError?.message ?? "The mock API could not complete the request.",
       response.status,
+      {
+        boundary: path === "/api/generations" ? "generation" : undefined,
+        requestId: response.headers.get("x-request-id") ?? requestId,
+      },
     );
   }
 
@@ -78,8 +88,16 @@ async function postJson<ResponseBody>(path: string, body: unknown): Promise<Resp
       "internal_error",
       "The mock API returned an empty response.",
       response.status,
+      {
+        boundary: path === "/api/generations" ? "generation" : undefined,
+        requestId: response.headers.get("x-request-id") ?? requestId,
+      },
     );
   }
 
   return payload as ResponseBody;
+}
+
+function createRequestId(): string {
+  return `req-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }

@@ -16,11 +16,25 @@ Prepare the app for privacy-sensitive handling of voice data, TestFlight distrib
 - `task-agents/backend/AGENT.md`
 - `task-agents/voice-ai/AGENT.md`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `security-review` for privacy-sensitive data handling and secret management.
-- Use `app-store-launch` from `skills/README.md` for release and App Store readiness.
-- Use `verification-loop` before marking a TestFlight or App Store gate complete.
+### Primary ECC
+
+- `security-review` for privacy-sensitive data handling, uploads, storage, retention, and secrets.
+- `verification-loop` before marking a TestFlight or App Store gate complete.
+- `research-ops` for current Apple, Expo, privacy-label, and platform requirements.
+- `deployment-patterns` for release workflow and environment separation.
+- `security-scan` for configuration and secret-exposure checks.
+
+### Superpowers
+
+- `superpowers:verification-before-completion` before release approval.
+- `superpowers:finishing-a-development-branch` after review and verification are complete.
+
+### Other And Project-Local
+
+- Use the App Store and privacy guidance in this brief, `requirements.md`, and current official sources.
+- `.agents/skills/structured-code-review/SKILL.md` for release-sensitive implementation review.
 
 ## Scope
 
@@ -64,6 +78,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

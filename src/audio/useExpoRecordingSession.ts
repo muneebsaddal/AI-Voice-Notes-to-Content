@@ -15,6 +15,7 @@ import {
   type RecordingProvider,
   type RecordingSnapshot,
 } from "./recordingSession";
+import { resolveRecordingUploadFormat } from "./recordingFormat";
 
 function toRecordingPermission(
   response: Awaited<ReturnType<typeof getRecordingPermissionsAsync>>,
@@ -39,22 +40,6 @@ async function discardUri(uri: string): Promise<void> {
 
   if (file.exists) {
     file.delete();
-  }
-}
-
-function mimeTypeForUri(uri: string): string | undefined {
-  const extension = uri.split("?")[0]?.split(".").pop()?.toLowerCase();
-
-  switch (extension) {
-    case "m4a":
-    case "mp4":
-      return "audio/mp4";
-    case "webm":
-      return "audio/webm";
-    case "wav":
-      return "audio/wav";
-    default:
-      return undefined;
   }
 }
 
@@ -97,12 +82,17 @@ export function useExpoRecordingSession() {
         }
 
         const durationMs = Math.max(1, status.durationMillis, durationBeforeStop);
+        const format = resolveRecordingUploadFormat({
+          platform: Platform.OS === "web" ? "web" : "native",
+          uri,
+          mimeType: Platform.OS === "web" ? "audio/webm" : "audio/mp4",
+        });
 
         return {
           id: `recording-${Date.now()}`,
           uri,
           durationMs,
-          mimeType: mimeTypeForUri(uri),
+          mimeType: format.mimeType,
           createdAt: new Date().toISOString(),
         };
       },

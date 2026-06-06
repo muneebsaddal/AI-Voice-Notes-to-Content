@@ -57,6 +57,20 @@ export function mapBackendErrorToFlowFailure(
         message: "Could not create the output from this transcript.",
         canUseMockFallback: allowMockFallback,
       };
+    case "generation_unavailable":
+      return {
+        state: "generationFailed",
+        kind: "backendUnavailable",
+        message: "Generation is temporarily unavailable. Try again.",
+        canUseMockFallback: false,
+      };
+    case "generation_configuration_error":
+      return {
+        state: "generationFailed",
+        kind: "generationFailed",
+        message: "Generation is not configured correctly. Check the backend settings.",
+        canUseMockFallback: false,
+      };
     default:
       return {
         state,

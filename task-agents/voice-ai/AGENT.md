@@ -16,11 +16,26 @@ Own the audio, transcription, intent detection, and structured output behavior f
 - `task-agents/backend/AGENT.md`
 - `task-agents/frontend/AGENT.md`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `voice-ai-architecture` from `skills/README.md` when planning audio, transcription, and generation behavior.
-- Use `cost-aware-llm-pipeline` for model/provider cost and latency tradeoffs.
-- Use `ai-regression-testing` or `eval-harness` for golden examples and output quality checks.
+### Primary ECC
+
+- `eval-harness` for output quality, intent routing, prompts, and golden examples.
+- `ai-regression-testing` for schema, fixture, fallback, and provider regressions.
+- `cost-aware-llm-pipeline` for quality, latency, and provider cost tradeoffs.
+- `security-review` for voice data, transcripts, retention, logging, and provider boundaries.
+- `tdd-workflow` for deterministic routing, parsing, validation, and bug fixes.
+- `verification-loop` before handoff.
+
+### Superpowers
+
+- `superpowers:systematic-debugging` for nondeterministic or cross-provider failures.
+- `superpowers:verification-before-completion` before approving generation milestones.
+
+### Other And Project-Local
+
+- `.agents/skills/structured-code-review/SKILL.md` when reviewing Voice AI work.
+- Use the Voice AI architecture guidance in this brief, `requirements.md`, and existing output contracts.
 
 ## Scope
 
@@ -65,6 +80,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

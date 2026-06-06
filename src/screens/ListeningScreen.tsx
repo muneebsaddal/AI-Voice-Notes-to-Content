@@ -7,11 +7,11 @@ import { ListeningOrb, type ListeningOrbState } from "../components/ListeningOrb
 import { TopBar } from "../components/TopBar";
 import { motion } from "../theme/motion";
 import { fonts, spacing } from "../theme/theme";
+import { nextStateAfterSuccessfulTranscription } from "../flows/listeningFlow";
 import type {
   AudioLifecycleState,
   BackendFlowFailure,
   BackendFlowResult,
-  GeneratedOutput,
   RecordingCancelFlowResult,
   RecordingStartFlowResult,
   RecordingStopFlowResult,
@@ -21,7 +21,6 @@ import type {
 type ListeningScreenProps = {
   theme: Theme;
   selectedTypeLabel: string;
-  suggestedOutput: GeneratedOutput;
   transcript: string;
   onOpenSettings: () => void;
   onOpenHistory: () => void;
@@ -39,7 +38,6 @@ type ListeningScreenProps = {
 export function ListeningScreen({
   theme,
   selectedTypeLabel,
-  suggestedOutput,
   transcript,
   onOpenSettings,
   onOpenHistory,
@@ -82,7 +80,7 @@ export function ListeningScreen({
 
       if (result.ok) {
         setFailure(null);
-        setCaptureState("generating");
+        setCaptureState(nextStateAfterSuccessfulTranscription());
         return;
       }
 
@@ -297,7 +295,7 @@ export function ListeningScreen({
           <View style={[styles.transcriptCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
             <Badge label={selectedTypeLabel} theme={theme} />
             <Text style={[styles.suggestedTitle, { color: theme.colors.foreground }]}>
-              {suggestedOutput.title}
+              Suggested {selectedTypeLabel}
             </Text>
             <Text numberOfLines={6} style={[styles.transcript, { color: theme.colors.mutedForeground }]}>
               {transcript}

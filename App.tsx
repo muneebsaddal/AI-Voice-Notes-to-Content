@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFonts } from "@expo-google-fonts/geist/useFonts";
 import { Geist_400Regular } from "@expo-google-fonts/geist/400Regular";
 import { Geist_500Medium } from "@expo-google-fonts/geist/500Medium";
@@ -102,7 +102,6 @@ export default function App() {
     return () => clearTimeout(timeout);
   }, [toast]);
 
-  const generatedForType = useMemo(() => mockGeneratedOutput[selectedType], [selectedType]);
   const mockFallbackEnabled = isMockFallbackEnabled();
 
   const previewLifecycleState = useCallback((state: LifecyclePreviewState) => {
@@ -188,13 +187,16 @@ export default function App() {
     };
   }, [cancelRecording, stopRecording]);
 
-  const handleGenerate = useCallback(async (): Promise<BackendFlowResult> => {
+  const generateForType = useCallback(async (
+    outputType: OutputType,
+  ): Promise<BackendFlowResult> => {
     try {
       const response = await generateMockOutput({
         transcript,
-        outputType: selectedType,
+        outputType,
       });
 
+      setSelectedType(outputType);
       setOutput(response);
       setLifecyclePreview(null);
       setSheet(null);
@@ -210,7 +212,12 @@ export default function App() {
         ),
       };
     }
-  }, [mockFallbackEnabled, selectedType, transcript]);
+  }, [mockFallbackEnabled, transcript]);
+
+  const handleGenerate = useCallback(
+    async (): Promise<BackendFlowResult> => await generateForType(selectedType),
+    [generateForType, selectedType],
+  );
 
   const useMockFallback = useCallback((state: BackendFlowFailure["state"]) => {
     if (state === "recordingFailed" || state === "transcriptionFailed") {
@@ -271,7 +278,6 @@ export default function App() {
             <ListeningScreen
               theme={theme}
               selectedTypeLabel={outputTypeLabels[selectedType]}
-              suggestedOutput={generatedForType}
               transcript={transcript}
               onOpenSettings={() => setScreen("settings")}
               onOpenHistory={() => setSheet("history")}
@@ -319,11 +325,14 @@ export default function App() {
         theme={theme}
         visible={sheet === "changeType"}
         selectedType={selectedType}
-        onSelect={(type) => {
+        onSelect={async (type) => {
           setSelectedType(type);
           setSheet(null);
           if (screen === "output") {
-            setOutput(mockGeneratedOutput[type]);
+            const result = await generateForType(type);
+            if (!result.ok) {
+              setToast(result.failure.message);
+            }
           }
         }}
         onClose={() => setSheet(null)}

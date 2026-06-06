@@ -16,12 +16,26 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - `memory/context-packs/frontend-scaffold.md` for the first scaffold task
 - Lovable reference code in `tmp/lovable-project-169832d9-ed67-4bfd-a8ea-aee90c2278e0-2026-05-30`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `frontend-design` for UI implementation and interaction quality.
-- Use `.agents/skills/transitions-dev/SKILL.md` when planning or implementing smooth UI motion, including state swaps, page transitions, sheets, panels, success checks, and error feedback.
-- Use `e2e-testing` or `playwright` when validating clickable flows.
-- Use `verification-loop` before claiming the frontend is ready.
+### Primary ECC
+
+- `tdd-workflow` for behavior changes and bug fixes.
+- `verification-loop` before claiming the frontend is ready.
+- `e2e-testing` or `playwright` for critical clickable flows.
+- `ai-regression-testing` for mock/backend parity, retry, fallback, and state regressions.
+- `security-review` for microphone permission, temporary audio, uploads, local storage, or sensitive state.
+
+### Superpowers
+
+- `superpowers:systematic-debugging` for elusive UI or state failures.
+- `superpowers:verification-before-completion` for medium- or high-risk frontend milestones.
+
+### Other And Project-Local
+
+- `frontend-design` for UI implementation and interaction quality.
+- `.agents/skills/transitions-dev/SKILL.md` for motion, state swaps, sheets, panels, success checks, and error feedback.
+- `.agents/skills/structured-code-review/SKILL.md` when reviewing frontend work.
 
 ## Scope
 
@@ -73,6 +87,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

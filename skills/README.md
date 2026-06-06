@@ -1,140 +1,141 @@
-# Project-Local Skills
+# Project Skill System
 
-These are lightweight project-local skill guides for building AI Voice Notes To Content.
+Use skills in this order:
 
-The general installed skills are still useful. Use them for broader workflows such as brainstorming, writing plans, frontend design, verification, and debugging. These local skills exist to preserve project-specific standards and decisions.
+1. **ECC skills** are the default operating layer.
+2. **Superpowers skills** add process rigor, independent review, or orchestration when ECC does not already cover the need.
+3. **Other installed, plugin, or project-local skills** provide framework-specific or product-specific guidance.
 
-## Recommended Skill Areas
+Choose the smallest set that covers the task. Do not load overlapping skills by habit.
 
-### requirements-writing
+## Core ECC Skills
 
-Use when creating or updating `requirements.md`.
+Use these across the project:
 
-Focus on:
+| Task | Primary ECC skill |
+|---|---|
+| Implement a feature or bug fix | `tdd-workflow` |
+| Diagnose a failure | `agent-introspection-debugging` |
+| Execute and inspect repository work | `terminal-ops` |
+| Verify completed work | `verification-loop` |
+| Review maintainability and code quality | `plankton-code-quality` |
+| Review AI-assisted changes | `ai-regression-testing` |
+| Review APIs, uploads, privacy, or secrets | `security-review` |
+| Test critical user flows | `e2e-testing` or `playwright` |
+| Evaluate AI outputs and prompts | `eval-harness` |
+| Control LLM cost and latency | `cost-aware-llm-pipeline` |
+| Research current external facts | `research-ops`, `deep-research`, or `exa-search` |
+| Plan a scoped implementation | `blueprint` or `product-capability` |
+| Research before an unfamiliar implementation | `search-first` |
+| Audit agents, tools, and skills | `workspace-surface-audit` |
+| Improve agent/tool workflows | `agent-harness-construction` |
+| Prepare deployment or release workflows | `deployment-patterns` |
+| Manage context in long tasks | `strategic-compact` |
+| Operate GitHub issues, PRs, and repository workflows | `github-ops` |
 
-- Product vision
-- User personas
-- Core use cases
-- Functional requirements
-- Non-functional requirements
-- MVP vs later scope
-- Data model
-- Integrations
-- Privacy
-- Acceptance criteria
+## Superpowers Layer
 
-### ios-product-design
+Use after the relevant ECC skill:
 
-Use when designing the iOS user experience.
+| Need | Superpowers skill |
+|---|---|
+| Independent review | `superpowers:requesting-code-review` |
+| Evaluate received feedback | `superpowers:receiving-code-review` |
+| Strong completion evidence | `superpowers:verification-before-completion` |
+| Debug an elusive failure | `superpowers:systematic-debugging` |
+| Execute an accepted written plan | `superpowers:executing-plans` |
+| Delegate independent workstreams | `superpowers:dispatching-parallel-agents` |
+| Finish a reviewed branch | `superpowers:finishing-a-development-branch` |
 
-Focus on:
+Prefer ECC `tdd-workflow` over the overlapping Superpowers TDD skill unless a task explicitly requires the Superpowers workflow.
 
-- One-tap recording
-- Output preview/edit flow
-- History
-- Share/export
-- Clear permissions
-- Fast, calm, native-feeling UI
-- Minimal user decisions
+## Project And Specialist Layer
 
-### voice-ai-architecture
+- `.agents/skills/structured-code-review/SKILL.md`: mandatory review format for milestone, pre-commit, and specialist handoff reviews.
+- `skills/prompt-orchestration/SKILL.md`: prompts for bounded specialist-agent tasks.
+- `skills/research-planning/SKILL.md`: project-specific research-to-plan workflow.
+- `.agents/skills/transitions-dev/SKILL.md`: motion reference for Expo UI work.
+- `frontend-design`: production UI implementation.
+- `ui-ux-pro-max`: additional UX heuristics when a design problem needs them.
+- `content-engine` and `article-writing`: App Store, launch, or marketing content only.
+- `github-ops` or GitHub plugin skills: repository, PR, issue, and CI operations.
 
-Use when planning audio, transcription, and AI transformation.
+## Task Skill Stacks
 
-Focus on:
+### Frontend And Recording
 
-- Recording lifecycle
-- Audio permissions
-- Transcription pipeline
-- Prompt/output schemas
-- Error states
-- Latency
-- Cost control
-- Privacy
+1. `tdd-workflow`
+2. `verification-loop`
+3. `e2e-testing` or `playwright` for critical flows
+4. `security-review` for permissions, local files, uploads, or sensitive state
+5. `frontend-design` and `transitions-dev`
 
-### integration-planning
+### Backend And Providers
 
-Use when planning connections to other apps.
+1. `tdd-workflow`
+2. `security-review`
+3. `ai-regression-testing`
+4. `verification-loop`
+5. `cost-aware-llm-pipeline` for paid model providers
 
-Focus on:
+### Voice AI And Structured Generation
 
-- Notion
-- Apple Reminders
-- Apple Calendar
-- Gmail / Apple Mail
-- Todoist / Things / TickTick
-- Day One / Apple Journal
-- Slack / Teams
+1. `eval-harness`
+2. `ai-regression-testing`
+3. `cost-aware-llm-pipeline`
+4. `security-review`
+5. `verification-loop`
 
-Start with the smallest useful export path before deeper API integrations.
+### Testing And Review
 
-### app-store-launch
+1. `structured-code-review`
+2. `verification-loop`
+3. `ai-regression-testing`
+4. `security-review` when the changed surface requires it
+5. `e2e-testing` for user-flow risk
+6. `superpowers:requesting-code-review` for independent review
+7. `superpowers:verification-before-completion` before approval
 
-Use when preparing launch.
+### Privacy And Release
 
-Focus on:
+1. `security-review`
+2. `verification-loop`
+3. `deployment-patterns`
+4. `research-ops` for current platform requirements
+5. Project-specific App Store and privacy guidance
 
-- App Store positioning
-- Screenshots
-- Demo videos
-- Keywords
-- Pricing
-- Free tier limits
-- TestFlight feedback
-- Instagram launch content
+### Research And Planning
 
-### prompt-orchestration
+1. `research-ops`
+2. `deep-research` or `exa-search` when needed
+3. `blueprint` or `product-capability`
+4. `skills/research-planning/SKILL.md`
+5. `skills/prompt-orchestration/SKILL.md` for delegation
 
-Use when the lead developer needs to create prompts for specialist task-agent chats.
+## Review Standard
 
-Focus on:
+Every non-trivial implementation must pass:
 
-- Writing self-contained agent prompts
-- Assigning one bounded task per specialist chat
-- Making agents read the correct project memory files
-- Defining deliverables, verification, and handoff format
-- Keeping the lead developer as coordinator
-- Updating project memory when agent outputs change decisions
+1. Relevant narrow tests.
+2. The applicable project verification gates.
+3. A diff-based review using `structured-code-review`.
+4. Independent review for medium- or high-risk milestones when an independent agent is available.
 
-### transitions-dev
+Reviews must lead with severity-ranked, file-and-line findings. A summary without findings, evidence, verdict, and remaining test gaps is not a completed review.
 
-Use when the frontend agent needs smooth UI motion.
+## Project Guidance Areas
 
-Focus on:
+The following names describe project knowledge, not separately installed skills:
 
-- Listening orb state transitions
-- Sheet and panel reveals
-- Page/state transitions
-- Icon and text swaps
-- Success and error feedback
-- Reduced-motion-aware animation choices
-
-Note: this installed skill is CSS/web-oriented. For the Expo app, use it as a motion catalog and timing/easing reference, then translate the ideas into React Native animation primitives.
-
-### research-planning
-
-Use when researching options, comparing tools or architectures, writing implementation plans, or preparing context packs for specialist agents.
-
-Focus on:
-
-- Current external research with source links
-- Option comparisons
-- Smallest useful next step
-- Markdown plans under `task-agents/research-planning/plans/`
-- Context packs that reduce future token usage
+- Requirements writing: use `product-capability`, `requirements.md`, and `product-context.md`.
+- iOS product design: use `frontend-design`, `ui-ux-pro-max`, `ux-flow.md`, and the Lovable reference.
+- Voice AI architecture: use `cost-aware-llm-pipeline`, `eval-harness`, and the Voice AI agent brief.
+- Integration planning: use `api-connector-builder`, `product-capability`, and the smallest useful export path.
+- App Store launch: use current-source research plus the Privacy Release agent brief.
 
 ## Dedicated Task-Agent Briefs
 
 When work becomes specialized, create a task-agent folder under `task-agents/`.
-
-Examples:
-
-- `task-agents/requirements/AGENT.md`
-- `task-agents/ios-ux/AGENT.md`
-- `task-agents/voice-ai/AGENT.md`
-- `task-agents/integrations/AGENT.md`
-- `task-agents/privacy-review/AGENT.md`
-- `task-agents/app-store-launch/AGENT.md`
 
 Current specialist briefs:
 
@@ -142,6 +143,7 @@ Current specialist briefs:
 - `task-agents/backend/AGENT.md`
 - `task-agents/voice-ai/AGENT.md`
 - `task-agents/testing/AGENT.md`
+- `task-agents/reviewer/AGENT.md`
 - `task-agents/product-ux/AGENT.md`
 - `task-agents/privacy-release/AGENT.md`
 - `task-agents/research-planning/AGENT.md`
@@ -150,7 +152,7 @@ Each task-agent `AGENT.md` should include:
 
 - Mission
 - Context files to read
-- Relevant skills to use
+- Ordered skill stack
 - Scope
 - Deliverables
 - Constraints

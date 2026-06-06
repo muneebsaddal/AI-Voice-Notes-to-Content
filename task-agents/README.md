@@ -26,6 +26,7 @@ The MVP should now move from planning into implementation in this order:
 - `backend/AGENT.md` - API, provider integration, audio upload, transcription/generation endpoints.
 - `voice-ai/AGENT.md` - audio lifecycle, transcription contract, output schemas, prompt behavior.
 - `testing/AGENT.md` - automated tests, manual QA, regression risk, release gates.
+- `reviewer/AGENT.md` - independent diff review, findings, verification evidence, and approval verdict.
 - `product-ux/AGENT.md` - requirements, UX coherence, copy, App Store-facing product decisions.
 - `privacy-release/AGENT.md` - privacy, data retention, App Store review, TestFlight readiness.
 - `research-planning/AGENT.md` - current research, option comparisons, implementation plans, and context packs.
@@ -46,7 +47,7 @@ Each `AGENT.md` should include:
 
 - Mission
 - Context to read
-- Relevant skills
+- Ordered skill stack
 - Scope
 - Constraints
 - Deliverables
@@ -55,6 +56,41 @@ Each `AGENT.md` should include:
 - Definition of done
 
 Specialist agents should use relevant ECC skills by default. They should load only what they need, then report the skill used in their handoff.
+
+## Skill Selection Order
+
+All task agents use the project hierarchy in `skills/README.md`:
+
+1. ECC skills first.
+2. Superpowers skills second when they add review or execution rigor.
+3. Other installed, plugin, or project-local skills last.
+
+Each specialist brief lists a role-specific stack. Agents should not load every listed skill. Select the smallest set that covers the assigned task and explain the selection in the handoff.
+
+## Review Workflow
+
+Implementation and review are separate responsibilities:
+
+1. The implementing agent runs relevant narrow tests and `verification-loop`.
+2. The lead or reviewer inspects the diff using `.agents/skills/structured-code-review/SKILL.md`.
+3. Medium- and high-risk changes should be reviewed by an agent that did not implement them when available.
+4. `security-review` is mandatory for audio handling, uploads, user-controlled input, secrets, storage, retention, privacy, external providers, and release-sensitive configuration.
+5. `ai-regression-testing` is mandatory for mock/real provider parity, output contracts, fallback behavior, retry behavior, and fixed regressions.
+6. The reviewer returns severity-ranked findings, verification evidence, test gaps, and an explicit verdict.
+
+No-findings reviews must say that directly. Review summaries without file/line evidence, verification, and a verdict do not satisfy the review gate.
+
+## Test Command Ownership
+
+- By default, specialist agents provide exact verification commands for the
+  user to run rather than launching them.
+- Include expected duration and the point at which the user should stop a
+  command that returns no output.
+- Accept current pasted terminal results as evidence; do not rerun passing
+  commands.
+- Agents may still use read-only inspection commands.
+- Agent-run test or service commands require an explicit user request or a
+  task-specific reason stated before execution.
 
 ## Coordination Rules
 
@@ -65,5 +101,6 @@ Specialist agents should use relevant ECC skills by default. They should load on
 - Agents should read `product-context.md`, `requirements.md`, `ux-flow.md`, `skills/README.md`, this file, and relevant `memory/context-packs/` when the task needs that detail.
 - Agents should produce concrete deliverables: files changed, test cases, risks, or implementation notes.
 - Agents should keep the core promise in view: **Say it once. Use it everywhere.**
+- Agents must follow the review and skill hierarchy in `skills/README.md`.
 - Agents that change files must commit approved changes after user or reviewer-agent review, or ask for review and commit approval before finishing.
-- Every handoff should include the skill used, what changed, what was verified, files touched, commit status, risks/open questions, and the recommended next task prompt.
+- Every handoff should include the skills used in priority order, what changed, what was verified, files touched, review status, commit status, risks/open questions, and the recommended next task prompt.

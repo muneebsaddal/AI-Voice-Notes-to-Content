@@ -6,9 +6,11 @@ import {
   buildTranscriptionFormData,
   getApiBaseUrl,
   isMockFallbackEnabled,
+  resolveRecordingUploadFormat,
   transcribeRecordingAsset,
 } from "../src/api/transcriptionClient.ts";
 import { processRetainedRecording } from "../src/flows/transcriptionFlow.ts";
+import { nextStateAfterSuccessfulTranscription } from "../src/flows/listeningFlow.ts";
 
 const asset = {
   id: "recording-1",
@@ -83,6 +85,120 @@ describe("frontend transcription client", () => {
     ]);
   });
 
+  it("uses m4a metadata for Android content URIs without an extension", async () => {
+    const nativeAsset = {
+      ...asset,
+      uri: "content://media/external/audio/recording-1",
+      mimeType: undefined,
+    };
+    const appended = [];
+
+    await buildTranscriptionFormData(nativeAsset, {
+      platform: "native",
+      formDataFactory: () => ({
+        append(name, value, filename) {
+          appended.push([name, value, filename]);
+        },
+      }),
+    });
+
+    assert.deepEqual(appended[0], [
+      "file",
+      {
+        uri: nativeAsset.uri,
+        name: "recording.m4a",
+        type: "audio/mp4",
+      },
+      undefined,
+    ]);
+  });
+
+  it("preserves an Android m4a filename with the native preset MIME type", () => {
+    assert.deepEqual(
+      resolveRecordingUploadFormat({
+        platform: "native",
+        uri: "file:///data/user/0/host.exp.exponent/cache/android-note.m4a",
+      }),
+      {
+        extension: "m4a",
+        filename: "android-note.m4a",
+        mimeType: "audio/mp4",
+      },
+    );
+  });
+
+  it("keeps native HIGH_QUALITY metadata aligned when the URI is ambiguous", () => {
+    assert.deepEqual(
+      resolveRecordingUploadFormat({
+        platform: "native",
+        uri: "file:///data/user/0/host.exp.exponent/cache/recording",
+      }),
+      {
+        extension: "m4a",
+        filename: "recording.m4a",
+        mimeType: "audio/mp4",
+      },
+    );
+  });
+
+  it("derives web upload metadata from the produced blob", async () => {
+    const appended = [];
+
+    await buildTranscriptionFormData(
+      {
+        ...asset,
+        mimeType: undefined,
+      },
+      {
+        platform: "web",
+        fetchImplementation: async () =>
+          new Response(new Blob(["voice"], { type: "audio/webm;codecs=opus" })),
+        formDataFactory: () => ({
+          append(name, value, filename) {
+            appended.push([name, value, filename]);
+          },
+        }),
+      },
+    );
+
+    assert.equal(appended[0][0], "file");
+    assert.equal(appended[0][2], "recording.webm");
+    assert.equal(appended[0][1].type, "audio/webm");
+  });
+
+  it("emits safe upload diagnostics without exposing the recording URI", async () => {
+    const diagnostics = [];
+
+    await transcribeRecordingAsset(
+      {
+        ...asset,
+        uri: "content://private/recording-secret",
+        mimeType: undefined,
+      },
+      {
+        apiBaseUrl: "http://192.168.1.20:3333",
+        platform: "native",
+        requestIdFactory: () => "req-safe-123",
+        diagnosticLogger: (event, metadata) => diagnostics.push([event, metadata]),
+        fetchImplementation: async (_input, init) => {
+          assert.equal(init.headers["x-request-id"], "req-safe-123");
+          return Response.json(transcription, {
+            headers: { "x-request-id": "req-safe-123" },
+          });
+        },
+        formDataFactory: () => ({
+          append() {},
+        }),
+      },
+    );
+
+    assert.equal(diagnostics.length >= 2, true);
+    assert.equal(JSON.stringify(diagnostics).includes("recording-secret"), false);
+    assert.equal(diagnostics[0][1].extension, "m4a");
+    assert.equal(diagnostics[0][1].mimeType, "audio/mp4");
+    assert.equal(diagnostics.at(-1)[1].requestId, "req-safe-123");
+  });
+
   it("uses the configured API base URL and lets fetch set the multipart boundary", async () => {
     let receivedUrl = "";
     let receivedInit;
@@ -102,7 +218,8 @@ describe("frontend transcription client", () => {
 
     assert.equal(receivedUrl, "http://192.168.1.20:3333/api/transcriptions");
     assert.equal(receivedInit.method, "POST");
-    assert.equal(receivedInit.headers, undefined);
+    assert.equal(typeof receivedInit.headers["x-request-id"], "string");
+    assert.equal("content-type" in receivedInit.headers, false);
     assert(receivedInit.body instanceof FormData);
     assert.deepEqual(result, transcription);
   });
@@ -129,7 +246,8 @@ describe("frontend transcription client", () => {
       (error) =>
         error instanceof MockBackendClientError &&
         error.code === "transcription_unavailable" &&
-        error.status === 503,
+        error.status === 503 &&
+        error.boundary === "sidecar",
     );
 
     await assert.rejects(
@@ -162,7 +280,8 @@ describe("frontend transcription client", () => {
       }),
       (error) =>
         error instanceof MockBackendClientError &&
-        error.code === "transcription_unavailable",
+        error.code === "transcription_unavailable" &&
+        error.boundary === "timeout",
     );
   });
 
@@ -246,5 +365,11 @@ describe("retained recording transcription flow", () => {
     });
 
     assert.deepEqual(result, { response: transcription, cleanupFailed: true });
+  });
+});
+
+describe("listening flow", () => {
+  it("shows output confirmation after transcription instead of generating immediately", () => {
+    assert.equal(nextStateAfterSuccessfulTranscription(), "suggested");
   });
 });

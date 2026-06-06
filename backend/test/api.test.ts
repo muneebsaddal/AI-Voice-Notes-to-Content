@@ -4,6 +4,7 @@ import { createServer, type Server } from "node:http";
 import { after, before, describe, it } from "node:test";
 
 import { createApp } from "../src/app";
+import { generationUnavailableError } from "../src/errors";
 import { goldenGeneratedOutputs } from "../src/goldenFixtures";
 
 type JsonRecord = Record<string, unknown>;
@@ -141,6 +142,28 @@ describe("mock API contracts", () => {
       assert.equal(typeof response.json.payload, "object");
       assert.ok(Array.isArray(response.json.warnings));
       assert.equal("sourceTranscript" in response.json, false);
+    }
+  });
+
+  it("grounds every generated output type in the submitted transcript", async () => {
+    const transcript =
+      "Solar compass review: call Priya about the launch checklist and bring the blue prototype on Friday.";
+
+    for (const outputType of ["note", "todo", "email", "journal", "content"] as const) {
+      const response = await requestJson("/api/generations", {
+        method: "POST",
+        body: {
+          transcript,
+          outputType,
+        },
+      });
+
+      assert.equal(response.status, 200);
+      assert.match(String(response.json.body), /solar compass/i);
+      assert.notEqual(
+        response.json.body,
+        goldenGeneratedOutputs[outputType].body,
+      );
     }
   });
 
@@ -362,6 +385,49 @@ describe("mock API contracts", () => {
         message: "Generation failed.",
       },
     });
+  });
+
+  it("returns a stable retryable error without substituting a local result", async () => {
+    const providerServer = createServer(
+      createApp({
+        generateOutput: async () => {
+          throw generationUnavailableError;
+        },
+      }),
+    );
+
+    await new Promise<void>((resolve) => {
+      providerServer.listen(0, "127.0.0.1", resolve);
+    });
+
+    const originalBaseUrl = baseUrl;
+    const address = providerServer.address();
+    assert(address && typeof address === "object");
+    baseUrl = `http://127.0.0.1:${address.port}`;
+
+    try {
+      const response = await requestJson("/api/generations", {
+        method: "POST",
+        body: {
+          transcript: "Keep this as a note about launch code ZX-42.",
+          outputType: "note",
+        },
+      });
+
+      assert.equal(response.status, 503);
+      assert.deepEqual(response.json, {
+        error: {
+          code: "generation_unavailable",
+          message: "Generation is temporarily unavailable. Try again.",
+        },
+      });
+      assert.equal("outputType" in response.json, false);
+    } finally {
+      baseUrl = originalBaseUrl;
+      await new Promise<void>((resolve, reject) => {
+        providerServer.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
   });
 
   it("distinguishes invalid generated output from a transient generation failure", async () => {

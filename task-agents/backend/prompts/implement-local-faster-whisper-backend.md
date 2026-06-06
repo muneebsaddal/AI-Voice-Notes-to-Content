@@ -23,8 +23,8 @@ Read these files before editing:
 - `task-agents/voice-ai/AGENT.md`
 - `task-agents/research-planning/plans/real-transcription-integration.md`
 
-Use the project-local voice AI architecture guidance plus `tdd-workflow`,
-`backend-patterns`, `security-review`, and `verification-loop` where available.
+Use the ordered stack in `task-agents/backend/AGENT.md`: `tdd-workflow`,
+`security-review`, `ai-regression-testing`, and `verification-loop`.
 
 ## Goal
 

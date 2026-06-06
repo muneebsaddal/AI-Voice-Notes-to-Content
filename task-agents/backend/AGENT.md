@@ -16,11 +16,26 @@ Build the backend foundation for secure audio upload, transcription, AI transfor
 - `task-agents/voice-ai/AGENT.md`
 - `task-agents/privacy-release/AGENT.md`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `backend-patterns` for API structure and provider boundaries when available.
-- Use `security-review` for secret handling, request validation, retention, and logging.
-- Use `tdd-workflow` or `verification-loop` for API contracts and risky parsing behavior.
+### Primary ECC
+
+- `tdd-workflow` for endpoints, providers, parsing, and bug fixes.
+- `security-review` for uploads, request validation, secrets, retention, logging, and external providers.
+- `ai-regression-testing` for API contracts, mock/real parity, fallback behavior, and fixed regressions.
+- `verification-loop` before handoff.
+- `cost-aware-llm-pipeline` for paid transcription or generation providers.
+- `api-connector-builder` when adding a new external provider or integration.
+
+### Superpowers
+
+- `superpowers:systematic-debugging` for cross-service failures.
+- `superpowers:verification-before-completion` for provider and API milestones.
+
+### Other And Project-Local
+
+- `.agents/skills/structured-code-review/SKILL.md` when reviewing backend work.
+- Use existing backend patterns in the repository before introducing new abstractions.
 
 ## Scope
 
@@ -66,6 +81,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

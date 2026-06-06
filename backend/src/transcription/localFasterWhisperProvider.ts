@@ -80,6 +80,7 @@ export class LocalFasterWhisperProvider implements TranscriptionProvider {
 
     try {
       const bytes = await readFile(input.filePath);
+      controller.signal.throwIfAborted();
       const form = new FormData();
       form.append("file", new Blob([bytes], { type: input.mimeType }), input.filename);
       if (input.language) {

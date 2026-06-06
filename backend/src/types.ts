@@ -127,6 +127,8 @@ export type ApiErrorCode =
   | "transcription_unavailable"
   | "transcription_failed"
   | "generation_failed"
+  | "generation_unavailable"
+  | "generation_configuration_error"
   | "invalid_generated_output"
   | "internal_error"
   | "unsupported_output_type"

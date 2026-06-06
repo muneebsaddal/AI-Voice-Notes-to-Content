@@ -82,6 +82,47 @@ Recommended mappings:
 
 Do not force a skill when the task is a tiny direct command, but for planning, coding, review, release, privacy, prompt orchestration, or agent configuration work, assume a relevant skill should be used.
 
+### Skill Priority
+
+Select skills in this order:
+
+1. ECC skills first for engineering, testing, verification, security, research, planning, and agent operations.
+2. Superpowers skills second when they add independent review, process rigor, plan execution, or multi-agent orchestration not already supplied by the chosen ECC skill.
+3. Other installed, plugin, or project-local skills last for framework-specific, design-specific, or project-specific guidance.
+
+Use the smallest non-overlapping skill set that covers the task. Read `skills/README.md` for the canonical project skill matrix and task stacks.
+
+Default implementation stack:
+
+- `tdd-workflow` while changing behavior.
+- `verification-loop` before completion.
+- `ai-regression-testing` for API, mock/real provider, fallback, and structured-output changes.
+- `security-review` for audio, uploads, user input, secrets, storage, retention, privacy, or external providers.
+- `e2e-testing` or `playwright` for critical user flows.
+- `eval-harness` for AI generation quality, routing, prompts, and golden examples.
+
+Use `superpowers:requesting-code-review` for independent review when available and `superpowers:verification-before-completion` before approving medium- or high-risk milestones.
+
+### Structured Review Gate
+
+Use `.agents/skills/structured-code-review/SKILL.md` for implementation reviews, specialist handoff reviews, milestone reviews, and pre-commit approval.
+
+Every completed non-trivial change must have:
+
+1. Acceptance criteria traced to the changed behavior.
+2. Relevant automated verification with fresh command evidence.
+3. A diff-based review with severity-ranked findings and file/line references.
+4. An explicit verdict: `APPROVE`, `APPROVE WITH FOLLOW-UPS`, or `CHANGES REQUIRED`.
+5. Remaining test gaps and residual risk stated plainly.
+
+Risk levels:
+
+- Low: docs, copy, isolated styles, or mechanically safe changes. Self-review plus relevant verification is acceptable.
+- Medium: shared UI state, storage, API contracts, provider adapters, retries, or cross-layer behavior. Prefer an independent reviewer.
+- High: audio deletion/retention, uploads, privacy, secrets, billing, migrations, authentication, release configuration, or destructive behavior. Require independent review when available plus `security-review`.
+
+The reviewer must inspect the diff and tests directly rather than relying on the implementer's handoff. The implementer must not silently treat their own summary as review approval.
+
 ## Verification Timebox And Stop Rule
 
 Optional browser, simulator, device, DevTools, local-service, or other manual
@@ -105,6 +146,28 @@ smoke checks must not delay an otherwise verified task indefinitely.
   holding completion on optional tooling.
 - When the user asks for a bounded action such as commit and push, complete
   that action and report it before beginning the next feature.
+
+## User-Run Test Commands
+
+In this workspace, some agent-started test commands can return no visible
+status even when the same command completes immediately in the user's terminal.
+
+- Do not automatically run test, build, lint, typecheck, audit, Expo, backend,
+  Python service, or model commands unless the user explicitly asks the agent
+  to run them.
+- Give the user the exact command or short ordered command list to run.
+- State the normal expected duration and a clear stop threshold.
+- Wait for the user to paste the result, then treat that output as verification
+  evidence and continue the task.
+- Do not rerun a command after the user has supplied a current passing result.
+- Read-only inspection commands remain available to agents.
+- If an automated command must be agent-run for a specific task, explain why
+  before running it and keep the existing timeout and stop rules.
+
+Current accepted verification evidence:
+
+- `npm run backend:test`: 41 tests, 5 suites, 41 passed, 0 failed,
+  completed in 298.2512 ms on 2026-06-07.
 
 ## Current Build Direction
 
@@ -431,6 +494,8 @@ Every agent that changes files must either:
 - Ask for review and commit approval if the changes have not yet been reviewed.
 
 Do not silently leave file changes uncommitted. Do not commit before review unless the task prompt or user explicitly says to commit now.
+
+Before requesting commit approval, report the structured review verdict and verification evidence. Do not commit changes with unresolved `P0` or `P1` findings.
 
 ## Multi-Chat Coordination Workflow
 

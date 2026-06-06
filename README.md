@@ -26,8 +26,10 @@ ports the final Lovable direction into the first MVP flow. Real Expo microphone
 permission and recording retention are implemented. The backend now has a
 provider-neutral transcription boundary, bounded multipart audio upload, and a
 localhost `faster-whisper` provider plus a tested Python sidecar. The frontend
-still uses the temporary JSON transcription bridge until the next multipart
-upload increment. Real structured generation, auth, payments, analytics,
+uploads retained recordings as multipart audio. Native Expo `HIGH_QUALITY`
+recordings are sent as `.m4a`/`audio/mp4`, including opaque Android content
+URIs. The backend also has provider-neutral structured generation with a local
+formatter and an OpenAI Responses API provider. Auth, payments, analytics,
 history storage, and native exports are not wired yet.
 
 Current flow:
@@ -104,9 +106,31 @@ The local backend listens on `http://127.0.0.1:3333` by default. Set `PORT` or
 and a localhost `faster-whisper` provider. See
 `services/local-transcription/README.md` for the Windows setup.
 
+Generation configuration:
+
+```text
+GENERATION_PROVIDER=local
+GENERATION_TIMEOUT_MS=15000
+```
+
+For real AI generation, set:
+
+```text
+GENERATION_PROVIDER=openai
+OPENAI_API_KEY=your-server-side-key
+OPENAI_GENERATION_MODEL=your-structured-output-capable-model
+```
+
+The model is configuration-driven. The OpenAI provider uses the Responses API
+with strict JSON Schema, does not store responses, retries only transient
+network, rate-limit, and provider 5xx failures, and never falls back silently
+to the local formatter.
+
 The Expo app uploads the retained recording as multipart `file`, `durationMs`,
 and `audioId`. It keeps the recording after upload/provider failures for retry
-and deletes it only after accepting a valid transcript. The backend JSON
+and deletes it only after accepting a valid transcript. Development diagnostics
+include only safe format metadata, byte size when available, and a request ID,
+never audio URIs, audio contents, or transcript text. The backend JSON
 transcription request remains a temporary compatibility bridge for older test
 and development callers.
 
@@ -180,10 +204,11 @@ Structured errors use:
 
 Transcription errors include `invalid_request_body`, `unsupported_audio_type`,
 `audio_too_large`, `recording_upload_failed`, `transcription_unavailable`, and
-`transcription_failed`. Other API errors include `generation_failed`,
-`internal_error`, `unsupported_output_type`, `not_found`, and
-`method_not_allowed`. Permission denial remains a frontend/local state, not a
-backend error.
+`transcription_failed`. Generation errors include `generation_failed`,
+`generation_unavailable`, `generation_configuration_error`, and
+`invalid_generated_output`. Other API errors include `internal_error`,
+`unsupported_output_type`, `not_found`, and `method_not_allowed`. Permission
+denial remains a frontend/local state, not a backend error.
 
 ## MVP Scope
 

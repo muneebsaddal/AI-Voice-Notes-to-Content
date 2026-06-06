@@ -17,11 +17,25 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 - `task-agents/backend/AGENT.md`
 - `task-agents/voice-ai/AGENT.md`
 
-## Relevant Skills
+## Skill Stack
 
-- Use `verification-loop` for release gates and evidence collection.
-- Use `e2e-testing` for Playwright/manual browser or app flow checks when applicable.
-- Use `ai-regression-testing` for AI output contracts and golden examples.
+### Primary ECC
+
+- `verification-loop` for repeatable quality gates and evidence.
+- `ai-regression-testing` for contracts, fixtures, mock/real parity, fallbacks, retries, and fixed bugs.
+- `e2e-testing` or `playwright` for critical user flows.
+- `eval-harness` for AI output quality, routing, and prompt behavior.
+- `security-review` for abuse cases around uploads, input, retention, privacy, and secrets.
+- `tdd-workflow` when adding tests alongside a feature or bug fix.
+
+### Superpowers
+
+- `superpowers:systematic-debugging` when a test fails without a clear cause.
+- `superpowers:verification-before-completion` before release-gate approval.
+
+### Other And Project-Local
+
+- `.agents/skills/structured-code-review/SKILL.md` when the task includes implementation review.
 
 ## Scope
 
@@ -68,6 +82,7 @@ Before finishing, report:
 - What was verified
 - Files touched
 - Commit status
+- Review status
 - Risks or open questions
 - Recommended next task prompt
 

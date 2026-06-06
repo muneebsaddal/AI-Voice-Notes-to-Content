@@ -38,6 +38,24 @@ export const invalidGeneratedOutputError = new ApiError(
   502,
 );
 
+export const generationUnavailableError = new ApiError(
+  "generation_unavailable",
+  "Generation is temporarily unavailable. Try again.",
+  503,
+);
+
+export const generationConfigurationError = new ApiError(
+  "generation_configuration_error",
+  "Generation is not configured correctly.",
+  503,
+);
+
+export const generationFailedError = new ApiError(
+  "generation_failed",
+  "Generation could not process this transcript.",
+  422,
+);
+
 export const unsupportedAudioTypeError = new ApiError(
   "unsupported_audio_type",
   "Unsupported audio type.",

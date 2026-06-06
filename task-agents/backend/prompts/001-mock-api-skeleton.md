@@ -25,11 +25,12 @@ Read these files before changing code:
 - `task-agents/voice-ai/AGENT.md`
 - `task-agents/privacy-release/AGENT.md`
 
-Use relevant ECC/project skills:
+Use the ordered stack in `task-agents/backend/AGENT.md`:
 
-- `backend-patterns` if available, for API structure and provider boundaries.
-- `security-review` for secret handling, request validation, safe logging, and retention.
-- `verification-loop` or `tdd-workflow` for tests and quality gates.
+- `tdd-workflow` for endpoint behavior.
+- `security-review` for request validation, safe logging, and retention.
+- `ai-regression-testing` for API contract and mock-path parity.
+- `verification-loop` before handoff.
 
 ## Goal
 

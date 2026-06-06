@@ -16,7 +16,7 @@
     "transcription:dev": "python -m uvicorn app.main:app --app-dir services/local-transcription --host 127.0.0.1 --port 8001",
     "transcription:test": "python -m pytest -p no:cacheprovider services/local-transcription/tests",
     "recording:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/recordingSession.test.mjs",
-    "frontend:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/frontendTranscription.test.mjs",
+    "frontend:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/frontendTranscription.test.mjs test/frontendUxState.test.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "npm run typecheck && npm run recording:test && npm run frontend:test && npm run backend:test"
@@ -32,6 +32,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "^0.85.3",
+    "react-native-gesture-handler": "~2.31.1",
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {

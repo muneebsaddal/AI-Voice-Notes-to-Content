@@ -224,13 +224,15 @@ Acceptance criteria:
 1. User reviews generated output.
 2. User edits title and body.
 3. User saves output.
-4. User can reopen it from history.
+4. User can reopen it from history in a read-only detail view.
 5. User can copy/share/export from history.
 
 Acceptance criteria:
 
 - Edits are preserved.
 - History displays meaningful title, output type, date, and preview.
+- Completed history items do not expose typing or inline editing controls.
+- Back from a history detail returns to History at the user's prior position.
 - Delete is available and confirmed.
 
 ### 8.5 Basic Notion Export
@@ -702,7 +704,7 @@ Core screens:
 - Suggested output confirmation state.
 - Output preview/edit screen.
 - History list.
-- History detail.
+- Read-only history detail.
 - Settings/privacy screen.
 - Paywall screen later.
 
@@ -912,7 +914,7 @@ Privacy-mode backlog:
 UX backlog:
 
 - Add a power-user setting for `Start recording when app opens` after the default one-tap recording flow is stable.
-- Use swipe up from the recording home screen to reveal history/task list as a secondary sheet or drawer.
+- Keep swipe-up History navigation paired with visible open and close controls.
 - Test whether the main listening control should use text, icon-only, or icon plus subtle state label.
 - Explore a main app/control icon based on a listening orb, voice aperture, wave lens, or abstract pulse instead of a literal microphone or record dot.
 
@@ -982,6 +984,7 @@ When requirements change:
 
 ## 26. Change Log
 
+- 2026-06-07: Locked completed History entries to a read-only detail view, required Back to preserve the History entry point and scroll position, retained visible controls alongside History gestures, and selected a spatially stable wave-lens-to-stop transition for the main listening control.
 - 2026-06-06: Selected local `faster-whisper` on the development laptop for transcription testing; kept transcription contracts provider-neutral; set fully local iPhone processing as the preferred long-term direction pending an on-device feasibility spike and cloud fallback validation.
 - 2026-05-31: Marked requirements as implementation-ready for the first frontend increment; documented Lovable as the MVP UI source of truth; updated milestones to reflect frontend-first build order and backend-after-mock-flow sequencing.
 - 2026-05-24: Updated visual direction from red recording identity to blue listening identity; added dark theme requirement and main icon exploration direction.

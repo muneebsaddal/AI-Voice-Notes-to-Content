@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  PanGestureHandler,
+  State,
+  type PanGestureHandlerStateChangeEvent,
+} from "react-native-gesture-handler";
 import { AppButton } from "../components/AppButton";
 import { Badge } from "../components/Badge";
 import { IconText } from "../components/IconText";
-import { ListeningOrb, type ListeningOrbState } from "../components/ListeningOrb";
+import { ListeningOrb } from "../components/ListeningOrb";
 import { TopBar } from "../components/TopBar";
 import { motion } from "../theme/motion";
 import { fonts, spacing } from "../theme/theme";
 import { nextStateAfterSuccessfulTranscription } from "../flows/listeningFlow";
+import {
+  getListeningVisualState,
+  shouldAnimateListeningStage,
+} from "../flows/listeningVisualState";
+import { shouldOpenHistory } from "../gestures/verticalSheetGesture";
 import type {
   AudioLifecycleState,
   BackendFlowFailure,
@@ -55,6 +65,7 @@ export function ListeningScreen({
   const [failure, setFailure] = useState<BackendFlowFailure | null>(null);
   const [contentOpacity] = useState(() => new Animated.Value(1));
   const [errorShake] = useState(() => new Animated.Value(0));
+  const previousCaptureState = useRef<AudioLifecycleState>(captureState);
 
   useEffect(() => {
     if (!previewState) {
@@ -120,6 +131,14 @@ export function ListeningScreen({
   }, [captureState, onGenerate]);
 
   useEffect(() => {
+    const previous = previousCaptureState.current;
+    previousCaptureState.current = captureState;
+
+    if (!shouldAnimateListeningStage(previous, captureState)) {
+      contentOpacity.setValue(1);
+      return;
+    }
+
     contentOpacity.setValue(0);
     Animated.timing(contentOpacity, {
       toValue: 1,
@@ -163,17 +182,7 @@ export function ListeningScreen({
     ]).start();
   }, [captureState, errorShake]);
 
-  const orbState: ListeningOrbState =
-    captureState === "idle"
-      ? "idle"
-      : captureState === "recording"
-        ? "stop"
-        : captureState === "starting" ||
-            captureState === "stopping" ||
-            captureState === "transcribing" ||
-            captureState === "generating"
-          ? "processing"
-          : "listening";
+  const visualState = getListeningVisualState(captureState);
 
   const handleOrbPress = async () => {
     if (captureState === "idle") {
@@ -226,6 +235,21 @@ export function ListeningScreen({
 
     if (captureState === "generationFailed") {
       setCaptureState("generating");
+    }
+  };
+
+  const handleHistoryGesture = (
+    event: PanGestureHandlerStateChangeEvent,
+  ) => {
+    if (
+      event.nativeEvent.oldState === State.ACTIVE &&
+      shouldOpenHistory({
+        translationX: event.nativeEvent.translationX,
+        translationY: event.nativeEvent.translationY,
+        velocityY: event.nativeEvent.velocityY,
+      })
+    ) {
+      onOpenHistory();
     }
   };
 
@@ -318,67 +342,77 @@ export function ListeningScreen({
   }
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-      <TopBar theme={theme} onMore={onOpenSettings} />
-      <Animated.View style={[styles.centerStage, { opacity: contentOpacity }]}>
-        <ListeningOrb state={orbState} theme={theme} onPress={handleOrbPress} />
-        {captureState === "starting" && (
-          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
-            Opening the microphone
-          </Text>
-        )}
-        {captureState === "stopping" && (
-          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
-            Finishing your recording
-          </Text>
-        )}
-        {captureState === "transcribing" && (
-          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
-            Transcribing your note
-          </Text>
-        )}
-        {captureState === "generating" && (
-          <Text style={[styles.processingText, { color: theme.colors.mutedForeground }]}>
-            Creating your {selectedTypeLabel.toLowerCase()}
-          </Text>
-        )}
-      </Animated.View>
-      <View style={styles.footer}>
-        {captureState === "recording" ? (
-          <AppButton
-            label="Cancel"
+    <PanGestureHandler
+      enabled={captureState === "idle"}
+      activeOffsetY={[-12, 12]}
+      failOffsetX={[-32, 32]}
+      onHandlerStateChange={handleHistoryGesture}
+    >
+      <Animated.View
+        style={[styles.screen, { backgroundColor: theme.colors.background }]}
+      >
+        <TopBar theme={theme} onMore={onOpenSettings} />
+        <Animated.View style={[styles.centerStage, { opacity: contentOpacity }]}>
+          <ListeningOrb
+            state={visualState.orbState}
             theme={theme}
-            variant="secondary"
-            onPress={async () => {
-              const result = await onCancelRecording();
-
-              if (result.ok) {
-                setFailure(null);
-                setCaptureState("idle");
-              } else {
-                setFailure({
-                  state: "recordingFailed",
-                  kind: "recordingCaptureFailed",
-                  message: result.error.message,
-                  canUseMockFallback: false,
-                });
-                setCaptureState("recordingFailed");
-              }
-            }}
-            style={styles.cancelButton}
+            onPress={visualState.interactive ? handleOrbPress : undefined}
           />
-        ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open history"
-            onPress={onOpenHistory}
-            style={styles.historyAffordance}
-          >
-            <IconText name="chevronUp" theme={theme} color={theme.colors.mutedForeground} size={30} />
-          </Pressable>
-        )}
-      </View>
-    </View>
+          {visualState.status && (
+            <Text
+              style={[
+                styles.processingText,
+                { color: theme.colors.mutedForeground },
+              ]}
+            >
+              {captureState === "generating"
+                ? `Creating your ${selectedTypeLabel.toLowerCase()}`
+                : visualState.status}
+            </Text>
+          )}
+        </Animated.View>
+        <View style={styles.footer}>
+          {captureState === "recording" ? (
+            <AppButton
+              label="Cancel"
+              theme={theme}
+              variant="secondary"
+              onPress={async () => {
+                const result = await onCancelRecording();
+
+                if (result.ok) {
+                  setFailure(null);
+                  setCaptureState("idle");
+                } else {
+                  setFailure({
+                    state: "recordingFailed",
+                    kind: "recordingCaptureFailed",
+                    message: result.error.message,
+                    canUseMockFallback: false,
+                  });
+                  setCaptureState("recordingFailed");
+                }
+              }}
+              style={styles.cancelButton}
+            />
+          ) : captureState === "idle" ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open history"
+              onPress={onOpenHistory}
+              style={styles.historyAffordance}
+            >
+              <IconText
+                name="chevronUp"
+                theme={theme}
+                color={theme.colors.mutedForeground}
+                size={30}
+              />
+            </Pressable>
+          ) : null}
+        </View>
+      </Animated.View>
+    </PanGestureHandler>
   );
 }
 

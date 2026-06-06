@@ -252,6 +252,9 @@ Behavior:
 - Each item shows title, output type, date, and short preview.
 - Tapping an item opens history detail.
 - Swipe down or drag closes the sheet.
+- The existing chevron-up control opens History without a gesture.
+- A visible close control, backdrop tap, and Android hardware Back dismiss History.
+- When a history item is opened, Back returns to History at the previous scroll position.
 
 UX requirements:
 
@@ -261,15 +264,15 @@ UX requirements:
 
 ## 12. History Detail
 
-Purpose: reopen, edit, share, copy, or delete a saved output.
+Purpose: reopen and reuse a completed output without accidentally changing the saved record.
 
-Actions:
+Behavior:
 
-- Edit title/body.
-- Copy.
-- Share.
-- Delete.
-- Regenerate as another type if transcript is stored and available.
+- Completed history items are read-only.
+- Title and body are selectable but do not use text inputs or open the keyboard.
+- Copy and Share remain available.
+- Back returns to History, not recording home, when History was the entry point.
+- A future explicit edit mode may add editing, delete, or regeneration after those behaviors and persistence rules are designed.
 
 Open privacy question:
 

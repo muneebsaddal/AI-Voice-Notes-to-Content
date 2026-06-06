@@ -9,6 +9,8 @@ export const motion = {
   successMs: 520,
   orbBreatheMs: 3200,
   orbPulseMs: 2200,
+  orbSpinMs: 1400,
+  orbWaveMs: 1040,
   easeOut: Easing.bezier(0.22, 1, 0.36, 1),
   easeInOut: Easing.inOut(Easing.ease),
 };

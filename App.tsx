@@ -1,3 +1,5 @@
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 import { useCallback, useEffect, useState } from "react";
 import { useFonts } from "@expo-google-fonts/geist/useFonts";
 import { Geist_400Regular } from "@expo-google-fonts/geist/400Regular";
@@ -7,6 +9,7 @@ import { Geist_700Bold } from "@expo-google-fonts/geist/700Bold";
 import { Geist_800ExtraBold } from "@expo-google-fonts/geist/800ExtraBold";
 import { Geist_900Black } from "@expo-google-fonts/geist/900Black";
 import {
+  BackHandler,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -35,6 +38,11 @@ import { isMockFallbackEnabled } from "./src/api/backendConfig";
 import { transcribeRecordingAsset } from "./src/api/transcriptionClient";
 import { mapBackendErrorToFlowFailure } from "./src/flows/backendErrorMapping";
 import { processRetainedRecording } from "./src/flows/transcriptionFlow";
+import {
+  canEditOutput,
+  resolveOutputBackTarget,
+  type OutputPresentation,
+} from "./src/navigation/outputPresentation";
 import { darkTheme, lightTheme } from "./src/theme/theme";
 import type {
   AudioLifecycleState,
@@ -68,6 +76,12 @@ export default function App() {
   const [selectedType, setSelectedType] = useState<OutputType>("email");
   const [transcript, setTranscript] = useState(mockTranscript);
   const [output, setOutput] = useState<GeneratedOutput>(() => mockGeneratedOutput.email);
+  const [outputPresentation, setOutputPresentation] =
+    useState<OutputPresentation>({
+      mode: "editable",
+      origin: "generation",
+    });
+  const [historyOffset, setHistoryOffset] = useState(0);
   const [lifecyclePreview, setLifecyclePreview] = useState<AudioLifecycleState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const recording = useExpoRecordingSession();
@@ -87,6 +101,14 @@ export default function App() {
       ? "prompt"
       : recordingSnapshot.permission;
 
+  const handleOutputBack = useCallback(() => {
+    const target = resolveOutputBackTarget(outputPresentation);
+    setScreen("listening");
+    if (target === "history") {
+      setSheet("history");
+    }
+  }, [outputPresentation]);
+
   useEffect(() => {
     if (recordingSnapshot.permission === "granted" && screen === "permission") {
       setScreen("listening");
@@ -101,6 +123,36 @@ export default function App() {
     const timeout = setTimeout(() => setToast(null), 1900);
     return () => clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    if (Platform.OS === "web") {
+      return;
+    }
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (sheet) {
+          setSheet(null);
+          return true;
+        }
+
+        if (screen === "output") {
+          handleOutputBack();
+          return true;
+        }
+
+        if (screen === "settings") {
+          setScreen("listening");
+          return true;
+        }
+
+        return false;
+      },
+    );
+
+    return () => subscription.remove();
+  }, [handleOutputBack, screen, sheet]);
 
   const mockFallbackEnabled = isMockFallbackEnabled();
 
@@ -198,6 +250,10 @@ export default function App() {
 
       setSelectedType(outputType);
       setOutput(response);
+      setOutputPresentation({
+        mode: "editable",
+        origin: "generation",
+      });
       setLifecyclePreview(null);
       setSheet(null);
       setScreen("output");
@@ -224,6 +280,10 @@ export default function App() {
       setTranscript(mockTranscript);
       setSelectedType("email");
       setOutput(mockGeneratedOutput.email);
+      setOutputPresentation({
+        mode: "editable",
+        origin: "generation",
+      });
       setLifecyclePreview(null);
       setSheet(null);
       setScreen("output");
@@ -232,6 +292,10 @@ export default function App() {
     }
 
     setOutput(mockGeneratedOutput[selectedType]);
+    setOutputPresentation({
+      mode: "editable",
+      origin: "generation",
+    });
     setLifecyclePreview(null);
     setSheet(null);
     setScreen("output");
@@ -243,7 +307,9 @@ export default function App() {
   }
 
   return (
-    <View style={[styles.app, { backgroundColor: theme.colors.background }]}>
+    <GestureHandlerRootView
+      style={[styles.app, { backgroundColor: theme.colors.background }]}
+    >
       <StatusBar barStyle={themeMode === "dark" ? "light-content" : "dark-content"} />
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
@@ -308,7 +374,8 @@ export default function App() {
             <OutputScreen
               theme={theme}
               output={output}
-              onBack={() => setScreen("listening")}
+              readOnly={!canEditOutput(outputPresentation)}
+              onBack={handleOutputBack}
               onSave={(updated) => {
                 setOutput(updated);
                 setToast("Saved to history");
@@ -341,17 +408,25 @@ export default function App() {
       <HistorySheet
         theme={theme}
         visible={sheet === "history"}
+        initialScrollOffset={historyOffset}
+        onScrollOffsetChange={setHistoryOffset}
         onClose={() => setSheet(null)}
-        onSelect={(item) => {
+        onSelect={(item, scrollOffset) => {
           setOutput(item);
           setSelectedType(item.outputType);
+          setHistoryOffset(scrollOffset);
+          setOutputPresentation({
+            mode: "readOnly",
+            origin: "history",
+            historyOffset: scrollOffset,
+          });
           setSheet(null);
           setScreen("output");
         }}
       />
 
       <Toast theme={theme} message={toast} />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

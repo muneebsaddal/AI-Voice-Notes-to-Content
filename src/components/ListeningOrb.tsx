@@ -1,9 +1,14 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing, Pressable, StyleSheet, View } from "react-native";
+import { useReducedMotion } from "../accessibility/useReducedMotion";
 import { motion } from "../theme/motion";
 import type { Theme } from "../types";
 
-export type ListeningOrbState = "idle" | "listening" | "stop" | "processing";
+export type ListeningOrbState =
+  | "idle"
+  | "starting"
+  | "recording"
+  | "processing";
 
 type ListeningOrbProps = {
   state: ListeningOrbState;
@@ -12,130 +17,173 @@ type ListeningOrbProps = {
   size?: number;
 };
 
-export function ListeningOrb({ state, theme, onPress, size = 168 }: ListeningOrbProps) {
-  const breathe = useRef(new Animated.Value(0)).current;
-  const pulse = useRef(new Animated.Value(0)).current;
+export function ListeningOrb({
+  state,
+  theme,
+  onPress,
+  size = 168,
+}: ListeningOrbProps) {
+  const reducedMotion = useReducedMotion();
+  const ringProgress = useRef(new Animated.Value(0)).current;
   const spin = useRef(new Animated.Value(0)).current;
   const wave = useRef(new Animated.Value(0)).current;
+  const stopProgress = useRef(new Animated.Value(0)).current;
   const orbSize = Math.round(size * 0.9);
+
+  useEffect(() => {
+    Animated.timing(stopProgress, {
+      toValue: state === "recording" ? 1 : 0,
+      duration: reducedMotion ? 0 : motion.iconSwapMs,
+      easing: motion.easeInOut,
+      useNativeDriver: true,
+    }).start();
+  }, [reducedMotion, state, stopProgress]);
 
   useEffect(() => {
     const animations: Animated.CompositeAnimation[] = [];
 
-    if (state === "idle") {
+    ringProgress.setValue(0);
+    spin.setValue(0);
+    wave.setValue(0);
+
+    if (!reducedMotion && state === "idle") {
       animations.push(
         Animated.loop(
           Animated.sequence([
-            Animated.timing(breathe, {
+            Animated.timing(ringProgress, {
               toValue: 1,
               duration: motion.orbBreatheMs / 2,
               easing: motion.easeInOut,
               useNativeDriver: true,
             }),
-            Animated.timing(breathe, {
+            Animated.timing(ringProgress, {
               toValue: 0,
               duration: motion.orbBreatheMs / 2,
               easing: motion.easeInOut,
               useNativeDriver: true,
             }),
-          ])
-        )
+          ]),
+        ),
       );
     }
 
-    if (state === "listening") {
+    if (!reducedMotion && state === "recording") {
       animations.push(
         Animated.loop(
-          Animated.timing(pulse, {
+          Animated.timing(ringProgress, {
             toValue: 1,
             duration: motion.orbPulseMs,
             easing: Easing.out(Easing.quad),
             useNativeDriver: true,
-          })
-        )
-      );
-      animations.push(
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(wave, {
-              toValue: 1,
-              duration: 520,
-              easing: motion.easeInOut,
-              useNativeDriver: true,
-            }),
-            Animated.timing(wave, {
-              toValue: 0,
-              duration: 520,
-              easing: motion.easeInOut,
-              useNativeDriver: true,
-            }),
-          ])
-        )
+          }),
+        ),
       );
     }
 
-    if (state === "processing") {
+    if (!reducedMotion && state === "processing") {
       animations.push(
         Animated.loop(
           Animated.timing(spin, {
             toValue: 1,
-            duration: 1400,
+            duration: motion.orbSpinMs,
             easing: Easing.linear,
             useNativeDriver: true,
-          })
-        )
+          }),
+        ),
       );
       animations.push(
         Animated.loop(
           Animated.sequence([
             Animated.timing(wave, {
               toValue: 1,
-              duration: 620,
+              duration: motion.orbWaveMs / 2,
               easing: motion.easeInOut,
               useNativeDriver: true,
             }),
             Animated.timing(wave, {
               toValue: 0,
-              duration: 620,
+              duration: motion.orbWaveMs / 2,
               easing: motion.easeInOut,
               useNativeDriver: true,
             }),
-          ])
-        )
+          ]),
+        ),
       );
     }
 
-    breathe.setValue(0);
-    pulse.setValue(0);
-    spin.setValue(0);
-    wave.setValue(0);
     animations.forEach((animation) => animation.start());
-
     return () => animations.forEach((animation) => animation.stop());
-  }, [breathe, pulse, spin, state, wave]);
+  }, [reducedMotion, ringProgress, spin, state, wave]);
 
-  const ringScale = state === "idle"
-    ? breathe.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] })
-    : pulse.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1.58] });
-  const ringOpacity = state === "idle"
-    ? breathe.interpolate({ inputRange: [0, 1], outputRange: [0.55, 0.16] })
-    : pulse.interpolate({ inputRange: [0, 1], outputRange: [0.55, 0] });
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
+  const ringScale =
+    state === "starting"
+      ? 1.08
+      : state === "idle"
+        ? ringProgress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 1.18],
+          })
+        : ringProgress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.95, 1.58],
+          });
+  const ringOpacity =
+    state === "starting"
+      ? 0.24
+      : state === "idle"
+        ? ringProgress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.55, 0.16],
+          })
+        : ringProgress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.48, 0],
+          });
+  const rotate = spin.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+  const lensOpacity = stopProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+  const lensScale = stopProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.76],
+  });
+  const stopOpacity = stopProgress;
+  const stopScale = stopProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.72, 1],
+  });
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={
-        state === "stop" ? "Stop recording" : state === "processing" ? "Processing recording" : "Start recording"
+        state === "recording"
+          ? "Stop recording"
+          : state === "processing"
+            ? "Processing recording"
+            : state === "starting"
+              ? "Starting recording"
+              : "Start recording"
       }
-      disabled={!onPress || state === "processing"}
+      accessibilityState={{ disabled: !onPress }}
+      disabled={!onPress}
       onPress={onPress}
       style={({ pressed }) => [
         styles.hitArea,
-        { width: size, height: size, opacity: pressed ? 0.88 : 1 },
+        {
+          width: size,
+          height: size,
+          opacity: pressed ? 0.88 : 1,
+        },
       ]}
     >
-      {(state === "idle" || state === "listening") && (
+      {(state === "idle" ||
+        state === "starting" ||
+        state === "recording") && (
         <Animated.View
           pointerEvents="none"
           style={[
@@ -175,46 +223,65 @@ export function ListeningOrb({ state, theme, onPress, size = 168 }: ListeningOrb
           },
         ]}
       >
-        {state === "stop" ? (
-          <View style={[styles.stopGlyph, { backgroundColor: theme.colors.white }]} />
-        ) : state === "idle" ? (
-          <ApertureGlyph color={theme.colors.white} />
-        ) : (
-          <WaveGlyph color={theme.colors.white} wave={wave} compact={state === "processing"} />
-        )}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.glyphLayer,
+            {
+              opacity: lensOpacity,
+              transform: [{ scale: lensScale }],
+            },
+          ]}
+        >
+          <WaveLensGlyph
+            color={theme.colors.white}
+            wave={wave}
+            animated={state === "processing" && !reducedMotion}
+          />
+        </Animated.View>
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.glyphLayer,
+            {
+              opacity: stopOpacity,
+              transform: [{ scale: stopScale }],
+            },
+          ]}
+        >
+          <View
+            style={[styles.stopGlyph, { backgroundColor: theme.colors.white }]}
+          />
+        </Animated.View>
       </View>
     </Pressable>
   );
 }
 
-function ApertureGlyph({ color }: { color: string }) {
-  return (
-    <View style={styles.aperture}>
-      <View style={[styles.apertureDot, { backgroundColor: color }]} />
-      <View style={[styles.apertureArcLarge, { borderTopColor: color, borderLeftColor: color }]} />
-      <View style={[styles.apertureArcSmall, { borderTopColor: color, borderLeftColor: color }]} />
-    </View>
-  );
-}
-
-function WaveGlyph({
+function WaveLensGlyph({
   color,
   wave,
-  compact,
+  animated,
 }: {
   color: string;
   wave: Animated.Value;
-  compact?: boolean;
+  animated: boolean;
 }) {
-  const bars = compact ? [0.45, 0.85, 0.55] : [0.45, 0.85, 1, 0.68, 0.5];
+  const bars = [0.48, 0.72, 1, 0.72, 0.48];
 
   return (
-    <View style={[styles.wave, compact && styles.waveCompact]}>
+    <View style={styles.waveLens}>
       {bars.map((base, index) => {
-        const scaleY = wave.interpolate({
-          inputRange: [0, 0.5, 1],
-          outputRange: [base, Math.min(1.15, base + 0.38 + index * 0.03), base],
-        });
+        const scaleY = animated
+          ? wave.interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [
+                base,
+                Math.min(1.12, base + 0.2 + index * 0.025),
+                base,
+              ],
+            })
+          : base;
 
         return (
           <Animated.View
@@ -257,54 +324,25 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 18 },
     elevation: 10,
   },
+  glyphLayer: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   stopGlyph: {
     width: 46,
     height: 46,
     borderRadius: 10,
   },
-  aperture: {
-    width: 72,
-    height: 72,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  apertureDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  apertureArcLarge: {
-    position: "absolute",
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    opacity: 0.95,
-    transform: [{ rotate: "45deg" }],
-  },
-  apertureArcSmall: {
-    position: "absolute",
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-    opacity: 0.62,
-    transform: [{ rotate: "45deg" }],
-  },
-  wave: {
-    height: 56,
+  waveLens: {
+    height: 62,
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
   },
-  waveCompact: {
-    height: 42,
-  },
   waveBar: {
     width: 7,
-    height: 52,
+    height: 54,
     borderRadius: 4,
   },
 });

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { AppButton } from "../components/AppButton";
@@ -11,11 +14,13 @@ import { IconText } from "../components/IconText";
 import { TopBar } from "../components/TopBar";
 import { outputTypeLabels } from "../mock/mockData";
 import { fonts, spacing } from "../theme/theme";
+import { getOutputTitleMetrics } from "../layout/outputTitleLayout";
 import type { GeneratedOutput, Theme } from "../types";
 
 type OutputScreenProps = {
   theme: Theme;
   output: GeneratedOutput;
+  readOnly?: boolean;
   onBack: () => void;
   onSave: (updated: GeneratedOutput) => void;
   onShare: () => void;
@@ -26,6 +31,7 @@ type OutputScreenProps = {
 export function OutputScreen({
   theme,
   output,
+  readOnly = false,
   onBack,
   onSave,
   onShare,
@@ -34,6 +40,8 @@ export function OutputScreen({
 }: OutputScreenProps) {
   const [title, setTitle] = useState(output.title);
   const [body, setBody] = useState(output.body);
+  const { width: viewportWidth } = useWindowDimensions();
+  const titleMetrics = getOutputTitleMetrics(viewportWidth);
 
   useEffect(() => {
     setTitle(output.title);
@@ -47,39 +55,77 @@ export function OutputScreen({
       <TopBar
         theme={theme}
         onBack={onBack}
-        onMore={onChangeType}
+        onMore={readOnly ? undefined : onChangeType}
         moreAccessibilityLabel="Change output type"
       />
-      <View style={styles.content}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Badge label={outputTypeLabels[output.outputType]} theme={theme} />
-        <TextInput
-          accessibilityLabel="Output title"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Title"
-          placeholderTextColor={theme.colors.mutedForeground}
-          style={[styles.titleInput, { color: theme.colors.foreground }]}
-        />
-        <TextInput
-          accessibilityLabel="Generated output body"
-          value={body}
-          onChangeText={setBody}
-          multiline
-          scrollEnabled={false}
-          textAlignVertical="top"
-          placeholder="Generated output"
-          placeholderTextColor={theme.colors.mutedForeground}
-          style={[styles.bodyInput, { color: theme.colors.foreground }]}
-        />
-      </View>
+        {readOnly ? (
+          <>
+            <Text
+              accessibilityRole="header"
+              accessibilityLabel={`Saved output title: ${title}`}
+              selectable
+              style={[
+                styles.titleText,
+                titleMetrics,
+                { color: theme.colors.foreground },
+              ]}
+            >
+              {title}
+            </Text>
+            <Text
+              accessibilityLabel="Read-only saved output"
+              selectable
+              style={[styles.bodyText, { color: theme.colors.foreground }]}
+            >
+              {body}
+            </Text>
+          </>
+        ) : (
+          <>
+            <TextInput
+              accessibilityLabel="Output title"
+              value={title}
+              onChangeText={setTitle}
+              multiline
+              scrollEnabled={false}
+              placeholder="Title"
+              placeholderTextColor={theme.colors.mutedForeground}
+              style={[
+                styles.titleInput,
+                titleMetrics,
+                { color: theme.colors.foreground },
+              ]}
+            />
+            <TextInput
+              accessibilityLabel="Generated output body"
+              value={body}
+              onChangeText={setBody}
+              multiline
+              scrollEnabled={false}
+              textAlignVertical="top"
+              placeholder="Generated output"
+              placeholderTextColor={theme.colors.mutedForeground}
+              style={[styles.bodyInput, { color: theme.colors.foreground }]}
+            />
+          </>
+        )}
+      </ScrollView>
       <View style={[styles.actionBar, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
-        <AppButton
-          label="Save"
-          theme={theme}
-          variant="secondary"
-          onPress={() => onSave(updatedOutput)}
-          style={styles.saveButton}
-        />
+        {!readOnly && (
+          <AppButton
+            label="Save"
+            theme={theme}
+            variant="secondary"
+            onPress={() => onSave(updatedOutput)}
+            style={styles.saveButton}
+          />
+        )}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Copy output"
@@ -102,26 +148,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: spacing.screenX,
     paddingTop: 8,
-    paddingBottom: 12,
+    paddingBottom: 28,
   },
   titleInput: {
     marginTop: 14,
     fontFamily: fonts.extraBold,
-    fontSize: 27,
-    lineHeight: 34,
     paddingVertical: 0,
+    width: "100%",
+  },
+  titleText: {
+    marginTop: 14,
+    fontFamily: fonts.extraBold,
+    width: "100%",
   },
   bodyInput: {
     marginTop: 18,
-    flex: 1,
-    minHeight: 0,
+    minHeight: 320,
     fontFamily: fonts.regular,
     fontSize: 16,
     lineHeight: 24,
     padding: 0,
+  },
+  bodyText: {
+    marginTop: 18,
+    fontFamily: fonts.regular,
+    fontSize: 16,
+    lineHeight: 24,
   },
   actionBar: {
     minHeight: 78,

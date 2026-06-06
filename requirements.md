@@ -414,8 +414,10 @@ Provider candidates:
 
 Initial recommendation:
 
-- Use a server-mediated OpenAI transcription flow for MVP if it gives the fastest reliable path.
-- Re-evaluate Apple on-device speech and other local transcription options after the cloud MVP validates the core flow.
+- During development and testing, use a local backend with `faster-whisper` running on the developer's Windows laptop. Start with `base.en` for English-only testing or `base` for multilingual testing, using CPU `int8` unless suitable GPU acceleration is available.
+- Keep the frontend-to-backend transcription contract provider-neutral so local `faster-whisper`, a cloud transcription API, and a future iPhone-local implementation can be exchanged without rewriting the app flow.
+- Production should potentially run transcription and transformation locally on supported iPhones, but the exact on-device stack remains subject to a dedicated feasibility spike.
+- Keep a cloud provider path available until local iPhone quality, latency, battery use, thermal impact, app size, and device coverage meet release requirements.
 
 ### 11.2 AI Transformation
 
@@ -885,7 +887,9 @@ Milestones:
 
 Post-MVP privacy-mode investigation:
 
+- Treat fully local iPhone processing as the preferred long-term direction, subject to feasibility and quality testing.
 - Test Apple Speech on-device transcription quality, latency, language support, device coverage, and Expo/native-module implications.
+- Test `whisper.cpp` or another proven iPhone-compatible Whisper runtime for offline transcription.
 - Test Apple Foundation Models for note cleanup, todo extraction, email drafting, journal formatting, and content post generation.
 - Test one embedded local LLM runtime only if Apple Foundation Models are insufficient or unavailable for the target devices.
 - Decide whether to ship `Total Privacy Mode`, `Private Local Mode`, or `Cloud Quality Mode` as a later feature.
@@ -894,8 +898,10 @@ Post-MVP privacy-mode investigation:
 
 Privacy-mode backlog:
 
+- Use local `faster-whisper` on the development laptop for free transcription testing before paying for cloud transcription.
 - After the cloud MVP flow works, create a dedicated technical spike for local processing.
 - Prototype on-device speech-to-text using Apple Speech where supported.
+- Prototype `whisper.cpp` on representative iPhones and compare it with Apple Speech.
 - Prototype on-device transformation using Apple Foundation Models where supported.
 - Compare local output quality against cloud output quality for all five MVP output types.
 - Measure local processing latency, battery impact, device heat, app size impact, and supported-device coverage.
@@ -976,6 +982,7 @@ When requirements change:
 
 ## 26. Change Log
 
+- 2026-06-06: Selected local `faster-whisper` on the development laptop for transcription testing; kept transcription contracts provider-neutral; set fully local iPhone processing as the preferred long-term direction pending an on-device feasibility spike and cloud fallback validation.
 - 2026-05-31: Marked requirements as implementation-ready for the first frontend increment; documented Lovable as the MVP UI source of truth; updated milestones to reflect frontend-first build order and backend-after-mock-flow sequencing.
 - 2026-05-24: Updated visual direction from red recording identity to blue listening identity; added dark theme requirement and main icon exploration direction.
 - 2026-05-23: Locked home UX philosophy: one large record/stop button dominates the home screen, no recording timer, cancel during recording, haptic/audio start-stop cues by default, swipe up for history/task list, auto-start only as a future power-user setting.

@@ -10,12 +10,16 @@
     "web": "expo start --web",
     "backend:build": "tsc -p backend/tsconfig.json",
     "backend:dev": "npm run backend:build && node backend/dist/src/server.js",
+    "backend:dev:local-transcription": "npm run backend:build && powershell -NoProfile -Command \"$env:TRANSCRIPTION_PROVIDER='local-faster-whisper'; node backend/dist/src/server.js\"",
     "backend:start": "node backend/dist/src/server.js",
     "backend:test": "npm run backend:build && node --test --experimental-test-isolation=none backend/dist/test/*.test.js",
+    "transcription:dev": "python -m uvicorn app.main:app --app-dir services/local-transcription --host 127.0.0.1 --port 8001",
+    "transcription:test": "python -m pytest -p no:cacheprovider services/local-transcription/tests",
     "recording:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/recordingSession.test.mjs",
+    "frontend:test": "node --test --experimental-strip-types --experimental-test-isolation=none test/frontendTranscription.test.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck && npm run recording:test && npm run backend:test"
+    "test": "npm run typecheck && npm run recording:test && npm run frontend:test && npm run backend:test"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",

@@ -37,3 +37,27 @@ export const invalidGeneratedOutputError = new ApiError(
   "The generated output was invalid. Try again.",
   502,
 );
+
+export const unsupportedAudioTypeError = new ApiError(
+  "unsupported_audio_type",
+  "Unsupported audio type.",
+  415,
+);
+
+export const audioTooLargeError = new ApiError(
+  "audio_too_large",
+  "Audio upload is too large.",
+  413,
+);
+
+export const transcriptionUnavailableError = new ApiError(
+  "transcription_unavailable",
+  "Transcription is temporarily unavailable. Try again.",
+  503,
+);
+
+export const transcriptionFailedError = new ApiError(
+  "transcription_failed",
+  "Transcription failed.",
+  502,
+);

@@ -413,6 +413,11 @@ that requires downloaded model weights.
 
 ### Manual checks
 
+These are human-triggered checks, not automatic agent completion gates. A
+real-model run may download weights and must only happen after explicit user
+approval. Browser, device, and local-service attempts must use a hard timeout
+and stop all spawned processes afterward.
+
 - Record 5-15 seconds in web and receive a matching local transcript.
 - Record 5-15 seconds on iPhone and receive a matching local transcript.
 - Stop the Python service after recording; verify retry UI and retained audio.

@@ -57,7 +57,10 @@ Build the iOS-first Expo frontend for AI Voice Notes To Content, using the Lovab
 - Start the local dev server when practical and report the URL.
 - Verify key screens fit mobile viewports without overlap.
 - Verify the clickable mock flow is nonblank and navigable.
-- Browser/Playwright verification must be timeboxed. If Playwright, the browser extension, or a browser profile blocks progress for more than 10 minutes, stop waiting, record the blocker, finish the handoff, and ask the lead developer whether to retry.
+- Browser/Playwright verification is optional unless the task explicitly makes
+  it an acceptance criterion. Make one attempt with a hard 3-minute tool
+  timeout. On timeout, missing status, or environment failure, stop immediately
+  and report the remaining manual check.
 - Stop any local dev servers or background processes you started before finishing unless the lead developer explicitly asked you to leave them running.
 - Do not end a task after starting Playwright or a dev server without a final handoff.
 

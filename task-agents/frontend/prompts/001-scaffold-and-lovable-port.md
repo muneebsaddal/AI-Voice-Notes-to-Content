@@ -111,9 +111,13 @@ Deliverables:
 
 Verification:
 - Run install/build/typecheck/lint/test commands that are available in the project.
-- Start the dev server if practical and report the URL.
-- If browser/app screenshot tooling is available, verify the main screen is nonblank and layout is not broken.
-- Check at least one narrow iPhone-sized viewport and one larger viewport if tooling allows.
+- Start the dev server only for one bounded check and report the URL.
+- If browser/app screenshot tooling is available, make one verification attempt
+  with a hard 3-minute tool timeout.
+- Check at least one narrow iPhone-sized viewport and one larger viewport within
+  that same attempt.
+- On timeout or environment failure, stop the server/helper processes and
+  report the remaining manual check without retrying.
 - Verify animation choices do not move the main listening control's center point between idle, active listening, and processing states.
 - Report any commands you could not run and why.
 

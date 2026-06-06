@@ -6,6 +6,11 @@ node_modules/
 .playwright-cli/
 dist/
 backend/dist/
+.venv/
+services/local-transcription/.venv/
+__pycache__/
+.pytest_cache/
+pytest-cache-files-*/
 npm-debug.log*
 .expo-server*.log
 backend-dev*.log

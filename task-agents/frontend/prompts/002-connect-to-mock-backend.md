@@ -51,7 +51,7 @@ Skills to use:
 - Use frontend-design for UI integration judgment.
 - Use .agents/skills/transitions-dev/SKILL.md for smooth transitions, then translate the ideas into Expo/React Native animation primitives.
 - Use verification-loop before claiming the task is complete.
-- Use e2e-testing or playwright if browser verification is available.
+- Use e2e-testing or Playwright for one bounded browser attempt if available.
 - If a bug or unexpected failure appears, use systematic-debugging before making broad changes.
 
 Goal:
@@ -138,7 +138,9 @@ Verification:
   2. The happy path reaches output preview using backend data.
   3. At least one backend/network failure falls back to the existing retry/error UI.
   4. A narrow iPhone-sized viewport has no obvious overlap or broken layout.
-- Timebox Playwright/browser verification to 10 minutes. If the browser extension, profile, or MCP bridge blocks progress, stop waiting, report the blocker, and finish the handoff instead of hanging.
+- Give the Playwright/browser tool call a hard 3-minute timeout. If the browser
+  extension, profile, MCP bridge, or app returns no status, stop immediately,
+  report the blocker, and finish the handoff without retrying.
 - Stop any backend, Expo, or browser helper processes you started unless the lead developer explicitly asks you to keep them running.
 - Report any command you could not run and why.
 

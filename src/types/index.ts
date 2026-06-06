@@ -6,7 +6,7 @@ import type {
 import type {
   RecordingActionResult,
   RecordingAsset,
-} from "../audio/recordingSession";
+} from "../audio/recordingSession.ts";
 
 export type OutputType = VoiceOutputType;
 export type GeneratedOutput = VoiceGeneratedOutput;

@@ -6,11 +6,12 @@ Use this file as the quick resume point for a fresh lead-developer chat. For dee
 
 ## Current Repo State
 
-Latest completed feature commit before this handoff update:
+Latest completed feature commit before the current uncommitted implementation:
 
 - `05e1781` - Document local transcription development direction.
 
-The working tree should be clean before new work starts. Confirm with:
+The complete local transcription milestone is implemented and remains
+uncommitted pending review and commit approval. Confirm with:
 
 ```bash
 git status --short
@@ -38,6 +39,24 @@ git status --short
 - Recording start, stop, cancel, temporary asset retention, and deletion.
 - Permission-denied recovery through device Settings.
 - Provider-independent recording session with focused lifecycle tests.
+- Provider-neutral Node transcription interface and startup selection.
+- Deterministic mock transcription provider for automated tests.
+- Bounded multipart transcription upload with format, duration, and size
+  validation.
+- Temporary backend audio cleanup after success and failure.
+- Localhost-only `LocalFasterWhisperProvider` with timeout/readiness handling.
+- Persistent FastAPI `faster-whisper` sidecar under
+  `services/local-transcription/`.
+- Python defaults of `base.en`, CPU, and `int8`.
+- Fake-model Python tests that do not download or load real model weights.
+- Expo multipart upload from the retained recording asset.
+- Configurable `EXPO_PUBLIC_API_BASE_URL`.
+- Explicit, disabled-by-default mock fallback.
+- Retry reuses the retained recording after upload/provider failures.
+- Successful transcription discards temporary frontend audio only after the
+  response is validated.
+- Focused frontend tests for web/native multipart payloads, timeout/error
+  mapping, retry retention, and success cleanup.
 - Root lint, typecheck, test, backend test/build, and web export scripts.
 - Project memory graph under `memory/`.
 - Specialist task-agent briefs under `task-agents/`.
@@ -57,6 +76,16 @@ Run mock backend:
 cd /c/Users/munee/Documents/development_workspace/apps_development/ai-voice-notes-to-content
 npm run backend:dev
 ```
+
+Run fake-model transcription tests:
+
+```bash
+npm run transcription:test
+```
+
+The real sidecar workflow is documented in
+`services/local-transcription/README.md`. Do not start it as an automatic agent
+verification step because first startup can download model weights.
 
 Open:
 
@@ -101,13 +130,31 @@ The recording lifecycle milestone was verified with:
 - `npm audit --audit-level=high` with zero vulnerabilities
 - `git diff --check`
 
+The uncommitted local transcription milestone was verified with:
+
+- `npm run recording:test`: 8 tests passed.
+- `npm run frontend:test`: 9 tests passed.
+- `npm run backend:test`: 40 tests passed before the frontend integration. A
+  later unchanged-backend rerun was stopped after the test command hung.
+- `npm run transcription:test`: 9 Python tests passed.
+- `npm run typecheck`
+- `npm run lint`
+- `npx expo export --platform web`
+- `npm audit --audit-level=high`: zero vulnerabilities.
+- `git diff --check`
+- No listeners remained on ports 3333, 8001, or 8081.
+
 ## Important Implementation Notes
 
 - Do not recreate `requirements.md`.
 - Do not scaffold a second app.
 - Do not rebuild the mock backend.
 - Do not depend on specialist chat history as source of truth; use repo commits, `memory/`, and this handoff file.
-- Playwright/browser verification should be timeboxed. If the browser bridge blocks progress, report the blocker and finish the handoff.
+- Playwright/browser/local-service verification gets one attempt with a hard
+  3-minute tool timeout. Stop spawned processes and finish the handoff after
+  any timeout or repeated environment failure.
+- Do not automatically start or download a real `faster-whisper` model for
+  verification. Real-model checks require explicit user approval.
 - Stop any local dev servers you start unless explicitly told to leave them running.
 - Commit approved changes or ask for review/commit approval; do not leave silent dirty work.
 
@@ -125,8 +172,8 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 
 ## Not Built Yet
 
-- Real audio upload to the backend.
-- Local `faster-whisper` transcription integration.
+- End-to-end real-model transcription check with explicit user approval.
+- Physical iPhone upload check.
 - Real AI generation provider.
 - Local persistent history.
 - Native share/export implementation.
@@ -139,25 +186,22 @@ The current mock flow intentionally skips the old playback/transcribe review pag
 
 ## Recommended Next Steps
 
-1. Real audio upload and transcription:
-   - multipart audio upload from the Expo app.
-   - backend file-size/type validation.
-   - provider-neutral Node transcription boundary.
-   - localhost-only persistent Python `faster-whisper` service.
-   - `base.en` on CPU `int8` as the development default.
-   - preserve temporary audio for retry on upload/transcription failure.
-   - delete temporary audio after successful transcription.
-2. Real structured generation provider integration.
-3. Local history and share/export.
-4. Automated frontend interaction testing.
-5. Privacy and release readiness.
+1. Review and commit the combined local transcription milestone.
+2. Run a bounded real-model and device/web integration check with explicit user
+   approval.
+3. Real structured generation provider integration.
+4. Local history and share/export.
+5. Automated frontend interaction testing.
+6. Privacy and release readiness.
 
 ## Suggested Fresh Chat Instruction
 
 ```text
 Read HANDOFF.md first, then AGENTS.md, memory/current-state.md, product-context.md, requirements.md, ux-flow.md, and task-agents/README.md.
 
-Confirm git status is clean. The current Expo mock UI, mock backend, Voice AI output contracts, and real recording lifecycle are implemented. Do not recreate requirements, scaffold another app, rebuild completed mock-backend wiring, redefine the five MVP output schemas, or replace the recording provider abstraction.
-
-Implement the next increment from `task-agents/research-planning/plans/real-transcription-integration.md`: provider seam and localhost `faster-whisper` service first, preserving the existing response contract and privacy defaults.
+Review the uncommitted complete local transcription milestone. The provider
+seam, multipart backend route, localhost faster-whisper sidecar, Expo multipart
+client, retry retention, explicit mock fallback, and automated tests are
+implemented. Do not start or download a real model during automatic
+verification.
 ```

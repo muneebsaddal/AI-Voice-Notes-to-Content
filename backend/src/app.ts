@@ -9,7 +9,13 @@ import {
 } from "./errors";
 import { validateGeneratedOutput } from "./outputContracts";
 import { generateMockOutput } from "./services/generationService";
-import { transcribeMockAudio } from "./services/transcriptionService";
+import {
+  transcribeMockAudio,
+  transcribeWithProvider,
+} from "./services/transcriptionService";
+import { MockTranscriptionProvider } from "./transcription/mockTranscriptionProvider";
+import { readMultipartTranscriptionUpload } from "./transcription/multipart";
+import type { TranscriptionProvider } from "./transcription/types";
 import type {
   ApiErrorResponse,
   GenerationRequest,
@@ -24,7 +30,16 @@ type AppHandler = (request: IncomingMessage, response: ServerResponse) => Promis
 
 type AppDependencies = {
   transcribeAudio?: (request: TranscriptionRequest) => Promise<TranscriptionResponse>;
+  transcriptionProvider?: TranscriptionProvider;
+  maxAudioUploadBytes?: number;
   generateOutput?: (request: GenerationRequest) => Promise<unknown>;
+};
+
+type ResolvedAppDependencies = {
+  transcribeAudio: (request: TranscriptionRequest) => Promise<TranscriptionResponse>;
+  transcriptionProvider: TranscriptionProvider;
+  maxAudioUploadBytes: number;
+  generateOutput: (request: GenerationRequest) => Promise<unknown>;
 };
 
 function setBaseHeaders(response: ServerResponse): void {
@@ -68,12 +83,21 @@ async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   }
 }
 
-async function handleHealth(response: ServerResponse): Promise<void> {
+async function handleHealth(
+  response: ServerResponse,
+  dependencies: ResolvedAppDependencies,
+): Promise<void> {
   const payload: HealthResponse = {
     ok: true,
     service: "voice-notes-api",
-    mode: "mock",
+    mode: dependencies.transcriptionProvider.name === "mock" ? "mock" : "local",
   };
+  if (dependencies.transcriptionProvider.name === "local-faster-whisper") {
+    payload.transcription = {
+      provider: "local-faster-whisper",
+      ready: await dependencies.transcriptionProvider.isReady?.() ?? false,
+    };
+  }
 
   sendJson(response, 200, payload);
 }
@@ -81,24 +105,55 @@ async function handleHealth(response: ServerResponse): Promise<void> {
 async function handleTranscriptions(
   request: IncomingMessage,
   response: ServerResponse,
-  dependencies: Required<AppDependencies>,
+  dependencies: ResolvedAppDependencies,
 ): Promise<void> {
-  const body = await readJsonBody(request);
-  const validation = validateTranscriptionRequest(body);
-
-  if (!validation.ok) {
-    sendJson(response, validation.error.status, toErrorResponse(validation.error));
+  const contentType = request.headers["content-type"] ?? "";
+  if (contentType.toLowerCase().startsWith("multipart/form-data")) {
+    const upload = await readMultipartTranscriptionUpload(
+      request,
+      dependencies.maxAudioUploadBytes,
+    );
+    let transcription: TranscriptionResponse;
+    try {
+      transcription = await transcribeWithProvider(
+        dependencies.transcriptionProvider,
+        {
+          filePath: upload.filePath,
+          filename: upload.filename,
+          mimeType: upload.mimeType,
+          language: upload.language,
+        },
+        upload.durationMs,
+      );
+    } finally {
+      await upload.cleanup();
+    }
+    sendJson(response, 200, transcription);
     return;
   }
 
-  const transcription = await dependencies.transcribeAudio(validation.value);
-  sendJson(response, 200, transcription);
+  // Temporary compatibility bridge until the Expo client switches to multipart.
+  if (contentType.toLowerCase().startsWith("application/json")) {
+    const body = await readJsonBody(request);
+    const validation = validateTranscriptionRequest(body);
+
+    if (!validation.ok) {
+      sendJson(response, validation.error.status, toErrorResponse(validation.error));
+      return;
+    }
+
+    const transcription = await dependencies.transcribeAudio(validation.value);
+    sendJson(response, 200, transcription);
+    return;
+  }
+
+  throw invalidRequestBodyError;
 }
 
 async function handleGenerations(
   request: IncomingMessage,
   response: ServerResponse,
-  dependencies: Required<AppDependencies>,
+  dependencies: ResolvedAppDependencies,
 ): Promise<void> {
   const body = await readJsonBody(request);
   const validation = validateGenerationRequest(body);
@@ -147,7 +202,7 @@ function handleError(error: unknown, response: ServerResponse): void {
   }
 
   console.error("Unhandled API error", {
-    message: error instanceof Error ? error.message : "Unknown error",
+    errorType: error instanceof Error ? error.name : "UnknownError",
   });
 
   sendJson(response, 500, {
@@ -159,8 +214,10 @@ function handleError(error: unknown, response: ServerResponse): void {
 }
 
 export function createApp(dependencies: AppDependencies = {}): AppHandler {
-  const resolvedDependencies: Required<AppDependencies> = {
+  const resolvedDependencies: ResolvedAppDependencies = {
     transcribeAudio: dependencies.transcribeAudio ?? transcribeMockAudio,
+    transcriptionProvider: dependencies.transcriptionProvider ?? new MockTranscriptionProvider(),
+    maxAudioUploadBytes: dependencies.maxAudioUploadBytes ?? 24 * 1024 * 1024,
     generateOutput: dependencies.generateOutput ?? generateMockOutput,
   };
 
@@ -181,7 +238,7 @@ export function createApp(dependencies: AppDependencies = {}): AppHandler {
           return;
         }
 
-        await handleHealth(response);
+        await handleHealth(response, resolvedDependencies);
         return;
       }
 

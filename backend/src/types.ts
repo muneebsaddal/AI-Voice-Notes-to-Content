@@ -88,12 +88,16 @@ export type IntentRoutingResult = {
   warnings: string[];
 };
 
-export type ApiMode = "mock";
+export type ApiMode = "mock" | "local";
 
 export type HealthResponse = {
   ok: true;
   service: "voice-notes-api";
   mode: ApiMode;
+  transcription?: {
+    provider: "local-faster-whisper";
+    ready: boolean;
+  };
 };
 
 export type TranscriptionRequest = {
@@ -104,7 +108,7 @@ export type TranscriptionRequest = {
 
 export type TranscriptionResponse = {
   transcript: string;
-  language: "en";
+  language: string;
   durationMs: number;
   suggestedOutputType: OutputType;
   routing: IntentRoutingResult;
@@ -118,6 +122,9 @@ export type GenerationRequest = {
 
 export type ApiErrorCode =
   | "recording_upload_failed"
+  | "unsupported_audio_type"
+  | "audio_too_large"
+  | "transcription_unavailable"
   | "transcription_failed"
   | "generation_failed"
   | "invalid_generated_output"

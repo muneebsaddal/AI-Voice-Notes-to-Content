@@ -30,9 +30,11 @@ import {
 import { useExpoRecordingSession } from "./src/audio/useExpoRecordingSession";
 import {
   generateMockOutput,
-  MockBackendClientError,
-  transcribeMockAudio,
 } from "./src/api/mockBackendClient";
+import { isMockFallbackEnabled } from "./src/api/backendConfig";
+import { transcribeRecordingAsset } from "./src/api/transcriptionClient";
+import { mapBackendErrorToFlowFailure } from "./src/flows/backendErrorMapping";
+import { processRetainedRecording } from "./src/flows/transcriptionFlow";
 import { darkTheme, lightTheme } from "./src/theme/theme";
 import type {
   AudioLifecycleState,
@@ -101,6 +103,7 @@ export default function App() {
   }, [toast]);
 
   const generatedForType = useMemo(() => mockGeneratedOutput[selectedType], [selectedType]);
+  const mockFallbackEnabled = isMockFallbackEnabled();
 
   const previewLifecycleState = useCallback((state: LifecyclePreviewState) => {
     setLifecyclePreview(state);
@@ -110,25 +113,42 @@ export default function App() {
   const handleTranscribe = useCallback(async (): Promise<BackendFlowResult> => {
     try {
       const recordingAsset = getRecordingSnapshot().asset;
-      const response = await transcribeMockAudio({
-        audioId: recordingAsset?.id ?? "mock-audio-1",
-        durationMs: recordingAsset?.durationMs ?? 42000,
+      if (!recordingAsset) {
+        return {
+          ok: false,
+          failure: {
+            state: "transcriptionFailed",
+            kind: "recordingUploadFailed",
+            message: "There is no retained recording to upload. Record your note again.",
+            canUseMockFallback: mockFallbackEnabled,
+          },
+        };
+      }
+
+      const { response, cleanupFailed } = await processRetainedRecording(recordingAsset, {
+        transcribe: async (asset) => await transcribeRecordingAsset(asset, {
+          platform: Platform.OS === "web" ? "web" : "native",
+        }),
+        discard: discardRecording,
       });
 
       setTranscript(response.transcript);
       setSelectedType(response.suggestedOutputType);
-      const discardResult = await discardRecording();
-      if (!discardResult.ok) {
+      if (cleanupFailed) {
         setToast("Temporary audio cleanup needs attention");
       }
       return { ok: true };
     } catch (error) {
       return {
         ok: false,
-        failure: mapBackendErrorToFlowFailure(error, "transcription"),
+        failure: mapBackendErrorToFlowFailure(
+          error,
+          "transcription",
+          mockFallbackEnabled,
+        ),
       };
     }
-  }, [discardRecording, getRecordingSnapshot]);
+  }, [discardRecording, getRecordingSnapshot, mockFallbackEnabled]);
 
   const handleStartRecording = useCallback(async (): Promise<RecordingStartFlowResult> => {
     const result = await startRecording();
@@ -183,14 +203,17 @@ export default function App() {
     } catch (error) {
       return {
         ok: false,
-        failure: mapBackendErrorToFlowFailure(error, "generation"),
+        failure: mapBackendErrorToFlowFailure(
+          error,
+          "generation",
+          mockFallbackEnabled,
+        ),
       };
     }
-  }, [selectedType, transcript]);
+  }, [mockFallbackEnabled, selectedType, transcript]);
 
   const useMockFallback = useCallback((state: BackendFlowFailure["state"]) => {
     if (state === "recordingFailed" || state === "transcriptionFailed") {
-      void discardRecording();
       setTranscript(mockTranscript);
       setSelectedType("email");
       setOutput(mockGeneratedOutput.email);
@@ -206,7 +229,7 @@ export default function App() {
     setSheet(null);
     setScreen("output");
     setToast("Using local mock output");
-  }, [discardRecording, selectedType]);
+  }, [selectedType]);
 
   if (!fontsLoaded) {
     return <View style={[styles.app, { backgroundColor: theme.colors.background }]} />;
@@ -334,60 +357,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-function mapBackendErrorToFlowFailure(
-  error: unknown,
-  stage: "transcription" | "generation",
-): BackendFlowFailure {
-  if (error instanceof MockBackendClientError) {
-    if (error.code === "recording_upload_failed") {
-      return {
-        state: "recordingFailed",
-        kind: "recordingUploadFailed",
-        message: "The mock API could not receive the recording. Try again or continue with local mock data.",
-        canUseMockFallback: true,
-      };
-    }
-
-    if (error.code === "backend_unavailable") {
-      return {
-        state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
-        kind: "backendUnavailable",
-        message: "Start `npm run backend:dev`, then try again. You can also continue with local mock data.",
-        canUseMockFallback: true,
-      };
-    }
-
-    if (error.code === "transcription_failed") {
-      return {
-        state: "transcriptionFailed",
-        kind: "transcriptionFailed",
-        message: "Could not transcribe this recording. The audio is still available.",
-        canUseMockFallback: false,
-      };
-    }
-
-    if (error.code === "generation_failed") {
-      return {
-        state: "generationFailed",
-        kind: "generationFailed",
-        message: "Could not create the output from this transcript.",
-        canUseMockFallback: true,
-      };
-    }
-
-    return {
-      state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
-      kind: "serverError",
-      message: "The local mock API returned a server error. Try again or continue with local mock data.",
-      canUseMockFallback: true,
-    };
-  }
-
-  return {
-    state: stage === "generation" ? "generationFailed" : "transcriptionFailed",
-    kind: "serverError",
-    message: "The mock flow hit an unexpected error. Try again or continue with local mock data.",
-    canUseMockFallback: true,
-  };
-}

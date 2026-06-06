@@ -52,6 +52,11 @@ Protect the MVP from regressions in recording, transformation, editing, sharing,
 - Run all available automated tests relevant to the changed surface.
 - Confirm manual QA steps cover permission denial, offline/provider failures, and export/share.
 - Keep test runs mock/provider-free by default.
+- Give browser, Playwright, simulator, device, and local-service checks one
+  attempt with a hard 3-minute tool timeout. Stop spawned processes after the
+  attempt and never block the handoff on an optional check.
+- Never download or start a real transcription model unless the user
+  explicitly requests that verification.
 - Report any commands that could not be run and why.
 
 ## Handoff Format

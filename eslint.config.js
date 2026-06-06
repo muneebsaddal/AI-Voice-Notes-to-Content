@@ -11,6 +11,7 @@ module.exports = defineConfig([
       "backend/dist/**",
       "dist/**",
       "node_modules/**",
+      "pytest-cache-files-*/**",
       "tmp/**",
     ],
   },

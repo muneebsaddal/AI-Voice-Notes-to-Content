@@ -84,16 +84,27 @@ Do not force a skill when the task is a tiny direct command, but for planning, c
 
 ## Verification Timebox And Stop Rule
 
-Optional browser, simulator, device, DevTools, or other manual smoke checks must not delay an otherwise verified task indefinitely.
+Optional browser, simulator, device, DevTools, local-service, or other manual
+smoke checks must not delay an otherwise verified task indefinitely.
 
 - Make one bounded attempt at an optional manual verification step.
-- If the same environment or tooling failure occurs again, stop retrying immediately.
-- Do not keep changing launch commands, process wrappers, ports, or browser tooling to work around a repeated optional-check failure.
-- Stop any servers or background processes started for the check.
-- Report the blocker, the exact verification that did pass, and any remaining manual check.
-- When required automated gates pass, present the work for review instead of holding completion on optional browser tooling.
-- Respect the specialist-agent browser timebox as a hard ceiling, not a target. Stop sooner when the failure is clearly environmental.
-- When the user asks for a bounded action such as commit and push, complete that action and report it before beginning the next feature.
+- Set a hard tool/command timeout before starting it: 3 minutes for browser,
+  Playwright, dev-server, or local-service checks unless the task explicitly
+  requires a different limit.
+- If the tool times out, returns no status, or repeats the same environment
+  failure, stop immediately. Do not retry with different wrappers, ports,
+  profiles, or launch commands.
+- Stop every server, browser helper, model process, or background process
+  started for the check before producing the handoff.
+- Real `faster-whisper` model startup, model download, and real-model inference
+  are never automatic agent verification steps. Run them only when the user
+  explicitly requests the check and accepts the download/runtime cost.
+- Report the blocker, the exact automated verification that passed, and the
+  remaining manual check.
+- When required automated gates pass, present the work for review instead of
+  holding completion on optional tooling.
+- When the user asks for a bounded action such as commit and push, complete
+  that action and report it before beginning the next feature.
 
 ## Current Build Direction
 

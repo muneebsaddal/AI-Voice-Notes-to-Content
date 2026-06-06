@@ -1,18 +1,12 @@
 import type { GeneratedOutput, IntentRoutingResult, OutputType } from "../types";
+import {
+  MockBackendClientError,
+  toApiErrorCode,
+  type ApiErrorResponse,
+} from "./backendError";
+import { getApiBaseUrl } from "./backendConfig";
 
-export const MOCK_BACKEND_BASE_URL = "http://127.0.0.1:3333";
-
-export type ApiErrorCode =
-  | "recording_upload_failed"
-  | "transcription_failed"
-  | "generation_failed"
-  | "invalid_generated_output"
-  | "internal_error"
-  | "unsupported_output_type"
-  | "invalid_request_body"
-  | "not_found"
-  | "method_not_allowed"
-  | "backend_unavailable";
+export { MockBackendClientError };
 
 export type TranscriptionRequest = {
   audioId: string;
@@ -34,25 +28,6 @@ export type GenerationRequest = {
   simulate?: "generation_failed" | "invalid_generated_output";
 };
 
-type ApiErrorResponse = {
-  error?: {
-    code?: string;
-    message?: string;
-  };
-};
-
-export class MockBackendClientError extends Error {
-  readonly code: ApiErrorCode;
-  readonly status: number;
-
-  constructor(code: ApiErrorCode, message: string, status: number) {
-    super(message);
-    this.name = "MockBackendClientError";
-    this.code = code;
-    this.status = status;
-  }
-}
-
 export async function transcribeMockAudio(
   request: TranscriptionRequest,
 ): Promise<TranscriptionResponse> {
@@ -69,7 +44,7 @@ async function postJson<ResponseBody>(path: string, body: unknown): Promise<Resp
   let response: Response;
 
   try {
-    response = await fetch(`${MOCK_BACKEND_BASE_URL}${path}`, {
+    response = await fetch(`${getApiBaseUrl()}${path}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -107,21 +82,4 @@ async function postJson<ResponseBody>(path: string, body: unknown): Promise<Resp
   }
 
   return payload as ResponseBody;
-}
-
-function toApiErrorCode(code: string | undefined): ApiErrorCode {
-  switch (code) {
-    case "recording_upload_failed":
-    case "transcription_failed":
-    case "generation_failed":
-    case "invalid_generated_output":
-    case "internal_error":
-    case "unsupported_output_type":
-    case "invalid_request_body":
-    case "not_found":
-    case "method_not_allowed":
-      return code;
-    default:
-      return "internal_error";
-  }
 }

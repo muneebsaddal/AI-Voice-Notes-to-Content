@@ -1,7 +1,11 @@
-import { ApiError } from "../errors";
+import { ApiError, transcriptionFailedError } from "../errors";
 import { mockTranscript, mockTranscriptsByAudioId } from "../mockData";
 import { routeOutputIntent } from "../intentRouter";
 import type { TranscriptionRequest, TranscriptionResponse } from "../types";
+import type {
+  TranscriptionProvider,
+  TranscriptionProviderInput,
+} from "../transcription/types";
 
 export async function transcribeMockAudio(
   request: TranscriptionRequest,
@@ -21,6 +25,27 @@ export async function transcribeMockAudio(
     transcript,
     language: "en",
     durationMs: request.durationMs,
+    suggestedOutputType: routing.suggestedOutputType,
+    routing,
+  };
+}
+
+export async function transcribeWithProvider(
+  provider: TranscriptionProvider,
+  input: TranscriptionProviderInput,
+  durationMs: number,
+): Promise<TranscriptionResponse> {
+  const result = await provider.transcribe(input);
+  const transcript = result.text.trim();
+  if (transcript.length === 0) {
+    throw transcriptionFailedError;
+  }
+  const routing = routeOutputIntent({ transcript });
+
+  return {
+    transcript,
+    language: result.language?.trim() || "en",
+    durationMs,
     suggestedOutputType: routing.suggestedOutputType,
     routing,
   };

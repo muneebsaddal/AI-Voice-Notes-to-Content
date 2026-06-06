@@ -21,9 +21,14 @@ The goal is not simple transcription. The goal is turning thought into action wi
 
 ## Current Status
 
-Frontend implementation has started.
-
-The current app is an Expo / React Native / TypeScript clickable mock that ports the final Lovable direction into the first MVP flow. It calls the local mock backend for transcription and generation when `npm run backend:dev` is running, while keeping local mock fallbacks available for frontend-only work. Real recording, provider calls, auth, payments, analytics, storage, and real exports are intentionally not wired yet.
+The current app is an Expo / React Native / TypeScript implementation that
+ports the final Lovable direction into the first MVP flow. Real Expo microphone
+permission and recording retention are implemented. The backend now has a
+provider-neutral transcription boundary, bounded multipart audio upload, and a
+localhost `faster-whisper` provider plus a tested Python sidecar. The frontend
+still uses the temporary JSON transcription bridge until the next multipart
+upload increment. Real structured generation, auth, payments, analytics,
+history storage, and native exports are not wired yet.
 
 Current flow:
 
@@ -52,6 +57,17 @@ Start Expo:
 ```bash
 npm run start
 ```
+
+Frontend environment variables:
+
+```text
+EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:3333
+EXPO_PUBLIC_ENABLE_MOCK_FALLBACK=false
+```
+
+For a physical iPhone, set `EXPO_PUBLIC_API_BASE_URL` to the laptop's trusted
+LAN address. Mock fallback is disabled by default and must be explicitly
+enabled for frontend-only development.
 
 Typecheck:
 
@@ -83,7 +99,16 @@ Run the mock backend locally:
 npm run backend:dev
 ```
 
-The local backend listens on `http://127.0.0.1:3333` by default. Set `PORT` or `HOST` for a different local binding. The current backend is mock-only: it does not call AI, transcription, storage, Notion, auth, payment, or cloud providers, and it does not write uploaded audio to disk.
+The local backend listens on `http://127.0.0.1:3333` by default. Set `PORT` or
+`HOST` for a different local binding. It supports a mock transcription provider
+and a localhost `faster-whisper` provider. See
+`services/local-transcription/README.md` for the Windows setup.
+
+The Expo app uploads the retained recording as multipart `file`, `durationMs`,
+and `audioId`. It keeps the recording after upload/provider failures for retry
+and deletes it only after accepting a valid transcript. The backend JSON
+transcription request remains a temporary compatibility bridge for older test
+and development callers.
 
 ## Mock Backend API
 
@@ -97,7 +122,17 @@ Returns:
 
 `POST /api/transcriptions`
 
-Accepts:
+The real-audio contract accepts `multipart/form-data`:
+
+- `file`: exactly one supported audio file
+- `durationMs`: required positive integer
+- `language`: optional language hint
+- `audioId`: optional client correlation identifier
+
+Supported extensions are `m4a`, `mp4`, `wav`, `webm`, `mp3`, `mpeg`, and
+`mpga`. The default total request limit is 24 MB.
+
+The temporary mock bridge also accepts:
 
 ```json
 { "audioId": "mock-audio-1", "durationMs": 42000 }
@@ -143,7 +178,12 @@ Structured errors use:
 { "error": { "code": "invalid_request_body", "message": "Invalid request body." } }
 ```
 
-Supported mock error codes are `recording_upload_failed`, `transcription_failed`, `generation_failed`, `internal_error`, `unsupported_output_type`, `invalid_request_body`, `not_found`, and `method_not_allowed`. Permission denial remains a frontend/local state, not a backend error.
+Transcription errors include `invalid_request_body`, `unsupported_audio_type`,
+`audio_too_large`, `recording_upload_failed`, `transcription_unavailable`, and
+`transcription_failed`. Other API errors include `generation_failed`,
+`internal_error`, `unsupported_output_type`, `not_found`, and
+`method_not_allowed`. Permission denial remains a frontend/local state, not a
+backend error.
 
 ## MVP Scope
 

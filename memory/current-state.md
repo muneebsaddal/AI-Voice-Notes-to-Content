@@ -26,18 +26,30 @@ The frontend-first implementation has produced the first mock app, backend found
 8. The UI now uses Geist as a web-preview font and Expo vector icons for controls.
 9. Voice AI output contracts now define structured payloads for all five MVP types, deterministic intent routing, runtime validation/sanitization, golden fixtures, and contract tests.
 10. Real Expo microphone permission, recording start/stop/cancel, temporary asset retention, permission recovery, and audio cleanup are implemented behind a provider-independent session.
-11. Real audio upload, backend provider calls, storage, export, and release readiness remain later increments.
+11. The Node backend now has a provider-neutral transcription boundary,
+    deterministic mock provider, localhost `LocalFasterWhisperProvider`,
+    bounded multipart upload validation, safe error mapping, and temporary-file
+    cleanup.
+12. A persistent localhost-only FastAPI `faster-whisper` service now exists
+    under `services/local-transcription/`, defaults to `base.en` on CPU
+    `int8`, reuses one model instance, and has fake-model tests that require no
+    model download.
+13. The Expo app now uploads the retained recording as multipart audio using a
+    configurable API base URL, preserves it after upload/transcription failure,
+    reuses it for retry, and deletes it only after accepting a valid transcript.
+14. Mock transcription fallback is disabled by default and requires explicit
+    development configuration and user action.
+15. Real structured generation, storage, export, and release readiness remain
+    later increments.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
 Next task:
 
-- Implement local development transcription through a provider-neutral backend:
-  `LocalFasterWhisperProvider`, a localhost-only persistent Python service using
-  `base.en` on CPU `int8`, bounded multipart upload, and retryable temporary
-  audio.
-- Use `task-agents/research-planning/plans/real-transcription-integration.md`
-  as the implementation plan.
+- Review and commit the combined local transcription milestone.
+- With explicit user approval, perform one bounded real-model and device/web
+  integration check.
+- Then implement real structured generation provider calls.
 
 ## Stack Decision
 

@@ -1,5 +1,6 @@
 import { ApiError } from "../errors";
 import { mockTranscript, mockTranscriptsByAudioId } from "../mockData";
+import { routeOutputIntent } from "../intentRouter";
 import type { TranscriptionRequest, TranscriptionResponse } from "../types";
 
 export async function transcribeMockAudio(
@@ -13,15 +14,14 @@ export async function transcribeMockAudio(
     throw new ApiError("transcription_failed", "Transcription failed.", 502);
   }
 
-  const fixture = mockTranscriptsByAudioId[request.audioId] ?? {
-    transcript: mockTranscript,
-    suggestedOutputType: "note" as const,
-  };
+  const transcript = mockTranscriptsByAudioId[request.audioId] ?? mockTranscript;
+  const routing = routeOutputIntent({ transcript });
 
   return {
-    transcript: fixture.transcript,
+    transcript,
     language: "en",
     durationMs: request.durationMs,
-    suggestedOutputType: fixture.suggestedOutputType,
+    suggestedOutputType: routing.suggestedOutputType,
+    routing,
   };
 }

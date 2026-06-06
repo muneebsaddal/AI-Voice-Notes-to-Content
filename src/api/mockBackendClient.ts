@@ -1,4 +1,4 @@
-import type { GeneratedOutput, OutputType } from "../types";
+import type { GeneratedOutput, IntentRoutingResult, OutputType } from "../types";
 
 export const MOCK_BACKEND_BASE_URL = "http://127.0.0.1:3333";
 
@@ -6,6 +6,7 @@ export type ApiErrorCode =
   | "recording_upload_failed"
   | "transcription_failed"
   | "generation_failed"
+  | "invalid_generated_output"
   | "internal_error"
   | "unsupported_output_type"
   | "invalid_request_body"
@@ -24,12 +25,13 @@ export type TranscriptionResponse = {
   language: "en";
   durationMs: number;
   suggestedOutputType: OutputType;
+  routing: IntentRoutingResult;
 };
 
 export type GenerationRequest = {
   transcript: string;
   outputType: OutputType;
-  simulate?: "generation_failed";
+  simulate?: "generation_failed" | "invalid_generated_output";
 };
 
 type ApiErrorResponse = {
@@ -112,6 +114,7 @@ function toApiErrorCode(code: string | undefined): ApiErrorCode {
     case "recording_upload_failed":
     case "transcription_failed":
     case "generation_failed":
+    case "invalid_generated_output":
     case "internal_error":
     case "unsupported_output_type":
     case "invalid_request_body":

@@ -4,6 +4,7 @@ import { createServer, type Server } from "node:http";
 import { after, before, describe, it } from "node:test";
 
 import { createApp } from "../src/app";
+import { goldenGeneratedOutputs } from "../src/goldenFixtures";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -108,14 +109,23 @@ describe("mock API contracts", () => {
     assert.equal(response.json.language, "en");
     assert.equal(response.json.durationMs, 42000);
     assert.equal(response.json.suggestedOutputType, "email");
+    assert.deepEqual(response.json.routing, {
+      suggestedOutputType: "email",
+      source: "inference",
+      confidence: "medium",
+      uncertain: false,
+      matchedSignals: ["email", "todo"],
+      warnings: [],
+    });
   });
 
   it("returns generated output for each MVP output type", async () => {
-    for (const outputType of ["note", "todo", "email", "journal", "content"]) {
+    for (const outputType of ["note", "todo", "email", "journal", "content"] as const) {
+      const fixture = goldenGeneratedOutputs[outputType];
       const response = await requestJson("/api/generations", {
         method: "POST",
         body: {
-          transcript: "Please turn this voice note into something useful.",
+          transcript: fixture.sourceTranscript,
           outputType,
         },
       });
@@ -127,6 +137,59 @@ describe("mock API contracts", () => {
       assert.equal(typeof response.json.body, "string");
       assert.equal(typeof response.json.preview, "string");
       assert.equal(response.json.createdAtLabel, "Today");
+      assert.equal(response.json.schemaVersion, "1.0");
+      assert.equal(typeof response.json.payload, "object");
+      assert.ok(Array.isArray(response.json.warnings));
+      assert.equal("sourceTranscript" in response.json, false);
+    }
+  });
+
+  it("strips unknown provider fields from valid generated output", async () => {
+    const providerServer = createServer(
+      createApp({
+        generateOutput: async () => ({
+          ...goldenGeneratedOutputs.note,
+          provider: "internal-provider",
+          rawProviderResponse: { secret: "must-not-leak" },
+          payload: {
+            ...goldenGeneratedOutputs.note.payload,
+            internalReasoning: "must-not-leak",
+          },
+        }),
+      }),
+    );
+
+    await new Promise<void>((resolve) => {
+      providerServer.listen(0, "127.0.0.1", resolve);
+    });
+
+    const originalBaseUrl = baseUrl;
+    const address = providerServer.address();
+    assert(address && typeof address === "object");
+    baseUrl = `http://127.0.0.1:${address.port}`;
+
+    try {
+      const response = await requestJson("/api/generations", {
+          method: "POST",
+          body: {
+            transcript: goldenGeneratedOutputs.note.sourceTranscript,
+            outputType: "note",
+          },
+        });
+
+      assert.equal(response.status, 200);
+      assert.equal("sourceTranscript" in response.json, false);
+      assert.equal("provider" in response.json, false);
+      assert.equal("rawProviderResponse" in response.json, false);
+      assert.equal(
+        "internalReasoning" in (response.json.payload as Record<string, unknown>),
+        false,
+      );
+    } finally {
+      baseUrl = originalBaseUrl;
+      await new Promise<void>((resolve, reject) => {
+        providerServer.close((error) => (error ? reject(error) : resolve()));
+      });
     }
   });
 
@@ -137,12 +200,10 @@ describe("mock API contracts", () => {
         generateOutput: async (request) => {
           receivedTranscript = request.transcript;
           return {
+            ...goldenGeneratedOutputs.note,
             id: "unicode-note",
-            outputType: request.outputType,
             title: "Unicode Note",
-            body: "ok",
             preview: "ok",
-            createdAtLabel: "Today",
           };
         },
       }),
@@ -299,6 +360,25 @@ describe("mock API contracts", () => {
       error: {
         code: "generation_failed",
         message: "Generation failed.",
+      },
+    });
+  });
+
+  it("distinguishes invalid generated output from a transient generation failure", async () => {
+    const response = await requestJson("/api/generations", {
+      method: "POST",
+      body: {
+        transcript: goldenGeneratedOutputs.note.sourceTranscript,
+        outputType: "note",
+        simulate: "invalid_generated_output",
+      },
+    });
+
+    assert.equal(response.status, 502);
+    assert.deepEqual(response.json, {
+      error: {
+        code: "invalid_generated_output",
+        message: "The generated output was invalid. Try again.",
       },
     });
   });

@@ -73,7 +73,11 @@ export function validateGenerationRequest(input: unknown): ValidationResult<Gene
     return { ok: false, error: invalidRequestBodyError };
   }
 
-  if (simulate !== undefined && simulate !== "generation_failed") {
+  if (
+    simulate !== undefined &&
+    simulate !== "generation_failed" &&
+    simulate !== "invalid_generated_output"
+  ) {
     return { ok: false, error: invalidRequestBodyError };
   }
 

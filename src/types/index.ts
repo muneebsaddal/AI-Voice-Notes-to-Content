@@ -1,4 +1,12 @@
-export type OutputType = "note" | "todo" | "email" | "journal" | "content";
+import type {
+  GeneratedOutput as VoiceGeneratedOutput,
+  IntentRoutingResult as VoiceIntentRoutingResult,
+  OutputType as VoiceOutputType,
+} from "../../backend/src/types";
+
+export type OutputType = VoiceOutputType;
+export type GeneratedOutput = VoiceGeneratedOutput;
+export type IntentRoutingResult = VoiceIntentRoutingResult;
 
 export type PermissionStatus = "prompt" | "granted" | "denied";
 
@@ -32,15 +40,6 @@ export type BackendFlowFailure = {
 };
 
 export type BackendFlowResult = { ok: true } | { ok: false; failure: BackendFlowFailure };
-
-export type GeneratedOutput = {
-  id: string;
-  outputType: OutputType;
-  title: string;
-  body: string;
-  preview: string;
-  createdAtLabel: string;
-};
 
 export type Theme = {
   name: "dark" | "light";

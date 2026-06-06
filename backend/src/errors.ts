@@ -31,3 +31,9 @@ export const unsupportedOutputTypeError = new ApiError(
   "Unsupported output type.",
   400,
 );
+
+export const invalidGeneratedOutputError = new ApiError(
+  "invalid_generated_output",
+  "The generated output was invalid. Try again.",
+  502,
+);

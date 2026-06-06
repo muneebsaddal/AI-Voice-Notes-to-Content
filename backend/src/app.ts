@@ -1,12 +1,17 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { validateGenerationRequest, validateTranscriptionRequest } from "./contracts";
-import { ApiError, invalidRequestBodyError, toErrorResponse } from "./errors";
+import {
+  ApiError,
+  invalidGeneratedOutputError,
+  invalidRequestBodyError,
+  toErrorResponse,
+} from "./errors";
+import { validateGeneratedOutput } from "./outputContracts";
 import { generateMockOutput } from "./services/generationService";
 import { transcribeMockAudio } from "./services/transcriptionService";
 import type {
   ApiErrorResponse,
-  GeneratedOutput,
   GenerationRequest,
   HealthResponse,
   TranscriptionRequest,
@@ -19,7 +24,7 @@ type AppHandler = (request: IncomingMessage, response: ServerResponse) => Promis
 
 type AppDependencies = {
   transcribeAudio?: (request: TranscriptionRequest) => Promise<TranscriptionResponse>;
-  generateOutput?: (request: GenerationRequest) => Promise<GeneratedOutput>;
+  generateOutput?: (request: GenerationRequest) => Promise<unknown>;
 };
 
 function setBaseHeaders(response: ServerResponse): void {
@@ -104,7 +109,13 @@ async function handleGenerations(
   }
 
   const generatedOutput = await dependencies.generateOutput(validation.value);
-  sendJson(response, 200, generatedOutput);
+  const outputValidation = validateGeneratedOutput(generatedOutput, validation.value.transcript);
+
+  if (!outputValidation.ok) {
+    throw invalidGeneratedOutputError;
+  }
+
+  sendJson(response, 200, outputValidation.value);
 }
 
 function methodNotAllowed(response: ServerResponse): void {

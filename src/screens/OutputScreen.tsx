@@ -15,16 +15,17 @@ import { TopBar } from "../components/TopBar";
 import { outputTypeLabels } from "../mock/mockData";
 import { fonts, spacing } from "../theme/theme";
 import { getOutputTitleMetrics } from "../layout/outputTitleLayout";
-import type { GeneratedOutput, Theme } from "../types";
+import type { OutputDocument, Theme } from "../types";
 
 type OutputScreenProps = {
   theme: Theme;
-  output: GeneratedOutput;
+  output: OutputDocument;
   readOnly?: boolean;
   onBack: () => void;
-  onSave: (updated: GeneratedOutput) => void;
-  onShare: () => void;
-  onCopy: () => void;
+  onSave: (updated: OutputDocument) => void;
+  onShare: (updated: OutputDocument) => void;
+  onCopy: (updated: OutputDocument) => void;
+  onDelete?: () => void;
   onChangeType: () => void;
 };
 
@@ -36,6 +37,7 @@ export function OutputScreen({
   onSave,
   onShare,
   onCopy,
+  onDelete,
   onChangeType,
 }: OutputScreenProps) {
   const [title, setTitle] = useState(output.title);
@@ -126,10 +128,23 @@ export function OutputScreen({
             style={styles.saveButton}
           />
         )}
+        {readOnly && onDelete && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Delete saved output"
+            onPress={onDelete}
+            style={({ pressed }) => [
+              styles.copyButton,
+              { backgroundColor: theme.colors.secondary, opacity: pressed ? 0.72 : 1 },
+            ]}
+          >
+            <IconText name="trash" theme={theme} color={theme.colors.destructive} size={22} />
+          </Pressable>
+        )}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Copy output"
-          onPress={onCopy}
+          onPress={() => onCopy(updatedOutput)}
           style={({ pressed }) => [
             styles.copyButton,
             { backgroundColor: theme.colors.secondary, opacity: pressed ? 0.72 : 1 },
@@ -137,7 +152,13 @@ export function OutputScreen({
         >
           <IconText name="copy" theme={theme} color={theme.colors.secondaryForeground} size={22} />
         </Pressable>
-        <AppButton label="Share" theme={theme} onPress={onShare} style={styles.shareButton} />
+        <AppButton
+          label="Share / Export"
+          theme={theme}
+          accessibilityLabel="Share or export to Notion or another app"
+          onPress={() => onShare(updatedOutput)}
+          style={styles.shareButton}
+        />
       </View>
     </View>
   );

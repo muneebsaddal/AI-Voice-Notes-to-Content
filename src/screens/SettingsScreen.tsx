@@ -12,6 +12,7 @@ type SettingsScreenProps = {
   onToggleTheme: () => void;
   onShowToast: (message: string) => void;
   onPreviewLifecycleState: (state: LifecyclePreviewState) => void;
+  onDeleteAllHistory: () => void;
 };
 
 export function SettingsScreen({
@@ -21,6 +22,7 @@ export function SettingsScreen({
   onToggleTheme,
   onShowToast,
   onPreviewLifecycleState,
+  onDeleteAllHistory,
 }: SettingsScreenProps) {
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
@@ -62,7 +64,7 @@ export function SettingsScreen({
         </SettingsGroup>
 
         <SettingsGroup title="" theme={theme}>
-          <Pressable accessibilityRole="button" onPress={() => onShowToast("History delete mocked")}>
+          <Pressable accessibilityRole="button" onPress={onDeleteAllHistory}>
             <SettingsRow label="Delete all history" danger theme={theme} />
           </Pressable>
         </SettingsGroup>

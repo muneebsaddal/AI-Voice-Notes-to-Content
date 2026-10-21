@@ -514,6 +514,10 @@ MVP requirements:
 - Later versions may add an explicit save-audio option with quality-of-life features such as replay, rename, retention settings, and storage controls.
 - Let users delete individual notes and generated outputs.
 - Store local data securely using platform-appropriate storage.
+- Store generated output title, body, type, preview, and timestamps in MVP history.
+- Do not retain raw transcripts, audio references, provider payloads, or generation warnings in history.
+- Encrypt native history at rest with a device-protected key.
+- Treat web as a development preview surface and keep history session-only rather than persisting sensitive output in unencrypted browser storage.
 - Store API keys only on a backend, never in the app bundle.
 - Use HTTPS for all network calls.
 - Avoid logging raw transcripts, generated outputs, or audio URLs.
@@ -1004,7 +1008,7 @@ Product:
 - Should the first TestFlight be fully free, subscription-gated, or free with usage limits?
 - What maximum recording length should the free tier allow?
 - What quality-of-life features are required before offering a user-controlled save-audio option?
-- Should history store raw transcripts, or only generated outputs, for privacy?
+- Resolved 2026-06-07: MVP history stores generated outputs only. Raw transcripts, audio references, provider payloads, and warnings are not retained.
 - What exact promise should future local processing use: `Total Privacy Mode`, `Private Local Mode`, or `Offline Mode`?
 
 Technical:

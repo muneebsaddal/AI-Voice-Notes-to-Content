@@ -12,6 +12,17 @@ export type OutputType = VoiceOutputType;
 export type GeneratedOutput = VoiceGeneratedOutput;
 export type IntentRoutingResult = VoiceIntentRoutingResult;
 
+export type OutputDocument = Pick<
+  GeneratedOutput,
+  "id" | "outputType" | "title" | "body" | "preview"
+>;
+
+export type SavedHistoryItem = OutputDocument & {
+  sourceOutputId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PermissionStatus = "prompt" | "granted" | "denied";
 
 export type AudioLifecycleState =

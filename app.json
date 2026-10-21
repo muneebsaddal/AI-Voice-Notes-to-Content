@@ -22,7 +22,8 @@
         {
           "microphonePermission": "Allow microphone access so you can capture a thought and turn it into a useful note, task list, email, journal entry, or post."
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }

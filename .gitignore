@@ -16,3 +16,9 @@ npm-debug.log*
 backend-dev*.log
 expo-web*.log
 static-web*.log
+
+# Local workstation files and private configuration.
+.DS_Store
+.env
+.env.*
+!.env.example

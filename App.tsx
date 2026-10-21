@@ -9,6 +9,7 @@ import { Geist_700Bold } from "@expo-google-fonts/geist/700Bold";
 import { Geist_800ExtraBold } from "@expo-google-fonts/geist/800ExtraBold";
 import { Geist_900Black } from "@expo-google-fonts/geist/900Black";
 import {
+  Alert,
   BackHandler,
   KeyboardAvoidingView,
   Linking,
@@ -48,17 +49,39 @@ import type {
   AudioLifecycleState,
   BackendFlowFailure,
   BackendFlowResult,
-  GeneratedOutput,
   LifecyclePreviewState,
+  OutputDocument,
   OutputType,
   PermissionStatus,
   RecordingStartFlowResult,
   RecordingStopFlowResult,
+  SavedHistoryItem,
 } from "./src/types";
+import { createHistoryItem } from "./src/history/historyModel";
+import { historyRepository } from "./src/history/platformHistoryRepository";
+import { copyOutput, shareOutput } from "./src/export/outputExport";
 
 type AppScreen = "permission" | "listening" | "settings" | "output";
 type Sheet = "changeType" | "history" | null;
 type ThemeMode = "dark" | "light";
+
+function confirmDestructiveAction(
+  title: string,
+  message: string,
+  onConfirm: () => void,
+) {
+  if (Platform.OS === "web") {
+    if (typeof globalThis.confirm === "function" && globalThis.confirm(message)) {
+      onConfirm();
+    }
+    return;
+  }
+
+  Alert.alert(title, message, [
+    { text: "Cancel", style: "cancel" },
+    { text: "Delete", style: "destructive", onPress: onConfirm },
+  ]);
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -75,13 +98,15 @@ export default function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>("dark");
   const [selectedType, setSelectedType] = useState<OutputType>("email");
   const [transcript, setTranscript] = useState(mockTranscript);
-  const [output, setOutput] = useState<GeneratedOutput>(() => mockGeneratedOutput.email);
+  const [output, setOutput] = useState<OutputDocument>(() => mockGeneratedOutput.email);
   const [outputPresentation, setOutputPresentation] =
     useState<OutputPresentation>({
       mode: "editable",
       origin: "generation",
     });
   const [historyOffset, setHistoryOffset] = useState(0);
+  const [historyItems, setHistoryItems] = useState<SavedHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const [lifecyclePreview, setLifecyclePreview] = useState<AudioLifecycleState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const recording = useExpoRecordingSession();
@@ -114,6 +139,32 @@ export default function App() {
       setScreen("listening");
     }
   }, [recordingSnapshot.permission, screen]);
+
+  useEffect(() => {
+    let active = true;
+
+    historyRepository
+      .list()
+      .then((items) => {
+        if (active) {
+          setHistoryItems(items);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setToast("Could not load saved history");
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setHistoryLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!toast) {
@@ -367,6 +418,21 @@ export default function App() {
               onToggleTheme={() => setThemeMode(themeMode === "dark" ? "light" : "dark")}
               onShowToast={setToast}
               onPreviewLifecycleState={previewLifecycleState}
+              onDeleteAllHistory={() => {
+                confirmDestructiveAction(
+                  "Delete all history?",
+                  "This permanently deletes every saved output on this device.",
+                  () => {
+                    void historyRepository
+                      .clear()
+                      .then(() => {
+                        setHistoryItems([]);
+                        setToast("History deleted");
+                      })
+                      .catch(() => setToast("Could not delete history"));
+                  },
+                );
+              }}
             />
           )}
 
@@ -377,11 +443,57 @@ export default function App() {
               readOnly={!canEditOutput(outputPresentation)}
               onBack={handleOutputBack}
               onSave={(updated) => {
-                setOutput(updated);
-                setToast("Saved to history");
+                try {
+                  const existing = historyItems.find(
+                    (item) => item.sourceOutputId === updated.id,
+                  );
+                  const savedItem = createHistoryItem(updated, { existing });
+
+                  void historyRepository
+                    .save(savedItem)
+                    .then((items) => {
+                      setOutput(updated);
+                      setHistoryItems(items);
+                      setToast(existing ? "Saved changes" : "Saved to history");
+                    })
+                    .catch(() => setToast("Could not save this output"));
+                } catch {
+                  setToast("Add a title and content before saving");
+                }
               }}
-              onShare={() => setToast("Share sheet ready")}
-              onCopy={() => setToast("Copied")}
+              onShare={(updated) => {
+                void shareOutput(updated).catch(() =>
+                  setToast("Could not open the share sheet"),
+                );
+              }}
+              onCopy={(updated) => {
+                void copyOutput(updated)
+                  .then(() => setToast("Copied"))
+                  .catch(() => setToast("Could not copy this output"));
+              }}
+              onDelete={
+                outputPresentation.origin === "history"
+                  ? () => {
+                      confirmDestructiveAction(
+                        "Delete saved output?",
+                        "This permanently deletes this output from local history.",
+                        () => {
+                          void historyRepository
+                            .deleteById(output.id)
+                            .then((items) => {
+                              setHistoryItems(items);
+                              setScreen("listening");
+                              setSheet("history");
+                              setToast("Saved output deleted");
+                            })
+                            .catch(() =>
+                              setToast("Could not delete this output"),
+                            );
+                        },
+                      );
+                    }
+                  : undefined
+              }
               onChangeType={() => setSheet("changeType")}
             />
           )}
@@ -408,6 +520,8 @@ export default function App() {
       <HistorySheet
         theme={theme}
         visible={sheet === "history"}
+        items={historyItems}
+        loading={historyLoading}
         initialScrollOffset={historyOffset}
         onScrollOffsetChange={setHistoryOffset}
         onClose={() => setSheet(null)}

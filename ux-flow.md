@@ -274,9 +274,11 @@ Behavior:
 - Back returns to History, not recording home, when History was the entry point.
 - A future explicit edit mode may add editing, delete, or regeneration after those behaviors and persistence rules are designed.
 
-Open privacy question:
+Privacy behavior:
 
-- Decide whether history stores raw transcripts, only generated outputs, or user-configurable transcript retention.
+- History stores generated outputs only.
+- Raw transcripts, audio references, provider payloads, and warnings are not retained.
+- Native history is encrypted at rest. Web preview history lasts only for the current app session.
 
 ## 13. Settings
 

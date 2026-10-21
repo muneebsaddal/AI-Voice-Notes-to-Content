@@ -3,22 +3,27 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Badge } from "./Badge";
 import { IconText } from "./IconText";
 import { Sheet } from "./Sheet";
-import { historyItems, outputTypeLabels } from "../mock/mockData";
+import { outputTypeLabels } from "../mock/mockData";
+import { formatHistoryDateLabel } from "../history/historyModel";
 import { fonts } from "../theme/theme";
-import type { GeneratedOutput, Theme } from "../types";
+import type { SavedHistoryItem, Theme } from "../types";
 
 type HistorySheetProps = {
   visible: boolean;
   theme: Theme;
+  items: SavedHistoryItem[];
+  loading?: boolean;
   initialScrollOffset?: number;
   onScrollOffsetChange?: (offset: number) => void;
   onClose: () => void;
-  onSelect: (item: GeneratedOutput, scrollOffset: number) => void;
+  onSelect: (item: SavedHistoryItem, scrollOffset: number) => void;
 };
 
 export function HistorySheet({
   visible,
   theme,
+  items,
+  loading = false,
   initialScrollOffset = 0,
   onScrollOffsetChange,
   onClose,
@@ -77,7 +82,22 @@ export function HistorySheet({
           scrollOffsetRef.current = offset;
         }}
       >
-        {historyItems.map((item) => (
+        {!loading && items.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyTitle, { color: theme.colors.foreground }]}>
+              No saved outputs yet
+            </Text>
+            <Text style={[styles.emptyBody, { color: theme.colors.mutedForeground }]}>
+              Save a generated output and it will appear here.
+            </Text>
+          </View>
+        )}
+        {loading && (
+          <Text style={[styles.loading, { color: theme.colors.mutedForeground }]}>
+            Loading history...
+          </Text>
+        )}
+        {items.map((item) => (
           <Pressable
             key={item.id}
             accessibilityRole="button"
@@ -93,7 +113,9 @@ export function HistorySheet({
           >
             <View style={styles.cardHeader}>
               <Badge label={outputTypeLabels[item.outputType]} theme={theme} />
-              <Text style={[styles.date, { color: theme.colors.mutedForeground }]}>{item.createdAtLabel}</Text>
+              <Text style={[styles.date, { color: theme.colors.mutedForeground }]}>
+                {formatHistoryDateLabel(item.updatedAt)}
+              </Text>
             </View>
             <Text numberOfLines={1} style={[styles.cardTitle, { color: theme.colors.foreground }]}>
               {item.title}
@@ -154,5 +176,27 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     lineHeight: 20,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontFamily: fonts.bold,
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  emptyBody: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+  },
+  loading: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    paddingVertical: 40,
+    textAlign: "center",
   },
 });

@@ -11,6 +11,7 @@ type IconName =
   | "copy"
   | "share"
   | "close"
+  | "trash"
   | "play";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
@@ -31,6 +32,7 @@ const iconNames: Record<IconName, IoniconName> = {
   copy: "copy-outline",
   share: "share-outline",
   close: "close",
+  trash: "trash-outline",
   play: "play",
 };
 

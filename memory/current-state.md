@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-06-07
+Last updated: 2026-08-01
 
 ## Product
 
@@ -61,13 +61,37 @@ The frontend-first implementation has produced the first mock app, backend found
     defect is implemented but still requires the user-run device acceptance
     check. Real-provider generation also requires optional user-approved paid
     smoke verification.
+24. Persistent native history now stores generated-output-only records,
+    encrypts them with XChaCha20-Poly1305, and keeps the encryption key in
+    device-only SecureStore. Raw transcripts, audio references, provider
+    payloads, and warnings are not retained.
+25. History now supports save/update, restart restoration on native devices,
+    read-only detail, confirmed individual deletion, confirmed delete-all, and
+    corruption-safe failure without overwriting unreadable data.
+26. Copy uses Expo Clipboard and Share / Export opens the native Share Sheet
+    with Markdown-friendly text for Notion or other destinations. Visible edits
+    are copied or shared even before Save.
+27. Web preview history is session-only to avoid persisting sensitive generated
+    content in unencrypted browser storage.
+28. Independent structured review of the history/export milestone returned
+    `APPROVE WITH FOLLOW-UPS`; remaining gaps are user-run automated commands
+    and physical-device acceptance.
 
 `requirements.md` is already implementation-ready for frontend increments. Frontend agents should not recreate requirements or stop at planning-only output.
 
-Next task:
+## Owner pause (2026-08-01)
+
+The owner postponed this project. Do not resume the pending verification or
+commit work, and do not archive the repository, unless the owner explicitly
+chooses one of those actions. The current uncommitted local work must be
+preserved unchanged while paused.
+
+Next task when resumed:
 
 - Run the bounded automated verification commands listed in
   `task-agents/testing/immediate-flow-reliability-checklist.md`.
+- Verify save, restart restoration on Android/iOS, read-only reopen, copy,
+  Share / Export to Notion, individual delete, and delete-all.
 - Complete the Android Expo Go and web acceptance matrix with the local
   transcription services already running.
 - Optionally approve one paid OpenAI smoke call after automated verification.
@@ -150,3 +174,7 @@ Latest evidence:
   2026-06-07. One upstream Starlette pending-deprecation warning remains.
 - `npm run recording:test`, `npm run frontend:test`, `npm run typecheck`, and
   `npm run lint`: user-confirmed passing on 2026-06-07.
+
+## Owner archive (2026-08-02)
+
+The owner archived all app work for now. Preserve the repository and its uncommitted local work unchanged. Do not resume pending verification, commit work, paid checks, deployment, or release preparation without explicit owner instruction.
